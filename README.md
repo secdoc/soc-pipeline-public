@@ -21,17 +21,9 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Architecture (short)
 
-```
-Greenbone gvmd (GMP socket, in Docker)
-   │ one read-only pull (gvm-tools container)
-   ▼
-Collector → GELF → Graylog `vuln` stream → forward → Wazuh
-                        │                              rules: Crit/High/KEV = alert,
-                        └─ (optional) AI agent          rest = event-only
-                           → remediation brief
-   ▼
-Central pane: Wazuh
-```
+![Vulnerability pipeline architecture](docs/architecture.svg)
+
+Full reasoning and the stage-by-stage mapping: [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Quick start
 

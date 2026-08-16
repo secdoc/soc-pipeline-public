@@ -11,30 +11,9 @@ Most guides bolt a vulnerability scanner on as its own silo with its own dashboa
 
 ## Architecture
 
-```
-Greenbone gvmd (GMP over local socket, inside Docker)
-        │  ONE read-only pull via `docker compose exec gvm-tools gvm-cli ... socket`
-        │  (QoD-filtered; secrets stripped; scan output treated as hostile input)
-        ▼
-   Collector  ── normalized JSON findings ──┐
-        │                                    │
-        ▼ forwarding path                     ▼ enrichment path (optional)
-   GELF → Graylog `vuln` stream          AI Vuln Report Agent
-   (own index set = retention;           (LLM: reads findings + asset context,
-    full finding history searchable)      emits prioritized remediation plan)
-        │
-        ▼
-   Forward `vuln` stream → Wazuh (syslog output)
-   Wazuh decoder + rules:
-     • Critical / High / KEV  → ALERT (level >= 10)
-     • everything else        → event-only (queryable enrichment, no alert)
-        │
-        ▼
-   CENTRAL PANE: Wazuh
-     + cross-correlation: a SIEM alert on a host that also has a known
-       critical vuln is a higher-priority incident than the same alert
-       on a hardened host.
-```
+![Vulnerability pipeline architecture](architecture.svg)
+
+*One read-only GMP pull feeds two consumers: the forwarding path (into the SIEM central pane) and the optional enrichment path (AI remediation brief). Rendered diagram: [`architecture.svg`](architecture.svg).*
 
 ## Design principles (the transferable part)
 
