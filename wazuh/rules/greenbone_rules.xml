@@ -1,0 +1,61 @@
+<!--
+  SOC Pipeline — Greenbone vulnerability rules
+  Rule-ID range: 115000-115999 (clear of UniFi 100001-110203; no collision).
+
+  Ingest: collector JSON via localfile log_format=json -> Wazuh BUILT-IN json
+  decoder extracts fields. Rules match with <decoded_as>json</decoded_as> +
+  <field name="...">. (No custom decoder — a custom one with use_own_name would
+  replace native JSON field extraction.)
+
+  Alert discipline (per design): only High/Critical page; Medium/Low are recorded
+  at low level as queryable enrichment, not alerts. Gating is on the Greenbone
+  "threat" band with a numeric "severity" (CVSS) escalation for Critical.
+  Wazuh fires ONE rule per event (best match), so severity tiers are mutually
+  exclusive children of the base; CVE presence is surfaced in the description
+  rather than as a competing sibling rule.
+-->
+<group name="vulnerability,greenbone,">
+
+  <!-- Base: any greenbone vuln event. Level 0 = recorded, not alerted. -->
+  <rule id="115000" level="0">
+    <decoded_as>json</decoded_as>
+    <field name="event_type">vulnerability</field>
+    <field name="source">greenbone</field>
+    <description>Greenbone vulnerability finding (base, not alerted)</description>
+  </rule>
+
+  <!-- LOW: threat=Low -> level 2 (archive/enrichment tier) -->
+  <rule id="115010" level="2">
+    <if_sid>115000</if_sid>
+    <field name="threat">Low</field>
+    <description>Greenbone: Low vuln on $(vuln_host) - $(nvt_name)</description>
+    <group>vulnerability_low,</group>
+  </rule>
+
+  <!-- MEDIUM: threat=Medium -> level 5 (visible, not paging) -->
+  <rule id="115020" level="5">
+    <if_sid>115000</if_sid>
+    <field name="threat">Medium</field>
+    <description>Greenbone: Medium vuln on $(vuln_host) - $(nvt_name)</description>
+    <group>vulnerability_medium,</group>
+  </rule>
+
+  <!-- HIGH: threat=High -> level 10 (alert). CVE list surfaced in description. -->
+  <rule id="115030" level="10">
+    <if_sid>115000</if_sid>
+    <field name="threat">High</field>
+    <description>Greenbone: HIGH vuln (CVSS $(severity)) on $(vuln_host) - $(nvt_name) [CVE:$(cve)]</description>
+    <group>vulnerability_high,gpg13_4.13,</group>
+  </rule>
+
+  <!-- CRITICAL: CVSS >= 9.0 -> level 12 (high alert). Child of 115030 so it
+       wins for 9.0+ (threat is still "High" at 9.0+, so gate on numeric severity).
+       JSON renders severity as a float string (e.g. 9.800000), so match ^9 / ^10. -->
+  <rule id="115040" level="12">
+    <if_sid>115030</if_sid>
+    <field name="severity">^9|^10</field>
+    <description>Greenbone: CRITICAL vuln (CVSS $(severity)) on $(vuln_host) - $(nvt_name) [CVE:$(cve)]</description>
+    <group>vulnerability_critical,</group>
+  </rule>
+
+</group>

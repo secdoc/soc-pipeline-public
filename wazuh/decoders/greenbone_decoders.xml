@@ -1,0 +1,13 @@
+<!--
+  SOC Pipeline — Greenbone vulnerability decoders
+
+  Ingest: Wazuh reads the collector's JSON output via a localfile with
+  log_format=json. Wazuh's BUILT-IN `json` decoder already extracts every field
+  (event_type, source, severity, vuln_host, cve, nvt_name, threat, ...), so NO
+  custom decoder is needed or wanted here — a custom decoder with use_own_name
+  would REPLACE the native JSON field extraction and break field matching.
+
+  Rules key off the native json decoder via <decoded_as>json</decoded_as> plus
+  <field name="..."> matches. This file is intentionally a no-op placeholder kept
+  for repo symmetry / future structured-decoder needs. Left empty on purpose.
+-->
