@@ -51,11 +51,15 @@ def main():
                 with open(p, encoding="utf-8", errors="ignore") as f:
                     for n, line in enumerate(f, 1):
                         for pat, desc in FORBIDDEN:
-                            if re.search(pat, line):
-                                # allow example ranges / placeholders on the same line
-                                if pat.startswith(r"\b192\.168") and allowed(line):
+                            for m in re.finditer(pat, line):
+                                matched = m.group(0)
+                                # A match is safe ONLY if the matched token itself is an
+                                # allowed placeholder/example (e.g. 192.0.2.x). Do NOT wave
+                                # the whole line through just because a placeholder appears
+                                # elsewhere on it — that let a real IP hide next to a fake one.
+                                if any(re.fullmatch(a, matched) or re.search(a, matched) for a in ALLOW):
                                     continue
-                                hits.append((p, n, desc, line.strip()[:100]))
+                                hits.append((p, n, desc, line.strip()[:120]))
             except Exception:
                 continue
     if hits:
