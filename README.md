@@ -46,4 +46,9 @@ The pipeline is the transferable part. Swap tools per stage: any scanner with an
 
 ## License
 
-MIT. Contributions welcome.
+Dual-licensed, **attribution required** under both:
+
+- **Code & configuration** (`collector/`, `wazuh/`, `graylog/`, `scripts/`): [Apache License 2.0](LICENSE)
+- **Docs, labs & diagrams** (`docs/`, `lab/`, `README`): [CC BY 4.0](LICENSE-docs)
+
+See [`LICENSING.md`](LICENSING.md) for the file-type mapping and [`NOTICE`](NOTICE) for the copyright line. Credit: Lester E. Nichols III, secdoc.tech. Contributions welcome.
