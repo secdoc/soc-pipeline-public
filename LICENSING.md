@@ -3,32 +3,21 @@
 This repository is dual-licensed to fit its mixed content. **Attribution is
 required under both licenses.**
 
-## Code and configuration — Apache License 2.0 (see `LICENSE`)
+## Code and configuration - Apache License 2.0 (see `LICENSE`)
 
-Applies to:
-- `collector/` (scripts)
-- `wazuh/` (decoders, rules)
-- `graylog/` (pipeline/stream/output config)
-- `scripts/`
-- any code or machine-readable configuration
+Applies to all code, scripts, and machine-readable configuration (rules,
+decoders, pipelines, grok patterns, dashboards-as-code, etc.). Apache-2.0
+requires retaining the copyright notice and `NOTICE`, and includes an explicit
+patent grant. Credit: Lester E. Nichols III (secdoc).
 
-Apache-2.0 requires retaining the copyright notice and `NOTICE`, and includes an
-explicit patent grant. Credit: Lester E. Nichols III (secdoc).
+## Documentation, guides, diagrams - CC BY 4.0 (see `LICENSE-docs`)
 
-## Documentation, labs, diagrams — CC BY 4.0 (see `LICENSE-docs`)
-
-Applies to:
-- `docs/` (including `architecture.svg` and other diagrams)
-- `lab/` (the step-by-step guide)
-- `README.md` and any prose / article material
-
-CC BY 4.0 requires attribution. Credit: "Lester E. Nichols III, secdoc.tech"
-with a link to the source where practical.
+Applies to prose documentation, guides, README narrative, articles, and
+diagrams. CC BY 4.0 requires attribution: "Lester E. Nichols III, secdoc.tech".
 
 ## Why dual
 
 Creative Commons recommends against CC for software (it does not address patents
-or source/binary distribution); the OSI-approved Apache-2.0 is the right fit for
-code. CC BY 4.0 is the standard for written and creative work. Splitting by
-content type gives each half the correct legal instrument while requiring
-attribution across the board.
+or source/binary distribution); OSI-approved Apache-2.0 fits code. CC BY 4.0 is
+the standard for written/creative work. Splitting by content type gives each
+half the correct instrument while requiring attribution across the board.
