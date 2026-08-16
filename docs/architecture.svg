@@ -1,101 +1,146 @@
-<svg viewBox="0 0 980 620" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Helvetica,Arial,sans-serif">
+<svg viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Helvetica,Arial,sans-serif">
   <defs>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
     </pattern>
-    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L7,3 L0,6 z" fill="#94a3b8"/>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L6,3 L0,6 z" fill="#94a3b8"/>
     </marker>
-    <marker id="arrCyan" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L7,3 L0,6 z" fill="#22d3ee"/>
-    </marker>
-    <marker id="arrViolet" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L7,3 L0,6 z" fill="#a78bfa"/>
+    <marker id="arrV" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L6,3 L0,6 z" fill="#a78bfa"/>
     </marker>
   </defs>
-  <rect width="980" height="620" fill="#020617"/>
-  <rect width="980" height="620" fill="url(#grid)"/>
+  <rect width="1200" height="760" fill="#020617"/>
+  <rect width="1200" height="760" fill="url(#grid)"/>
 
-  <text x="490" y="34" fill="#e6edf3" font-size="17" font-weight="700" text-anchor="middle">Vulnerability findings into the SIEM central pane</text>
-  <text x="490" y="54" fill="#94a3b8" font-size="11" text-anchor="middle">Greenbone (GMP) &#8594; Collector &#8594; Graylog &#8594; Wazuh central pane, with optional AI enrichment. Read-only, one pull, two consumers.</text>
+  <text x="600" y="30" fill="#e6edf3" font-size="18" font-weight="700" text-anchor="middle">SOC Pipeline — End to End</text>
+  <text x="600" y="50" fill="#94a3b8" font-size="11" text-anchor="middle">Every security feed (network → endpoint → identity → vuln) correlated to decision and response. Central pane: Wazuh. Transport/retention: Graylog.</text>
 
-  <!-- SOURCE: Greenbone -->
-  <rect x="40" y="90" width="210" height="86" rx="10" fill="#0f172a" stroke="#fb923c" stroke-width="1.5"/>
-  <text x="145" y="116" fill="#e6edf3" font-size="13" font-weight="600" text-anchor="middle">Greenbone / OpenVAS</text>
-  <text x="145" y="134" fill="#fed7aa" font-size="9.5" text-anchor="middle">gvmd &#183; GMP over local socket</text>
-  <text x="145" y="149" fill="#fed7aa" font-size="9.5" text-anchor="middle">(Docker; not on network)</text>
-  <text x="145" y="166" fill="#94a3b8" font-size="8.5" text-anchor="middle">SOURCE</text>
+  <!-- ============ SOURCES column ============ -->
+  <text x="140" y="80" fill="#e6edf3" font-size="12" font-weight="700" text-anchor="middle">SOURCES</text>
+  <!-- Network -->
+  <rect x="30" y="92" width="220" height="70" rx="8" fill="#0f172a" stroke="#fb923c" stroke-width="1.3"/>
+  <text x="140" y="112" fill="#fdba74" font-size="10.5" font-weight="600" text-anchor="middle">NETWORK</text>
+  <text x="140" y="128" fill="#fed7aa" font-size="8.5" text-anchor="middle">UniFi EFG firewall (ZBF)</text>
+  <text x="140" y="141" fill="#fed7aa" font-size="8.5" text-anchor="middle">OPNsense + Suricata IDS</text>
+  <text x="140" y="154" fill="#fed7aa" font-size="8.5" text-anchor="middle">(lab segmentation)</text>
+  <!-- DNS -->
+  <rect x="30" y="170" width="220" height="52" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.3"/>
+  <text x="140" y="189" fill="#7dd3fc" font-size="10.5" font-weight="600" text-anchor="middle">DNS</text>
+  <text x="140" y="205" fill="#bae6fd" font-size="8.5" text-anchor="middle">Technitium x4 (query logs, API)</text>
+  <!-- Endpoints -->
+  <rect x="30" y="230" width="220" height="66" rx="8" fill="#0f172a" stroke="#34d399" stroke-width="1.3"/>
+  <text x="140" y="249" fill="#6ee7b7" font-size="10.5" font-weight="600" text-anchor="middle">ENDPOINTS</text>
+  <text x="140" y="265" fill="#a7f3d0" font-size="8.5" text-anchor="middle">Wazuh agents: Linux / macOS /</text>
+  <text x="140" y="278" fill="#a7f3d0" font-size="8.5" text-anchor="middle">Windows (+ Sysmon, FIM, SCA)</text>
+  <text x="140" y="290" fill="#6ee7b7" font-size="8" text-anchor="middle">Velociraptor DFIR client</text>
+  <!-- Identity -->
+  <rect x="30" y="304" width="220" height="66" rx="8" fill="#0f172a" stroke="#f472b6" stroke-width="1.3" stroke-dasharray="4,3"/>
+  <text x="140" y="323" fill="#f9a8d4" font-size="10.5" font-weight="600" text-anchor="middle">IDENTITY / AUTH (planned)</text>
+  <text x="140" y="339" fill="#fbcfe8" font-size="8.5" text-anchor="middle">Zentyal AD + 802.1X/RADIUS</text>
+  <text x="140" y="352" fill="#fbcfe8" font-size="8.5" text-anchor="middle">covers mobile: iOS / Android</text>
+  <text x="140" y="364" fill="#f9a8d4" font-size="8" text-anchor="middle">rank-1 source — current GAP</text>
+  <!-- Vulnerability -->
+  <rect x="30" y="378" width="220" height="66" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.3"/>
+  <text x="140" y="397" fill="#fcd34d" font-size="10.5" font-weight="600" text-anchor="middle">VULNERABILITY</text>
+  <text x="140" y="413" fill="#fde68a" font-size="8.5" text-anchor="middle">Greenbone/OpenVAS (un-agentable)</text>
+  <text x="140" y="426" fill="#fde68a" font-size="8.5" text-anchor="middle">Wazuh native VD (agent'd hosts)</text>
+  <text x="140" y="438" fill="#fcd34d" font-size="8" text-anchor="middle">read-only GMP pull (gvm-tools)</text>
 
-  <!-- one pull -->
-  <line x1="250" y1="133" x2="330" y2="133" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <text x="290" y="123" fill="#cbd5e1" font-size="8" text-anchor="middle">one read-only pull</text>
-  <text x="290" y="147" fill="#64748b" font-size="7.5" text-anchor="middle">gvm-tools exec</text>
+  <!-- arrows sources -> transport -->
+  <line x1="250" y1="270" x2="300" y2="270" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arr)"/>
 
-  <!-- COLLECTOR -->
-  <rect x="330" y="90" width="200" height="86" rx="10" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
-  <text x="430" y="114" fill="#e6edf3" font-size="13" font-weight="600" text-anchor="middle">Collector</text>
-  <text x="430" y="131" fill="#a5f3fc" font-size="9" text-anchor="middle">pull report (QoD-filtered)</text>
-  <text x="430" y="144" fill="#a5f3fc" font-size="9" text-anchor="middle">normalize &#183; strip secrets</text>
-  <text x="430" y="157" fill="#a5f3fc" font-size="9" text-anchor="middle">treat output as hostile</text>
-  <text x="430" y="170" fill="#94a3b8" font-size="8.5" text-anchor="middle">COLLECT / NORMALIZE</text>
+  <!-- ============ TRANSPORT: Graylog ============ -->
+  <text x="370" y="80" fill="#e6edf3" font-size="12" font-weight="700" text-anchor="middle">COLLECT / TRANSPORT</text>
+  <rect x="300" y="180" width="140" height="180" rx="10" fill="#0f172a" stroke="#34d399" stroke-width="1.6"/>
+  <text x="370" y="210" fill="#e6edf3" font-size="12" font-weight="600" text-anchor="middle">Graylog</text>
+  <text x="370" y="230" fill="#a7f3d0" font-size="8.5" text-anchor="middle">syslog/GELF inputs</text>
+  <text x="370" y="245" fill="#a7f3d0" font-size="8.5" text-anchor="middle">pipelines (parse)</text>
+  <text x="370" y="260" fill="#a7f3d0" font-size="8.5" text-anchor="middle">streams + index sets</text>
+  <text x="370" y="275" fill="#a7f3d0" font-size="8.5" text-anchor="middle">retention tiers</text>
+  <text x="370" y="298" fill="#86efac" font-size="8" text-anchor="middle">fan-out point:</text>
+  <text x="370" y="311" fill="#86efac" font-size="8" text-anchor="middle">ship once, land twice</text>
+  <text x="370" y="335" fill="#64748b" font-size="8" text-anchor="middle">archive tier =</text>
+  <text x="370" y="347" fill="#64748b" font-size="8" text-anchor="middle">bulk allow-logs/flow</text>
 
-  <!-- split: two consumers -->
-  <!-- forwarding path down-left -->
-  <line x1="430" y1="176" x2="430" y2="215" stroke="#22d3ee" stroke-width="1.6" marker-end="url(#arrCyan)"/>
-  <text x="500" y="200" fill="#22d3ee" font-size="8.5" text-anchor="middle">forwarding path (GELF)</text>
+  <line x1="440" y1="270" x2="490" y2="270" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arr)"/>
 
-  <!-- enrichment path right -->
-  <line x1="530" y1="133" x2="720" y2="133" stroke="#a78bfa" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arrViolet)"/>
-  <text x="625" y="123" fill="#a78bfa" font-size="8.5" text-anchor="middle">enrichment path (optional)</text>
+  <!-- ============ CORRELATE: Wazuh central pane ============ -->
+  <text x="580" y="80" fill="#e6edf3" font-size="12" font-weight="700" text-anchor="middle">PARSE / CORRELATE / DETECT</text>
+  <rect x="490" y="160" width="180" height="220" rx="12" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+  <text x="580" y="188" fill="#e6edf3" font-size="13" font-weight="700" text-anchor="middle">Wazuh</text>
+  <text x="580" y="204" fill="#a5f3fc" font-size="9" text-anchor="middle">CENTRAL PANE</text>
+  <text x="580" y="226" fill="#a5f3fc" font-size="8.5" text-anchor="middle">decoders + rules</text>
+  <text x="580" y="240" fill="#a5f3fc" font-size="8.5" text-anchor="middle">MITRE ATT&#38;CK tagging</text>
+  <text x="580" y="254" fill="#a5f3fc" font-size="8.5" text-anchor="middle">alerts (severity-gated)</text>
+  <text x="580" y="268" fill="#a5f3fc" font-size="8.5" text-anchor="middle">native Vuln Detection</text>
+  <text x="580" y="282" fill="#a5f3fc" font-size="8.5" text-anchor="middle">FIM / SCA / compliance</text>
+  <text x="580" y="304" fill="#fde68a" font-size="8" text-anchor="middle">dedicated rule-ID ranges</text>
+  <text x="580" y="316" fill="#fde68a" font-size="8" text-anchor="middle">per source (no collisions)</text>
+  <text x="580" y="340" fill="#fda4b4" font-size="8" text-anchor="middle">alert discipline:</text>
+  <text x="580" y="352" fill="#fda4b4" font-size="8" text-anchor="middle">Crit/High/KEV page,</text>
+  <text x="580" y="364" fill="#cbd5e1" font-size="8" text-anchor="middle">rest = event-only</text>
 
-  <!-- AI agent -->
-  <rect x="720" y="96" width="220" height="74" rx="10" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
-  <text x="830" y="120" fill="#e6edf3" font-size="12.5" font-weight="600" text-anchor="middle">AI Vuln Report Agent</text>
-  <text x="830" y="137" fill="#c4b5fd" font-size="9" text-anchor="middle">LLM: findings + asset context</text>
-  <text x="830" y="151" fill="#c4b5fd" font-size="9" text-anchor="middle">&#8594; ranked remediation brief</text>
-  <text x="830" y="164" fill="#94a3b8" font-size="8" text-anchor="middle">ENRICH (read-only, human-in-loop)</text>
+  <line x1="670" y1="270" x2="720" y2="270" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arr)"/>
 
-  <!-- GRAYLOG -->
-  <rect x="330" y="215" width="200" height="86" rx="10" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
-  <text x="430" y="239" fill="#e6edf3" font-size="13" font-weight="600" text-anchor="middle">Graylog</text>
-  <text x="430" y="256" fill="#a7f3d0" font-size="9" text-anchor="middle">`vuln` stream + index set</text>
-  <text x="430" y="269" fill="#a7f3d0" font-size="9" text-anchor="middle">retention: full finding history</text>
-  <text x="430" y="282" fill="#a7f3d0" font-size="9" text-anchor="middle">pipeline: event_type=vulnerability</text>
-  <text x="430" y="295" fill="#94a3b8" font-size="8.5" text-anchor="middle">TRANSPORT / RETAIN</text>
+  <!-- ============ ENRICH / TRIAGE ============ -->
+  <text x="820" y="80" fill="#e6edf3" font-size="12" font-weight="700" text-anchor="middle">ENRICH / TRIAGE</text>
+  <rect x="720" y="180" width="200" height="80" rx="10" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4"/>
+  <text x="820" y="202" fill="#c4b5fd" font-size="10.5" font-weight="600" text-anchor="middle">AI enrichment agents</text>
+  <text x="820" y="219" fill="#ddd6fe" font-size="8.5" text-anchor="middle">rank + explain alerts;</text>
+  <text x="820" y="232" fill="#ddd6fe" font-size="8.5" text-anchor="middle">remediation briefs;</text>
+  <text x="820" y="245" fill="#ddd6fe" font-size="8.5" text-anchor="middle">read-only, human-in-loop</text>
+  <text x="820" y="257" fill="#a78bfa" font-size="7.5" text-anchor="middle">asset + vuln + intel context</text>
+  <!-- cross-correlation note -->
+  <rect x="720" y="272" width="200" height="52" rx="8" fill="#0f172a" stroke="#243044" stroke-width="1"/>
+  <text x="820" y="291" fill="#fde68a" font-size="8.5" font-weight="600" text-anchor="middle">cross-correlation</text>
+  <text x="820" y="306" fill="#cbd5e1" font-size="8" text-anchor="middle">alert x vuln x identity</text>
+  <text x="820" y="318" fill="#cbd5e1" font-size="8" text-anchor="middle">on same host = priority</text>
 
-  <!-- graylog -> wazuh -->
-  <line x1="430" y1="301" x2="430" y2="340" stroke="#34d399" stroke-width="1.6" marker-end="url(#arr)"/>
-  <text x="500" y="325" fill="#86efac" font-size="8.5" text-anchor="middle">forward `vuln` stream</text>
+  <line x1="920" y1="240" x2="970" y2="240" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arr)"/>
 
-  <!-- WAZUH central pane -->
-  <rect x="300" y="340" width="380" height="120" rx="12" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
-  <text x="490" y="366" fill="#e6edf3" font-size="14" font-weight="700" text-anchor="middle">Wazuh &#8212; Central Pane</text>
-  <text x="490" y="387" fill="#a5f3fc" font-size="9.5" text-anchor="middle">decoder + rules (severity-gated):</text>
-  <text x="490" y="404" fill="#fda4b4" font-size="9.5" text-anchor="middle">&#9679; Critical / High / KEV &#8594; ALERT (level &#8805; 10)</text>
-  <text x="490" y="420" fill="#cbd5e1" font-size="9.5" text-anchor="middle">&#9679; everything else &#8594; event-only (queryable enrichment)</text>
-  <text x="490" y="440" fill="#fde68a" font-size="9" text-anchor="middle">cross-correlation: SIEM alert on a host &#215; known vuln on that host = higher priority</text>
-  <text x="490" y="453" fill="#94a3b8" font-size="8.5" text-anchor="middle">CORRELATE / ALERT / TRIAGE &#8594; INCIDENT</text>
+  <!-- ============ ORCHESTRATE / RESPOND ============ -->
+  <text x="1075" y="80" fill="#e6edf3" font-size="12" font-weight="700" text-anchor="middle">ORCHESTRATE / RESPOND</text>
+  <rect x="970" y="150" width="200" height="96" rx="10" fill="#0f172a" stroke="#f87171" stroke-width="1.5"/>
+  <text x="1070" y="172" fill="#fca5a5" font-size="11" font-weight="600" text-anchor="middle">Shuffle (SOAR)</text>
+  <text x="1070" y="189" fill="#fecaca" font-size="8.5" text-anchor="middle">automation spine:</text>
+  <text x="1070" y="202" fill="#fecaca" font-size="8.5" text-anchor="middle">enrich &#8594; notify &#8594;</text>
+  <text x="1070" y="215" fill="#fecaca" font-size="8.5" text-anchor="middle">contain (w/ approval)</text>
+  <text x="1070" y="230" fill="#f87171" font-size="8" text-anchor="middle">staged by risk-if-wrong</text>
+  <text x="1070" y="241" fill="#f87171" font-size="8" text-anchor="middle">&lt;HOST&gt;</text>
+  <!-- Velociraptor -->
+  <rect x="970" y="256" width="200" height="80" rx="10" fill="#0f172a" stroke="#2dd4bf" stroke-width="1.5"/>
+  <text x="1070" y="278" fill="#5eead4" font-size="11" font-weight="600" text-anchor="middle">Velociraptor (DFIR)</text>
+  <text x="1070" y="295" fill="#99f6e4" font-size="8.5" text-anchor="middle">hunt, collect artifacts,</text>
+  <text x="1070" y="308" fill="#99f6e4" font-size="8.5" text-anchor="middle">isolate host (response verb)</text>
+  <text x="1070" y="322" fill="#2dd4bf" font-size="8" text-anchor="middle">alert &#8594; scoped incident</text>
+  <text x="1070" y="333" fill="#2dd4bf" font-size="8" text-anchor="middle">&lt;HOST&gt;</text>
 
-  <!-- AI agent feeds the pane (brief) -->
-  <path d="M 830 170 Q 830 300 682 400" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#arrViolet)"/>
-  <text x="800" y="300" fill="#a78bfa" font-size="8" text-anchor="middle">brief informs</text>
-  <text x="800" y="311" fill="#a78bfa" font-size="8" text-anchor="middle">triage</text>
+  <!-- INCIDENT outcome -->
+  <rect x="970" y="348" width="200" height="40" rx="8" fill="#0f172a" stroke="#e6edf3" stroke-width="1.3"/>
+  <text x="1070" y="366" fill="#e6edf3" font-size="10" font-weight="700" text-anchor="middle">INCIDENT / DECISION</text>
+  <text x="1070" y="380" fill="#94a3b8" font-size="8" text-anchor="middle">contain / escalate / close</text>
 
-  <!-- scope divide callout -->
-  <rect x="40" y="360" width="230" height="86" rx="10" fill="#0f172a" stroke="#243044" stroke-width="1"/>
-  <text x="155" y="382" fill="#e6edf3" font-size="10.5" font-weight="600" text-anchor="middle">Vuln-scope divide (no double-count)</text>
-  <text x="155" y="401" fill="#a5f3fc" font-size="8.5" text-anchor="middle">Wazuh native VD &#8594; agent'd hosts</text>
-  <text x="155" y="416" fill="#fed7aa" font-size="8.5" text-anchor="middle">Greenbone &#8594; the un-agentable:</text>
-  <text x="155" y="429" fill="#fed7aa" font-size="8.5" text-anchor="middle">firewalls, network gear, IoT,</text>
-  <text x="155" y="442" fill="#fed7aa" font-size="8.5" text-anchor="middle">printers, appliances</text>
+  <!-- Shuffle bidirectional to Wazuh (orchestration reads alerts) and Velociraptor -->
+  <path d="M 670 200 Q 820 120 970 175" fill="none" stroke="#f87171" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <text x="820" y="130" fill="#f87171" font-size="8" text-anchor="middle">Wazuh alerts &#8594; Shuffle trigger</text>
 
-  <!-- legend -->
-  <rect x="40" y="500" width="900" height="86" rx="10" fill="#0f172a" stroke="#243044" stroke-width="1"/>
-  <text x="56" y="522" fill="#e6edf3" font-size="10.5" font-weight="600">Pipeline stages (the transferable part)</text>
-  <text x="56" y="542" fill="#cbd5e1" font-size="9">SOURCE &#8594; COLLECT/NORMALIZE &#8594; TRANSPORT/RETAIN &#8594; CORRELATE/ALERT &#8594; TRIAGE &#8594; INCIDENT</text>
-  <line x1="56" y1="556" x2="86" y2="556" stroke="#22d3ee" stroke-width="1.6" marker-end="url(#arrCyan)"/>
-  <text x="92" y="559" fill="#cbd5e1" font-size="8.5">forwarding path (into the pane)</text>
-  <line x1="300" y1="556" x2="330" y2="556" stroke="#a78bfa" stroke-width="1.6" stroke-dasharray="5,4" marker-end="url(#arrViolet)"/>
-  <text x="336" y="559" fill="#cbd5e1" font-size="8.5">enrichment path (optional AI brief)</text>
-  <text x="56" y="576" fill="#64748b" font-size="8">One read-only GMP pull feeds both paths. Alert discipline keeps the pane signal-only. Central pane stays the SIEM you already run (KISS).</text>
+  <!-- ============ IaC cross-cutting layer ============ -->
+  <rect x="30" y="470" width="1140" height="90" rx="12" fill="#0f172a" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="600" y="492" fill="#c7d2fe" font-size="12" font-weight="700" text-anchor="middle">INFRASTRUCTURE AS CODE (cross-cutting deployment layer)</text>
+  <rect x="55" y="504" width="540" height="44" rx="8" fill="#020617" stroke="#6366f1" stroke-width="1"/>
+  <text x="325" y="522" fill="#a5b4fc" font-size="10" font-weight="600" text-anchor="middle">Terraform — PROVISION</text>
+  <text x="325" y="538" fill="#c7d2fe" font-size="8.5" text-anchor="middle">VMs / containers / Proxmox guests / network + firewall objects</text>
+  <rect x="605" y="504" width="540" height="44" rx="8" fill="#020617" stroke="#6366f1" stroke-width="1"/>
+  <text x="875" y="522" fill="#a5b4fc" font-size="10" font-weight="600" text-anchor="middle">Ansible — CONFIGURE / DEPLOY</text>
+  <text x="875" y="538" fill="#c7d2fe" font-size="8.5" text-anchor="middle">collectors, Wazuh rules/decoders, Graylog pipelines, agents, Shuffle workflows</text>
+
+  <!-- legend / pipeline stages -->
+  <rect x="30" y="580" width="1140" height="150" rx="12" fill="#0f172a" stroke="#243044" stroke-width="1"/>
+  <text x="50" y="602" fill="#e6edf3" font-size="11" font-weight="700">Pipeline stages (your article: log &#8594; event &#8594; alert &#8594; incident)</text>
+  <text x="50" y="624" fill="#cbd5e1" font-size="9.5">SOURCES &#8594; COLLECT/TRANSPORT (Graylog) &#8594; PARSE/CORRELATE/DETECT (Wazuh) &#8594; ENRICH/TRIAGE (AI) &#8594; ORCHESTRATE/RESPOND (Shuffle + Velociraptor) &#8594; INCIDENT</text>
+  <text x="50" y="648" fill="#94a3b8" font-size="9">Volume drops at every stage as meaning is added. Every narrowing is a filter someone designed. Central pane = Wazuh; nothing adds a second console you must watch.</text>
+  <text x="50" y="672" fill="#94a3b8" font-size="9">Scope split: Wazuh native VD for agent'd hosts; Greenbone for the un-agentable. Identity via host logs (domain-join) + RADIUS (universal, incl. mobile).</text>
+  <text x="50" y="696" fill="#94a3b8" font-size="9">Discipline: read-only + human-in-the-loop; offline-validate before any live change; dedicated rule-ID ranges; alert only on Crit/High/KEV + high-signal detections.</text>
+  <text x="50" y="718" fill="#64748b" font-size="8.5">Components (set your own hosts): UniFi, OPNsense, Technitium DNS, Wazuh, Graylog, Greenbone, Shuffle, Velociraptor. Identity/AD = build to close the rank-1 gap.</text>
 </svg>

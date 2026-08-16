@@ -1,6 +1,6 @@
-# vuln-siem-pipeline (public)
+# soc-pipeline (public)
 
-Feed **vulnerability scan findings into your SIEM's central pane** using a simple, pipeline-based integration, so vulnerabilities become a first-class source alongside your logs and alerts, not a siloed scanner dashboard nobody checks.
+Build an **end-to-end Security Operations pipeline** that correlates every security feed into one central pane using a simple, pipeline-based integration, so vulnerabilities become a first-class source alongside your logs and alerts, not a siloed scanner dashboard nobody checks.
 
 **Stack:** Greenbone / OpenVAS (Community Edition, Docker) → Graylog → Wazuh, with an optional AI enrichment path (LLM-generated remediation briefs). All read-only, human-in-the-loop.
 

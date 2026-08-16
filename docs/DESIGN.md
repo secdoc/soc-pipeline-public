@@ -1,58 +1,55 @@
-# Design: Vulnerability findings into the SIEM central pane
+# SOC Pipeline — End to End
 
-A KISS, pipeline-based integration that feeds vulnerability scan findings from **Greenbone / OpenVAS (Community Edition, Docker)** into a **Graylog → Wazuh** SIEM pipeline, with an optional **AI enrichment** path. The goal: make vulnerability data a first-class source in the same central pane analysts already use, without adding another console.
+A KISS, pipeline-based Security Operations build that ingests **every security-relevant feed** in the environment — network, DNS, endpoint, identity, and vulnerability — normalizes and correlates them in one central pane (**Wazuh**), retains and transports via **Graylog**, enriches with AI, and drives **decision and response** through **Shuffle (SOAR)** and **Velociraptor (DFIR)**. Provisioned and configured reproducibly with **Terraform + Ansible**.
 
-## Why this design
-
-Most guides bolt a vulnerability scanner on as its own silo with its own dashboard. That violates two principles:
-
-1. **The pipeline is what transfers, not the tool.** Every source should flow through the same stages: source → collect → parse/normalize → correlate/detect → alert/triage → incident. Vulnerability data is just another source.
-2. **A single pane is only a virtue if it doesn't add a failure domain.** So the central pane stays the SIEM you already run (Wazuh here). We do not introduce a new orchestration UI.
+This is the practical, buildable form of the "log → event → alert → incident" pipeline: every stage discards volume to add meaning, and every narrowing is a filter someone designed.
 
 ## Architecture
 
-![Vulnerability pipeline architecture](architecture.svg)
+![SOC pipeline architecture](architecture.svg)
 
-*One read-only GMP pull feeds two consumers: the forwarding path (into the SIEM central pane) and the optional enrichment path (AI remediation brief). Rendered diagram: [`architecture.svg`](architecture.svg).*
+*Rendered diagram: [`architecture.svg`](architecture.svg). One correlated pipeline; the central pane stays the SIEM you already run.*
+
+## Sources (all feeds)
+
+| Domain | Source | Ingest | Scope note |
+|--------|--------|--------|-----------|
+| Network | UniFi EFG firewall (ZBF) | syslog → Graylog/Wazuh | denies alert; bulk allows → archive tier |
+| Network | OPNsense + Suricata IDS | syslog | lab/segment isolation; signature detection |
+| DNS | Technitium ×4 | API / query logs | C2 domains, tunneling, NRD contact (high value) |
+| Endpoint | Wazuh agents (Linux/macOS/Windows) | agent channel | execution, persistence, FIM, SCA |
+| Endpoint | Velociraptor client | DFIR (on-demand) | hunt, collect, isolate |
+| Identity | Zentyal AD + 802.1X/RADIUS **(planned)** | AD security log + RADIUS | rank-1 source; RADIUS = universal, incl. iOS/Android |
+| Vulnerability | Greenbone/OpenVAS | read-only GMP pull | un-agentable assets (firewalls, appliances, IoT) |
+| Vulnerability | Wazuh native VD | built-in | agent'd hosts |
+
+## Pipeline stages
+
+| Stage | Component |
+|-------|-----------|
+| Collect / transport | Graylog (inputs, pipelines, streams, retention tiers; fan-out point) |
+| Parse / normalize | Wazuh decoders + Graylog pipelines |
+| Correlate / detect | Wazuh (central pane; dedicated rule-ID ranges per source; MITRE tagging) |
+| Enrich / triage | AI agents (rank + explain, remediation briefs); cross-correlation of alert × vuln × identity on the same host |
+| Orchestrate / respond | Shuffle SOAR (enrich → notify → contain with approval) + Velociraptor (DFIR, host isolation) |
+| Incident | contain / escalate / close — the decision layer |
+
+## Infrastructure as Code (cross-cutting)
+
+- **Terraform — provision:** VMs, containers, Proxmox guests, network/firewall objects.
+- **Ansible — configure/deploy:** collectors, Wazuh rules/decoders, Graylog pipelines, agent rollout, Shuffle workflows.
+
+IaC is built alongside each phase so the whole pipeline is reproducible (`terraform apply` + `ansible-playbook`), version-controlled, and adoptable by anyone — not a pile of manual steps.
 
 ## Design principles (the transferable part)
 
-- **One pull, two consumers.** A single GMP pull feeds both the forwarding path (into the pane) and the enrichment path (the AI brief). No duplicate scanner access.
-- **Read-only, human-in-the-loop.** The collector and the AI agent only read. They never re-run scans, never touch a host, never write to the scanner. A human reads the output and decides.
-- **Alert discipline.** Only Critical/High/KEV findings become alerts. A raw scan returns thousands of results; if each were an alert you would recreate the noise problem the SIEM exists to solve. Everything else is retained and queryable as enrichment.
-- **Treat scan output as hostile.** A scan banner or service description is attacker-influenceable text. Sanitize before it enters the pipeline, and (for the AI path) before it reaches a model — prompt injection is a real risk when the input is telemetry.
-- **Divide vuln scope to avoid double-counting.** Agent-based vulnerability detection (e.g. Wazuh's native VD) covers hosts that run an agent. The scanner covers the **un-agentable**: network gear, appliances, IoT, printers, firewalls. Keep them in separate rule-ID ranges and tag the source.
+- **One correlated pipeline, one central pane.** Wazuh is where an analyst looks; Graylog is transport/retention; nothing adds a second console you must watch.
+- **Read-only, human-in-the-loop.** Collectors and AI agents only read. Response actions (Shuffle/Velociraptor) are staged by risk-if-wrong, with human approval on containment.
+- **Offline-validate before any live change.** `wazuh-logtest`, config backup, read-back verification. No production surprise.
+- **Dedicated rule-ID ranges per source.** No collisions between feeds (e.g. vuln rules never touch the UniFi 110xxx range).
+- **Alert discipline.** Only Critical/High/KEV and high-signal detections page; everything else is retained, queryable enrichment.
+- **Scope split for vulnerability + identity.** Wazuh native VD for agent'd hosts, Greenbone for the un-agentable; identity via host logs (domain-join) plus RADIUS (universal, the only auth signal from mobile).
 
-## GMP access (Greenbone Community Docker build)
+## Component reachability (2026-08-16)
 
-In the official Greenbone Community Docker Compose stack, `gvmd` exposes GMP on a **local unix socket inside the container**, not on a network port. The clean, no-exposure access method is the `gvm-tools` container, which already has the socket mounted:
-
-```bash
-docker compose exec -T gvm-tools \
-  gvm-cli --gmp-username <GMP_USER> --gmp-password "$GMP_PASS" \
-  socket --xml "<get_version/>"
-```
-
-This keeps GMP off the network entirely (no 9390 exposure). The collector runs the same exec to pull reports.
-
-## Components
-
-| Component | Role | Path |
-|-----------|------|------|
-| Collector | pull GMP report, normalize, emit GELF + JSON | `collector/` |
-| Graylog config | `vuln` stream, index set, pipeline, Wazuh forward output | `graylog/` |
-| Wazuh decoder | parse the normalized vuln event | `wazuh/decoders/` |
-| Wazuh rules | alert on Critical/High/KEV; suppress the rest | `wazuh/rules/` |
-| AI enrichment (optional) | LLM remediation plan per host | `collector/` (agent) |
-| Lab | step-by-step build guide | `lab/` |
-
-## Pipeline-stage mapping (for the article)
-
-| Stage | This build |
-|-------|-----------|
-| Source | Greenbone gvmd (GMP) |
-| Collect/transport | collector → GELF → Graylog |
-| Parse/normalize | collector normalizes; Graylog pipeline tags `event_type=vulnerability` |
-| Correlate/detect | Wazuh rules (severity-gated) |
-| Alert/triage | Wazuh central pane; AI agent ranks + explains |
-| Incident | cross-correlation of SIEM alert × vuln on same host |
+Set your own component hosts (UniFi, OPNsense, Technitium, Wazuh, Graylog, Greenbone, Shuffle, Velociraptor). Identity/AD: build to close the rank-1 gap.
