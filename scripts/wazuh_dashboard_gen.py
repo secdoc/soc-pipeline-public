@@ -186,24 +186,26 @@ def build_dashboard(dash_id, title, panel_ids):
         "vuln_solution": (24, 10),
         "vuln_timeline": (48, 10),
     }
+    # OpenSearch Dashboards uses a 48-column responsive grid. Every row MUST sum to
+    # 48 columns or the remaining width renders as empty space (looks like the panels
+    # don't fit the window). Each row is (pid, width) pairs whose widths total 48.
+    GRID_W = 48
+    rows = [
+        [("vuln_kpi_total", 12), ("vuln_sev_tier", 12), ("vuln_threat", 24)],  # -> 48
+        [("vuln_top_hosts", 24), ("vuln_top_findings", 24)],                   # -> 48
+        [("vuln_top_cves", 24), ("vuln_by_scan", 24)],                         # -> 48
+        [("vuln_solution", 48)],                                               # -> 48
+        [("vuln_timeline", 48)],                                               # -> 48
+    ]
     panels_json, refs = [], []
     cur_y = 0
-    row = [
-        ["vuln_kpi_total", "vuln_sev_tier"],
-        ["vuln_threat"],
-        ["vuln_top_hosts"],
-        ["vuln_top_findings"],
-        ["vuln_top_cves"],
-        ["vuln_by_scan"],
-        ["vuln_solution"],
-        ["vuln_timeline"],
-    ]
     n = 0
-    for group in row:
+    for group in rows:
+        assert sum(w for _, w in group) == GRID_W, f"row does not fill 48 cols: {group}"
         cur_x = 0
         max_h = 0
-        for pid in group:
-            w, h = sizes[pid]
+        for pid, w in group:
+            h = sizes[pid][1]
             pref = f"panel_{n}"
             panels_json.append({
                 "version": "2.13.0",
