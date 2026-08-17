@@ -37,6 +37,14 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 Full reasoning and stage-by-stage mapping: [`docs/DESIGN.md`](docs/DESIGN.md).
 
+### Vulnerability dashboard (sample)
+
+Point-in-time vulnerability posture rendered from a Greenbone findings feed. This sample uses pseudonymized hosts (`host-NN`) and RFC5737 example addresses; it carries no real environment data. Regenerate from any collector output with `scripts/vuln_dashboard_gen.py`.
+
+![Vulnerability dashboard](docs/vuln-dashboard.svg)
+
+See [`docs/vuln-dashboard.md`](docs/vuln-dashboard.md) for the tabular breakdown.
+
 ## Build order (efficient + non-disruptive)
 
 Build one feed end-to-end first (the **vulnerability slice**), proving the whole source → Graylog → Wazuh → enrich → respond pattern, then repeat the slice per feed. Every live change is preceded by offline validation (`wazuh-logtest`), a config backup, and read-back verification. IaC is built alongside each phase. Phases:
