@@ -59,7 +59,7 @@ def to_gelf(ev, source_host):
         "_scan_task": ev.get("task", ""),
         "_report_id": ev.get("report_id", ""),
         "_vuln_host": ev.get("host", ""),      # the SCANNED host (distinct from GELF host)
-        "_port": ev.get("port", ""),
+        "_port": ev.get("vuln_port", ev.get("port", "")),
         "_nvt_name": ev.get("name", ""),
         "_nvt_oid": ev.get("nvt_oid", ""),
         "_family": ev.get("family", ""),

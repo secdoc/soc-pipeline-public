@@ -81,7 +81,7 @@ def normalize_result(res, task_name, report_id, scan_end):
         "report_id": report_id,
         "scan_end": scan_end,
         "host": text(res, "host", "unknown"),
-        "port": text(res, "port"),
+        "vuln_port": text(res, "port"),   # 'port' collides with Wazuh's reserved data.port object mapping; use vuln_port
         "name": text(res, "name"),
         "severity": sev_f,
         "threat": text(res, "threat"),            # High/Medium/Low/Log
