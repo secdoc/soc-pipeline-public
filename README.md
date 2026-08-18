@@ -68,6 +68,7 @@ The pipeline is the transferable part. Swap tools per stage — any source with 
 
 - **[socfortress-waf-siem](https://github.com/secdoc/socfortress-waf-siem)** — standalone sanitized build of the WAF lane: wire a SOCFortress WAF (Caddy+Coraza / OWASP CRS) into Wazuh+Graylog (collector, dual delivery, detection rules, dashboard).
 - **[greenbone-wazuh-graylog](https://github.com/secdoc/greenbone-wazuh-graylog)** — standalone sanitized build of the vulnerability lane: wire a Greenbone/OpenVAS scanner into Wazuh+Graylog (GMP collector, dual delivery, rules, dashboard, how-tos).
+- **[technitium-wazuh-graylog](https://github.com/secdoc/technitium-wazuh-graylog)** — standalone sanitized build of the DNS lane: wire a Technitium DNS server/cluster into Wazuh+Graylog (Query Logs collector, dual delivery, detection enrichments, rules for blocking/NXDOMAIN/DGA/tunneling).
 
 ## License
 
