@@ -64,6 +64,10 @@ Tracked on the project board and in `docs/` (design + lab as built).
 
 The pipeline is the transferable part. Swap tools per stage — any source with an API, any log platform for transport/retention, any SIEM for correlation, any SOAR/DFIR for response. The stage roles stay the same. See `docs/DESIGN.md`.
 
+## Related projects
+
+- **[socfortress-waf-siem](https://github.com/secdoc/socfortress-waf-siem)** — standalone sanitized build of the WAF lane: wire a SOCFortress WAF (Caddy+Coraza / OWASP CRS) into Wazuh+Graylog (collector, dual delivery, detection rules, dashboard).
+
 ## License
 
 Dual-licensed, **attribution required** under both:
