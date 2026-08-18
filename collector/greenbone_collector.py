@@ -18,7 +18,7 @@ Usage:
   # then:
   python3 collector/greenbone_collector.py --socket <local.sock> --out <dir>
 
-Env (from /opt/data/.env or environment): GVM_USER, GVM_PASS
+Env (from /opt/soc/.env or environment): GVM_USER, GVM_PASS
 """
 import argparse, json, os, sys, re, datetime
 import xml.etree.ElementTree as ET
@@ -27,7 +27,7 @@ import xml.etree.ElementTree as ET
 DEFAULT_MIN_QOD = 70          # drop low quality-of-detection noise (<70%)
 SENSITIVE_KEYS = re.compile(r"(password|passwd|secret|api[_-]?key|token|private[_-]?key)", re.I)
 
-def load_env(path="/opt/data/.env"):
+def load_env(path="/opt/soc/.env"):
     env = {}
     if os.path.exists(path):
         for line in open(path):
@@ -148,7 +148,7 @@ def main():
     guser = os.environ.get("GVM_USER") or env.get("GVM_USER")
     gpass = os.environ.get("GVM_PASS") or env.get("GVM_PASS")
     if not (guser and gpass):
-        sys.exit("GVM_USER/GVM_PASS not found in env or /opt/data/.env")
+        sys.exit("GVM_USER/GVM_PASS not found in env or /opt/soc/.env")
 
     os.makedirs(args.out, exist_ok=True)
     gmp = gmp_connect(args.socket)

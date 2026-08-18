@@ -15,7 +15,7 @@ findings reach Wazuh, so you don't get 366 alerts every cycle.
 
 Read-only against Greenbone. Idempotent. Safe to cron.
 
-Env (from /opt/data/.env): GVM_USER, GVM_PASS, GRAYLOG_HOST,
+Env (from /opt/soc/.env): GVM_USER, GVM_PASS, GRAYLOG_HOST,
   WAZUH_SSH_USER, WAZUH_SSH_HOST, WAZUH_SSH_KEY
 """
 import argparse, json, os, subprocess, sys, hashlib, tempfile
@@ -23,7 +23,7 @@ import argparse, json, os, subprocess, sys, hashlib, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE_DEFAULT = os.path.join(HERE, "..", "collector", ".delivered_state.json")
 
-def load_env(path="/opt/data/.env"):
+def load_env(path="/opt/soc/.env"):
     e = {}
     if os.path.exists(path):
         for l in open(path):
@@ -85,7 +85,7 @@ def main():
 
     # 3b. Wazuh manager localfile (append NEW findings for detection)
     if not args.no_wazuh:
-        key = env["WAZUH_SSH_KEY"].replace("/opt/data/home/.ssh", os.path.expanduser("~/.ssh"))
+        key = env["WAZUH_SSH_KEY"].replace("~/.ssh", os.path.expanduser("~/.ssh"))
         if not os.path.exists(key):
             key = os.path.expanduser("~/.ssh/wazuh_hermes")
         # append via ssh: cat >> the manager file
