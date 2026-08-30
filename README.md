@@ -60,6 +60,50 @@ Tracked on the project board and in `docs/` (design + lab as built).
 - **Offline-validate before any live change.** Dedicated SIEM rule-ID ranges per source (no collisions); logtest both ways before load.
 - **Secrets never leave; telemetry is treated as hostile.** Credentials stripped before ingest and before any LLM call; service banners are attacker-influenceable (prompt-injection aware).
 
+## Reliability controls
+
+The vulnerability collector advances delivered state only after every configured consumer succeeds. A Graylog or Wazuh failure leaves the batch retryable instead of silently losing it.
+
+Supported delivery modes:
+
+```text
+Graylog GELF/TCP
+Graylog GELF/TCP with TLS
+Graylog GELF/HTTP over verified HTTPS
+Wazuh localfile append over SSH
+Wazuh newline-delimited JSON over TCP
+```
+
+Example target-only invocation:
+
+```bash
+python3 collector/run_pipeline.py \
+  --socket /tmp/gvmd.sock \
+  --graylog-endpoint retention=graylog.example.local:12213:https \
+  --graylog-ca /path/to/ca-chain.pem \
+  --no-default-graylog \
+  --wazuh-endpoint detection=wazuh.example.local:5514:tcp \
+  --no-default-wazuh
+```
+
+Each finding carries a stable SHA-256 event hash across Graylog, Wazuh, dedupe state, and dashboard cardinality.
+
+## Operational tooling
+
+- `scripts/wazuh_agent_migration.py`: generates activation and rollback scripts that stop the agent, require process exit, validate configuration, start, and verify the intended manager connection.
+- `scripts/prepare_socfortress_rules.py`: builds a temporary collision-safe rules bundle from a pinned third-party source. It remaps conflicts, preserves parent references, validates dependencies, and emits a hash manifest.
+- `scripts/wazuh_manager_vendor_config.py`: adds required CDB list declarations and supports exact-count hook replacement.
+- `scripts/wazuh_dashboard_gen.py`: generates a full-width dashboard with total and distinct stable-finding KPIs.
+
+The SOCFortress source repository did not contain a license file at the reviewed revision. Do not redistribute its rule content without a valid license. The builder itself is Apache-2.0 and does not embed vendor rules.
+
+Validation gates:
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 scripts/scrub_check.py .
+```
+
 ## Adapting to a different stack
 
 The pipeline is the transferable part. Swap tools per stage — any source with an API, any log platform for transport/retention, any SIEM for correlation, any SOAR/DFIR for response. The stage roles stay the same. See `docs/DESIGN.md`.

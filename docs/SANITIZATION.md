@@ -2,8 +2,8 @@
 
 This project maintains two repos:
 
-- **Private** (`secdoc/vuln-siem-pipeline`): explicit internal designs, real IPs/hostnames/IDs, working configs against the live environment.
-- **Public** (`secdoc/vuln-siem-pipeline-public`): the same step-by-step build, sanitized so anyone can adapt it. No real environment facts, ever.
+- **Private** (`secdoc/soc-pipeline`): explicit internal designs, real IPs/hostnames/IDs, working configs against the live environment.
+- **Public** (`secdoc/soc-pipeline-public`): the same transferable implementation patterns, sanitized so anyone can adapt them. No real environment facts, ever.
 
 ## The rule
 
@@ -55,8 +55,8 @@ The scrub-check is a safety net, not a substitute for care. It catches known pat
 
 The same rule extends beyond files. **GitHub Issues, milestone descriptions, and Project board cards are public surface too.**
 
-- **Private-repo issues** (`secdoc/vuln-siem-pipeline`): may reference real environment specifics (IPs, hostnames, GMP user, target/task IDs) as needed for the internal build.
-- **Public-repo issues** (`secdoc/vuln-siem-pipeline-public`) and **the public Project board**: generic only. No real IPs/hostnames/domains/credentials. Use the placeholder conventions above. Describe work in adopter-facing, environment-neutral terms.
+- **Private-repo issues** (`secdoc/soc-pipeline`): may reference real environment specifics as needed for the internal build.
+- **Public-repo issues** (`secdoc/soc-pipeline-public`) and **the public Project board**: generic only. No real IPs/hostnames/domains/credentials. Use the placeholder conventions above. Describe work in adopter-facing, environment-neutral terms.
 - **Cross-repo board caution:** the public Project board can pull in issues from *both* repos. A private-repo issue added to a public board exposes its title/body. Keep private-repo issues off the public board, or ensure any cross-referenced item is itself sanitized.
 
 Rule of thumb: if an issue names something only your environment has, it belongs in the private repo and stays off the public board.

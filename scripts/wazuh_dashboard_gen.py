@@ -10,6 +10,7 @@ dashboard over the existing `wazuh-alerts-*` index pattern, filtered to
 
 Panels (aggregation-based, no scripted fields):
   - KPI metric: total Greenbone alerts
+  - KPI metric: distinct stable findings
   - Severity tier: donut on rule.level (2=Low,5=Med,10=High,12=Crit)
   - Threat band: bar on data.threat
   - Top vulnerable hosts: bar on data.host
@@ -68,6 +69,18 @@ def _metric(vid, title, label):
                               "labels": {"show": True}, "style": {"fontSize": 48}}},
         "aggs": [{"id": "1", "enabled": True, "type": "count", "schema": "metric",
                   "params": {"customLabel": label}}],
+    }
+    return _vis(vid, title, vs)
+
+
+def _cardinality_metric(vid, title, field, label):
+    vs = {
+        "title": title, "type": "metric",
+        "params": {"metric": {"percentageMode": False, "useRanges": False,
+                              "colorSchema": "Green to Red", "metricColorMode": "None",
+                              "labels": {"show": True}, "style": {"fontSize": 48}}},
+        "aggs": [{"id": "1", "enabled": True, "type": "cardinality", "schema": "metric",
+                  "params": {"field": field, "customLabel": label}}],
     }
     return _vis(vid, title, vs)
 
@@ -152,6 +165,7 @@ def _timeline(vid, title, split_field):
 
 PANELS = [
     ("vuln_kpi_total",   _metric,  ("SOC Vuln - Total Greenbone alerts", "Greenbone alerts")),
+    ("vuln_kpi_unique",  _cardinality_metric, ("SOC Vuln - Distinct stable findings", "data.event_hash", "unique findings")),
     ("vuln_sev_tier",    _pie,     ("SOC Vuln - Severity tier (rule.level)", "rule.level", "tier")),
     ("vuln_threat",      _terms_bar, ("SOC Vuln - Threat band", "data.threat", 6, "threat")),
     ("vuln_top_hosts",   _terms_bar, ("SOC Vuln - Top vulnerable hosts", "data.host", 15, "host")),
@@ -177,6 +191,7 @@ def build_dashboard(dash_id, title, panel_ids):
     x, y, i = 0, 0, 0
     sizes = {
         "vuln_kpi_total": (12, 8),
+        "vuln_kpi_unique": (12, 8),
         "vuln_sev_tier": (12, 8),
         "vuln_threat": (24, 8),
         "vuln_top_hosts": (24, 12),
@@ -191,7 +206,8 @@ def build_dashboard(dash_id, title, panel_ids):
     # don't fit the window). Each row is (pid, width) pairs whose widths total 48.
     GRID_W = 48
     rows = [
-        [("vuln_kpi_total", 12), ("vuln_sev_tier", 12), ("vuln_threat", 24)],  # -> 48
+        [("vuln_kpi_total", 24), ("vuln_kpi_unique", 24)],                      # -> 48
+        [("vuln_sev_tier", 24), ("vuln_threat", 24)],                          # -> 48
         [("vuln_top_hosts", 24), ("vuln_top_findings", 24)],                   # -> 48
         [("vuln_top_cves", 24), ("vuln_by_scan", 24)],                         # -> 48
         [("vuln_solution", 48)],                                               # -> 48
@@ -225,7 +241,7 @@ def build_dashboard(dash_id, title, panel_ids):
         "attributes": {
             "title": title,
             "hits": 0,
-            "description": "Greenbone vulnerability posture over wazuh-alerts-* (rule.groups: greenbone). "
+            "description": "Greenbone portable vulnerability posture over wazuh-alerts-* (rule.groups: greenbone). "
                            "Built by scripts/wazuh_dashboard_gen.py.",
             "panelsJSON": json.dumps(panels_json),
             "optionsJSON": json.dumps({"useMargins": True, "hidePanelTitles": False}),
