@@ -356,7 +356,7 @@ def _html_table(headers, rows):
 
 
 def render_html(a, svg, title, as_of, source_commit, sanitized):
-    """Self-contained dark-theme HTML page (inline SVG + tables) for Wiki.js HTML editor."""
+    """Self-contained dark-theme HTML audit artifact with inline SVG and tables."""
     generated = datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d %H:%M UTC")
     hi = a["sev"]["Critical"] + a["sev"]["High"]
     tag = "SANITIZED / SYNTHETIC-SAFE" if sanitized else "REAL environment data"
@@ -400,7 +400,7 @@ def main():
     ap.add_argument("--as-of", default=None, help="scan date to display (default: max scan_end)")
     ap.add_argument("--source-commit", default=None)
     ap.add_argument("--sanitize", action="store_true", help="pseudonymize hosts + scrub for public")
-    ap.add_argument("--html", action="store_true", help="also emit vuln-dashboard.html (Wiki.js HTML editor)")
+    ap.add_argument("--html", action="store_true", help="also emit the standalone vuln-dashboard.html audit artifact")
     ap.add_argument("--svg-name", default="vuln-dashboard.svg")
     args = ap.parse_args()
 
