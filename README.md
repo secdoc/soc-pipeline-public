@@ -1,8 +1,8 @@
 # soc-pipeline (public)
 
-Build an **end-to-end Security Operations pipeline** that correlates **every security feed** — network, DNS, endpoint, identity, and vulnerability — into one central pane, enriches with AI, and drives decision and response through SOAR and DFIR. A simple, pipeline-based approach so each feed is a first-class source in one correlated flow, not a scattered set of consoles nobody watches.
+Build an **end-to-end Security Operations pipeline** that brings network, DNS, endpoint, identity, vulnerability, and audit feeds into one detection and investigation model. The design treats each feed as a first-class source in one correlated flow rather than a set of disconnected consoles.
 
-**Stack:** UniFi / OPNsense+Suricata / DNS / endpoints / vuln scanner → **Graylog** (transport & retention) → **Wazuh** (central pane: correlate & detect) → **AI enrichment** → **Shuffle** (SOAR) + **Velociraptor** (DFIR) → incident. Provisioned and configured with **Terraform + Ansible**. All read-only and human-in-the-loop through triage; response actions are staged by risk with human approval on containment.
+**Reference stack:** firewall / IDS / DNS / endpoints / identity / vulnerability and audit sources → **Graylog** (transport and retention) → **Wazuh** (correlation and detection) → enrichment → **Shuffle** (SOAR) + **Velociraptor** (DFIR) → incident. Collection and enrichment remain read-only through triage. Containment requires human approval.
 
 > This is the **sanitized, adaptable** reference build. It uses placeholders (`<SCANNER_HOST>`, `<WAZUH_HOST>`, `<GMP_USER>`, RFC5737 example networks) so you can drop in your own environment. It carries no real environment data.
 
@@ -29,7 +29,7 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 - **Cross-correlation:** an alert on a host that also has a known critical vuln (or a suspicious identity event) is a higher-priority incident than the same alert on a hardened host.
 - **AI enrichment:** dense signal turned into ranked, plain-language triage and remediation.
 - **Response:** SOAR workflows (enrich → notify → contain-with-approval) and DFIR (hunt, collect, isolate host).
-- **Reproducible:** Terraform provisions, Ansible configures — `terraform apply` + `ansible-playbook`, not a pile of manual steps.
+- **Reproducibility target:** portable collectors, deterministic generators, tests, sanitization controls, and CI are published now. Complete Terraform and Ansible coverage remains open work.
 
 ## Architecture
 
@@ -51,7 +51,21 @@ Build one feed end-to-end first (the **vulnerability slice**), proving the whole
 
 - **P0** Foundations & access · **P1** Vuln slice (offline build/validate) · **P2** First live change (verified) · **P3** Add source lanes (DNS, firewall/IDS, endpoints, identity) · **P4** Enrich, orchestrate, respond · **P5** Reproducibility & publish
 
-Tracked on the project board and in `docs/` (design + lab as built).
+Tracked on the [public project board](https://github.com/users/secdoc/projects/3) and in `docs/`.
+
+## Implementation status
+
+Status below reflects verified work through **2026-09-02**. It distinguishes the tested implementation from artifacts already generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
+
+| Phase | Verified implementation checkpoint | Public artifact status |
+|---|---|---|
+| P0, foundations and access | Required source access is substantially complete. The least-privilege DFIR API credential remains outstanding. | Access tracking remains [in progress](https://github.com/secdoc/soc-pipeline-public/issues/10). Terraform and Ansible scaffolding is [deferred](https://github.com/secdoc/soc-pipeline-public/issues/11), not complete. |
+| P1 and P2, vulnerability slice and first live change | The vulnerability path, dual-consumer delivery, severity gating, stable event identity, dashboards, backup, rollback, and read-back verification are accepted. | The portable collector, rules, dashboard generators, migration helpers, tests, and standalone [Greenbone lane](https://github.com/secdoc/greenbone-wazuh-graylog) are published. |
+| P3, source lanes | Seven source lanes have passed target-only delivery acceptance: vulnerability, DNS, WAF, firewall, camera metadata, secrets-manager audit, and password-vault audit. Identity telemetry and endpoint expansion are still in progress. Firewall and IDS sensor placement is intentionally last and requires a traffic-visibility architecture decision first. | Standalone public WAF, Greenbone, and DNS lanes are published. Endpoint [coverage](https://github.com/secdoc/soc-pipeline-public/issues/14), [identity](https://github.com/secdoc/soc-pipeline-public/issues/15), and the final [firewall/IDS lane](https://github.com/secdoc/soc-pipeline-public/issues/13) remain open. |
+| P4, enrich and respond | Local-observation enrichment, anti-flood alerting, read-only egress hunting, threat-intelligence context, and enrichment-first SOAR are active. Automatic blocking and host isolation are not enabled. | Core transactional and migration tooling is published. Portable DFIR [investigation and isolation](https://github.com/secdoc/soc-pipeline-public/issues/17) remains open. Default-deny egress is [held](https://github.com/secdoc/soc-pipeline-public/issues/24) until visibility and dependency prerequisites are met. |
+| P5, reproduce and publish | A consolidated article has been drafted from tested implementation. The complete adopter lab and end-to-end IaC have not been delivered. | The sanitized [build guide](https://github.com/secdoc/soc-pipeline-public/issues/8), [article publication](https://github.com/secdoc/soc-pipeline-public/issues/9), and complete [Ansible roles](https://github.com/secdoc/soc-pipeline-public/issues/18) remain open. |
+
+The enterprise Graylog and Wazuh migration is operationally advanced but not represented here as a turnkey cluster installer. Source cutover, high-availability frontends, health checks, backup and restore controls, parser recovery, certificate rotation, and progressive agent migration have been exercised. Remaining endpoint migration, historical-data decisions, and decommission gates are not complete.
 
 ## Safety model
 
@@ -103,6 +117,8 @@ Validation gates:
 python3 -m unittest discover -s tests -v
 python3 scripts/scrub_check.py .
 ```
+
+GitLab is the development source of truth. The verified public state is mirrored to GitHub after its pipeline passes. The CI baseline performs repository integrity checks and centralized malware scanning on an isolated runner.
 
 ## Adapting to a different stack
 

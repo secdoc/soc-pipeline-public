@@ -1,6 +1,8 @@
 # SOC Pipeline — End to End
 
-A KISS, pipeline-based Security Operations build that ingests **every security-relevant feed** in the environment — network, DNS, endpoint, identity, and vulnerability — normalizes and correlates them in one central pane (**Wazuh**), retains and transports via **Graylog**, enriches with AI, and drives **decision and response** through **Shuffle (SOAR)** and **Velociraptor (DFIR)**. Provisioned and configured reproducibly with **Terraform + Ansible**.
+> Implementation note, 2026-09-02: this document describes the target architecture. The working implementation has accepted seven target-only source lanes and enrichment-first SOAR, but endpoint and identity expansion, DFIR automation, the final firewall/IDS sensor design, default-deny egress, and complete Terraform/Ansible automation remain unfinished. See the status table in the repository README and the public Project #3 board.
+
+A KISS, pipeline-based Security Operations design for network, DNS, endpoint, identity, vulnerability, and audit feeds. It normalizes and correlates them in one central pane (**Wazuh**), retains and transports through **Graylog**, enriches local observations, and drives **decision and response** through **Shuffle (SOAR)** and **Velociraptor (DFIR)**. The published implementation includes portable collectors, generators, tests, and safety controls. Complete Terraform and Ansible automation remains a target rather than a delivered capability.
 
 This is the practical, buildable form of the "log → event → alert → incident" pipeline: every stage discards volume to add meaning, and every narrowing is a filter someone designed.
 
