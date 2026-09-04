@@ -15,7 +15,7 @@ findings reach Wazuh, so you don't get 366 alerts every cycle.
 
 Read-only against Greenbone. Idempotent. Safe to cron.
 
-Env (from /opt/soc/.env): GVM_USER, GVM_PASS, GRAYLOG_HOST,
+Env (from ~/.config/soc-pipeline/env): GVM_USER, GVM_PASS, GRAYLOG_HOST,
   WAZUH_SSH_USER, WAZUH_SSH_HOST, WAZUH_SSH_KEY
 """
 import argparse
@@ -34,7 +34,10 @@ from pathlib import Path
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE_DEFAULT = os.path.join(HERE, "..", "collector", ".delivered_state.json")
 
-def load_env(path="/opt/soc/.env"):
+def load_env(path=None):
+    path = path or os.environ.get(
+        "SOC_ENV_FILE", os.path.expanduser("~/.config/soc-pipeline/env")
+    )
     e = {}
     if os.path.exists(path):
         for l in open(path):

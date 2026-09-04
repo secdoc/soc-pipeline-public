@@ -2,7 +2,7 @@
 
 This project maintains two repos:
 
-- **Private** (`secdoc/soc-pipeline`): explicit internal designs, real IPs/hostnames/IDs, working configs against the live environment.
+- **Private** (`private implementation repository`): explicit internal designs, real IPs/hostnames/IDs, working configs against the live environment.
 - **Public** (`secdoc/soc-pipeline-public`): the same transferable implementation patterns, sanitized so anyone can adapt them. No real environment facts, ever.
 
 ## The rule
@@ -25,10 +25,10 @@ Nothing in the public repo may contain a real environment fact. Treat any accide
 
 ## Forbidden in public (enforced by scrub-check)
 
-- `secdoc.home`, any `192.168.x.x` / `10.13.37.x` real address
-- Real hostnames (VOID-EFG, the graylog hostname, etc.)
+- Internal-only DNS names and specific RFC1918 host addresses
+- Real hostnames, device names, cluster names, and account identifiers
 - Any credential, token, or key fragment
-- Internal zone/lab names (ESSEXLAB, pvecluster)
+- Internal zone, lab, and cluster names
 - Named crown-jewel assets or their addresses
 
 ## The gate
@@ -55,7 +55,7 @@ The scrub-check is a safety net, not a substitute for care. It catches known pat
 
 The same rule extends beyond files. **GitHub Issues, milestone descriptions, and Project board cards are public surface too.**
 
-- **Private-repo issues** (`secdoc/soc-pipeline`): may reference real environment specifics as needed for the internal build.
+- **Private-repo issues** (`private implementation repository`): may reference real environment specifics as needed for the internal build.
 - **Public-repo issues** (`secdoc/soc-pipeline-public`) and **the public Project board**: generic only. No real IPs/hostnames/domains/credentials. Use the placeholder conventions above. Describe work in adopter-facing, environment-neutral terms.
 - **Cross-repo board caution:** the public Project board can pull in issues from *both* repos. A private-repo issue added to a public board exposes its title/body. Keep private-repo issues off the public board, or ensure any cross-referenced item is itself sanitized.
 

@@ -81,5 +81,5 @@
 | Workaround | 12 |
 | WillNotFix | 4 |
 
-*Source of truth: `secdoc/soc-pipeline`.*
+*Source of truth: `private implementation repository`.*
 *Last generated: 2026-08-17 12:48 UTC.*

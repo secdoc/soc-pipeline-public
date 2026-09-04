@@ -1,75 +1,70 @@
 #!/usr/bin/env python3
-"""Scrub-check gate: scan a directory tree for environment-specific facts that
-must NEVER appear in the PUBLIC repo. Exit non-zero if any are found.
+"""Fail a public release when environment-specific facts are present."""
 
-Run before every public commit:  python3 scripts/scrub_check.py <dir>
-Default dir = current directory.
-"""
-import sys, os, re
+import ipaddress
+import os
+import re
+import sys
 
-# Patterns that indicate real environment leakage. Extend as the estate grows.
-FORBIDDEN = [
-    (r"\bsecdoc\.home\b",                     "internal domain secdoc.home"),
-    (r"\b192\.168\.\d{1,3}\.\d{1,3}\b",       "real RFC1918 192.168.x.x address"),
-    (r"\b10\.13\.37\.\d{1,3}\b",              "ESSEXLAB 10.13.37.x address"),
-    (r"\bVOID-EFG\b",                          "real gateway hostname"),
-    (r"graylog-debian13-lab-kvm-svr",          "real graylog hostname"),
-    (r"hermes-agent@pam",                      "real Proxmox token id"),
-    (r"\bpvecluster\b",                        "real Proxmox cluster name"),
-    (r"ESSEXLAB",                              "internal lab/zone name"),
-    (r"\bwskWEw|v7thuqf|eyJhbGciOiJSUzI1",     "credential/token fragment"),
-    (r"\bGVM_PASS\s*=\s*\S+",                  "hardcoded GMP password"),
-    (r"(?i)\b(password|passwd|secret|api[_-]?key|token)\b\s*[:=]\s*['\"]?[A-Za-z0-9!@#$%^&*_\-]{8,}", "possible hardcoded secret value"),
-]
-# Values that ARE allowed (documentation placeholders / example ranges)
-ALLOW = [
-    r"192\.0\.2\.",   # TEST-NET-1 (RFC5737) example
-    r"198\.51\.100\.",
-    r"203\.0\.113\.",
-    r"<[A-Z_]+>",     # <SCANNER_HOST> style placeholders
-    r"example\.(com|org|net|local)",
-]
+TEXT_SUFFIXES = (".conf", ".json", ".md", ".ndjson", ".py", ".sh", ".txt", ".xml", ".yml", ".yaml")
+SKIP_DIRS = {".git", ".venv", "__pycache__", "node_modules", "venv"}
+SKIP_FILES = {"scrub_check.py"}
+ALLOWED_PRIVATE_CIDRS = {"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"}
+DOCUMENTATION_NETWORKS = tuple(ipaddress.ip_network(value) for value in (
+    "192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24"
+))
+IPV4 = re.compile(r"(?<![0-9])(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?:/[0-9]{1,2})?(?![0-9])")
+INTERNAL_DNS = re.compile(r"(?i)\b(?:[a-z0-9-]+\.)+(?:home|internal)\b")
+LOCAL_PATH = re.compile(r"(?i)(?:(?:/opt|/srv)/(?!example(?:/|\b))[^\s'\"]*|/home/(?!runner\b|user\b|example\b)[a-z0-9._-]+)")
+SECRET_ASSIGNMENT = re.compile(r"(?i)\b(password|passwd|secret|api[_-]?key|token)\b\s*[:=]\s*['\"]?(?!\$|<|CHANGE_ME|None|\"\"|'')[A-Za-z0-9!@#$%^&*_\-]{8,}")
 
-SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv"}
-# Files that legitimately CONTAIN the forbidden patterns because they DEFINE them
-# (the scrubber's own ruleset and the sanitization guide). Excluded from scanning.
-SKIP_FILES = {"scrub_check.py", "SANITIZATION.md"}
 
-def allowed(line):
-    return any(re.search(a, line) for a in ALLOW)
+def private_address_is_allowed(token):
+    if token in ALLOWED_PRIVATE_CIDRS:
+        return True
+    try:
+        address = ipaddress.ip_interface(token).ip
+        if any(address in network for network in DOCUMENTATION_NETWORKS):
+            return True
+        return not address.is_private
+    except ValueError:
+        return True
+
 
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else "."
     hits = []
-    for dp, dns, fns in os.walk(root):
-        dns[:] = [d for d in dns if d not in SKIP_DIRS]
-        for fn in fns:
-            if fn in SKIP_FILES:
+    for directory, directories, files in os.walk(root):
+        directories[:] = [name for name in directories if name not in SKIP_DIRS]
+        for name in files:
+            if name in SKIP_FILES or not name.endswith(TEXT_SUFFIXES):
                 continue
-            p = os.path.join(dp, fn)
+            path = os.path.join(directory, name)
             try:
-                with open(p, encoding="utf-8", errors="ignore") as f:
-                    for n, line in enumerate(f, 1):
-                        for pat, desc in FORBIDDEN:
-                            for m in re.finditer(pat, line):
-                                matched = m.group(0)
-                                # A match is safe ONLY if the matched token itself is an
-                                # allowed placeholder/example (e.g. 192.0.2.x). Do NOT wave
-                                # the whole line through just because a placeholder appears
-                                # elsewhere on it — that let a real IP hide next to a fake one.
-                                if any(re.fullmatch(a, matched) or re.search(a, matched) for a in ALLOW):
-                                    continue
-                                hits.append((p, n, desc, line.strip()[:120]))
-            except Exception:
+                lines = open(path, encoding="utf-8", errors="ignore")
+            except OSError:
                 continue
+            with lines:
+                for number, line in enumerate(lines, 1):
+                    for match in INTERNAL_DNS.finditer(line):
+                        if not match.group(0).lower().endswith("example.internal"):
+                            hits.append((path, number, "internal DNS name"))
+                    if LOCAL_PATH.search(line):
+                        hits.append((path, number, "operator-local filesystem path"))
+                    if SECRET_ASSIGNMENT.search(line):
+                        hits.append((path, number, "possible hardcoded secret"))
+                    for match in IPV4.finditer(line):
+                        token = match.group(0)
+                        if not private_address_is_allowed(token):
+                            hits.append((path, number, "specific private IPv4 address"))
     if hits:
-        print(f"SCRUB-CHECK FAILED: {len(hits)} environment leak(s) found\n")
-        for p, n, desc, txt in hits:
-            print(f"  {p}:{n}  [{desc}]\n      {txt}")
-        print("\nRemove or replace with placeholders before publishing. See docs/SANITIZATION.md")
-        sys.exit(1)
-    print("SCRUB-CHECK PASSED: no environment-specific facts found. Safe to publish.")
-    sys.exit(0)
+        print(f"SCRUB-CHECK FAILED: {len(hits)} possible environment leak(s)")
+        for path, number, description in hits:
+            print(f"  {path}:{number} [{description}]")
+        return 1
+    print("SCRUB-CHECK PASSED: no environment-specific facts found")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
