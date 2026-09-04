@@ -1,3 +1,15 @@
 ---
 wazuh_indexer_config_path: /etc/wazuh-indexer/opensearch.yml
 wazuh_indexer_heap: 16g
+wazuh_indexer_package_name: wazuh-indexer
+wazuh_indexer_package_version: ""
+wazuh_indexer_install_package: true
+wazuh_indexer_update_cache: false
+wazuh_indexer_service_name: wazuh-indexer
+wazuh_indexer_expected_nodes: 1
+wazuh_indexer_cluster_name: example-wazuh
+wazuh_indexer_repository_path: /mnt/soc-backup
+wazuh_indexer_certificate: /etc/wazuh-indexer/certs/indexer.pem
+wazuh_indexer_private_key: /etc/wazuh-indexer/certs/indexer-key.pem
+wazuh_indexer_ca: /etc/wazuh-indexer/certs/root-ca.pem
+wazuh_indexer_validation_command: []

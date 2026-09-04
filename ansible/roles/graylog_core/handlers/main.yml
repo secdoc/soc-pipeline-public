@@ -1,2 +1,7 @@
 ---
-[]
+- name: Restart Graylog server
+  ansible.builtin.systemd_service:
+    name: "{{ graylog_core_service_name }}"
+    state: restarted
+  when: soc_iac_restart_confirmed | bool
+  listen: Restart Graylog server

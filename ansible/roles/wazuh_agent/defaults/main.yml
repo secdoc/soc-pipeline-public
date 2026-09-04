@@ -1,4 +1,8 @@
 ---
 wazuh_agent_version: 4.14.7-1
+wazuh_agent_package_name: wazuh-agent
+wazuh_agent_install_package: true
+wazuh_agent_update_cache: false
+wazuh_agent_service_name: wazuh-agent
 wazuh_agent_manager: wazuh-agent.example.internal
 wazuh_agent_name: "{{ inventory_hostname }}"

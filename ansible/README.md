@@ -1,12 +1,12 @@
 # Public Ansible SOC scaffold
 
-This sanitized reference publishes non-mutating role skeletons for Graylog, Wazuh, HA edge candidates, collectors, endpoint agents, storage, and planning-only SOAR workflows. The example inventory uses RFC 5737 addresses and contains no credentials.
+This sanitized reference publishes gated, adopter-configurable roles for Graylog, Wazuh, HA edge candidates, collectors, endpoint agents, storage, and explicitly approved SOAR workflows. The example inventory uses RFC 5737 addresses and contains no credentials.
 
-No live deployment is authorized by this reference. Every role refuses `soc_iac_apply_confirmed=true` and contains no package, file, mount, service, or restart mutation. Defaults and templates are published for adaptation and review only.
+Mutation is disabled by default. Every role requires `soc_iac_apply_confirmed=true`; service restart, edge activation, collector activation, and Shuffle activation have additional gates. Package installation assumes the adopter has already configured the applicable signed vendor repository.
 
-The edge templates illustrate candidate HAProxy and Keepalived configuration only. They do not activate live routing, VIP, rsyslog, queue, or listener configuration.
+The edge role validates HAProxy and Keepalived candidates before installation. It does not activate routing, VIPs, or listeners unless `siem_edge_activation_confirmed=true` and restart approval are both present.
 
-Issue 18 remains open. These skeletons do not claim to install complete products or pass clean-environment idempotence. Before enabling a role, add package and repository management, prerequisite users and directories, certificate provisioning, protected candidate rendering, product validation, rollback, independently gated handlers, and two-run integration tests.
+Issue 18 remains open while clean-environment product convergence is completed for every role. The current implementation provides package, configuration, identity, candidate, validation, rollback, and restart gates where documented. See `DEPLOYMENT.md` for exact prerequisites, variables, verification, rollback, and known gaps.
 
 ```text
 ansible-lint .

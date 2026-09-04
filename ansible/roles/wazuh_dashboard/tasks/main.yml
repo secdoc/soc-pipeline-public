@@ -1,8 +1,122 @@
 ---
-- name: Keep the public wazuh_dashboard role skeleton non-mutating
+- name: Require explicit apply and restart approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - soc_iac_restart_confirmed | bool
+      - wazuh_dashboard_api_password is defined
+      - wazuh_dashboard_api_password | string | length >= 16
+      - not (wazuh_dashboard_install_package | bool) or wazuh_dashboard_package_version | length > 0
+      - wazuh_dashboard_validation_command | length > 0
+  no_log: true
+
+- name: Install the adopter-selected Wazuh dashboard package
+  ansible.builtin.apt:
+    name: "{{ wazuh_dashboard_package_name }}{{ ('=' + wazuh_dashboard_package_version) if wazuh_dashboard_package_version | length > 0 else '' }}"
+    state: present
+    update_cache: "{{ wazuh_dashboard_update_cache | bool }}"
+    policy_rc_d: 101
+  when: wazuh_dashboard_install_package | bool
+
+- name: Create protected dashboard candidate directory
+  ansible.builtin.file:
+    path: "{{ soc_iac_candidate_root }}/wazuh-dashboard"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Render Wazuh dashboard candidate
+  ansible.builtin.template:
+    src: opensearch_dashboards.yml.j2
+    dest: "{{ soc_iac_candidate_root }}/wazuh-dashboard/opensearch_dashboards.yml"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Render protected Wazuh API candidate
+  ansible.builtin.template:
+    src: wazuh.yml.j2
+    dest: "{{ soc_iac_candidate_root }}/wazuh-dashboard/wazuh.yml"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Validate and activate the dashboard candidates
+  when: not ansible_check_mode
+  block:
+    - name: Validate the candidate Wazuh dashboard configuration
+      ansible.builtin.command:
+        argv: >-
+          {{ wazuh_dashboard_validation_command +
+          [soc_iac_candidate_root + '/wazuh-dashboard/opensearch_dashboards.yml',
+          soc_iac_candidate_root + '/wazuh-dashboard/wazuh.yml'] }}
+      changed_when: false
+      no_log: true
+    - name: Install the validated dashboard configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/wazuh-dashboard/opensearch_dashboards.yml"
+        dest: "{{ wazuh_dashboard_config_path }}"
+        remote_src: true
+        owner: wazuh-dashboard
+        group: wazuh-dashboard
+        mode: "0640"
+        backup: true
+      register: wazuh_dashboard_active_copy
+      notify: Restart Wazuh dashboard
+    - name: Install the validated Wazuh API configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/wazuh-dashboard/wazuh.yml"
+        dest: "{{ wazuh_dashboard_api_config_path }}"
+        remote_src: true
+        owner: wazuh-dashboard
+        group: wazuh-dashboard
+        mode: "0600"
+        backup: true
+      register: wazuh_dashboard_api_active_copy
+      no_log: true
+      notify: Restart Wazuh dashboard
+  rescue:
+    - name: Restore prior dashboard configuration
+      ansible.builtin.copy:
+        src: "{{ wazuh_dashboard_active_copy.backup_file }}"
+        dest: "{{ wazuh_dashboard_config_path }}"
+        remote_src: true
+        owner: wazuh-dashboard
+        group: wazuh-dashboard
+        mode: "0640"
+      when:
+        - wazuh_dashboard_active_copy is defined
+        - wazuh_dashboard_active_copy.backup_file is defined
+    - name: Remove newly created dashboard configuration
+      ansible.builtin.file:
+        path: "{{ wazuh_dashboard_config_path }}"
+        state: absent
+      when:
+        - wazuh_dashboard_active_copy is defined
+        - wazuh_dashboard_active_copy.changed | default(false)
+        - wazuh_dashboard_active_copy.backup_file is not defined
+    - name: Restore prior Wazuh API configuration
+      ansible.builtin.copy:
+        src: "{{ wazuh_dashboard_api_active_copy.backup_file }}"
+        dest: "{{ wazuh_dashboard_api_config_path }}"
+        remote_src: true
+        owner: wazuh-dashboard
+        group: wazuh-dashboard
+        mode: "0600"
+      when:
+        - wazuh_dashboard_api_active_copy is defined
+        - wazuh_dashboard_api_active_copy.backup_file is defined
+      no_log: true
+    - name: Remove newly created Wazuh API configuration
+      ansible.builtin.file:
+        path: "{{ wazuh_dashboard_api_config_path }}"
+        state: absent
+      when:
+        - wazuh_dashboard_api_active_copy is defined
+        - wazuh_dashboard_api_active_copy.changed | default(false)
+        - wazuh_dashboard_api_active_copy.backup_file is not defined
+    - name: Stop after Wazuh dashboard rollback
+      ansible.builtin.fail:
+        msg: Dashboard candidate validation or activation failed; prior configurations were restored when available.

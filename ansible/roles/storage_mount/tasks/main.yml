@@ -1,8 +1,158 @@
 ---
-- name: Keep the public storage_mount role skeleton non-mutating
+- name: Require explicit apply approval
+  ansible.builtin.assert:
+    that: soc_iac_apply_confirmed | bool
+
+- name: Validate the stable storage identity
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - storage_mount_source is match('^/dev/disk/by-id/[A-Za-z0-9_.:+-]+$')
+      - storage_mount_path is match('^/[A-Za-z0-9_./-]+$')
+      - "'..' not in storage_mount_path"
+      - storage_mount_fstype is match('^[a-z0-9]+$')
+      - storage_mount_options | length > 0
+      - storage_mount_options | reject('match', '^[A-Za-z0-9_.=-]+$') | list | length == 0
+  when: storage_mount_enabled | bool
+
+- name: Resolve the approved storage device
+  ansible.builtin.stat:
+    path: "{{ storage_mount_source }}"
+    follow: true
+  register: storage_mount_device
+  when: storage_mount_enabled | bool
+
+- name: Read the approved device filesystem type
+  ansible.builtin.command:
+    argv: [/usr/sbin/blkid, -s, TYPE, -o, value, "{{ storage_mount_source }}"]
+  check_mode: false
+  register: storage_mount_blkid
+  changed_when: false
+  failed_when: false
+  when: storage_mount_enabled | bool
+
+- name: Require the exact block-device and filesystem contract
+  ansible.builtin.assert:
+    that:
+      - storage_mount_device.stat.exists
+      - storage_mount_device.stat.isblk | default(false)
+      - storage_mount_blkid.rc == 0
+      - storage_mount_blkid.stdout == storage_mount_fstype
+    fail_msg: The by-id source is missing, is not a block device, or has an unexpected filesystem.
+  when: storage_mount_enabled | bool
+
+- name: Read the active mount state
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/findmnt
+      - -no
+      - SOURCE,FSTYPE,OPTIONS
+      - --mountpoint
+      - "{{ storage_mount_path }}"
+  check_mode: false
+  register: storage_mount_state
+  changed_when: false
+  failed_when: false
+  when: storage_mount_enabled | bool
+
+- name: Read the expected active mount contract
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/findmnt
+      - -n
+      - --source
+      - "{{ storage_mount_source }}"
+      - --target
+      - "{{ storage_mount_path }}"
+      - -o
+      - FSTYPE,OPTIONS
+  check_mode: false
+  register: storage_mount_expected_state
+  changed_when: false
+  failed_when: false
+  when:
+    - storage_mount_enabled | bool
+    - storage_mount_state.rc == 0
+
+- name: Reject an unexpected active mount
+  ansible.builtin.assert:
+    that:
+      - storage_mount_expected_state.rc == 0
+      - storage_mount_expected_state.stdout.split()[0] == storage_mount_fstype
+      - >-
+        storage_mount_required_options |
+        difference(storage_mount_expected_state.stdout.split()[1].split(',')) | length == 0
+    fail_msg: The target is mounted from an unexpected source or with an unexpected filesystem.
+  when:
+    - storage_mount_enabled | bool
+    - storage_mount_state.rc == 0
+
+- name: Create the approved mount point
+  ansible.builtin.file:
+    path: "{{ storage_mount_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: storage_mount_enabled | bool
+
+- name: Persist and activate the approved mount transaction
+  when: storage_mount_enabled | bool
+  block:
+    - name: Persist the approved by-id mount
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: "^[^#]+\\s+{{ storage_mount_path | regex_escape }}\\s+"
+        line: "{{ storage_mount_source }} {{ storage_mount_path }} {{ storage_mount_fstype }} {{ storage_mount_options | join(',') }} 0 2"
+        state: present
+        backup: true
+      register: storage_mount_fstab
+    - name: Activate the approved filesystem
+      ansible.builtin.command:
+        argv: [/bin/mount, "{{ storage_mount_path }}"]
+      register: storage_mount_activation
+      when: storage_mount_state.rc != 0
+      changed_when: true
+    - name: Read back the activated mount
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/findmnt
+          - -n
+          - --source
+          - "{{ storage_mount_source }}"
+          - --target
+          - "{{ storage_mount_path }}"
+          - -o
+          - FSTYPE,OPTIONS
+      register: storage_mount_post_state
+      changed_when: false
+    - name: Require the activated mount contract
+      ansible.builtin.assert:
+        that:
+          - storage_mount_post_state.rc == 0
+          - storage_mount_post_state.stdout.split()[0] == storage_mount_fstype
+          - >-
+            storage_mount_required_options |
+            difference(storage_mount_post_state.stdout.split()[1].split(',')) | length == 0
+  rescue:
+    - name: Unmount a filesystem activated by this failed transaction
+      ansible.builtin.command:
+        argv: [/bin/umount, "{{ storage_mount_path }}"]
+      register: storage_mount_rollback_unmount
+      changed_when: true
+      when:
+        - storage_mount_activation is defined
+        - storage_mount_activation.changed | default(false)
+    - name: Restore fstab after failed activation
+      ansible.builtin.copy:
+        src: "{{ storage_mount_fstab.backup_file }}"
+        dest: /etc/fstab
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0644"
+      when:
+        - storage_mount_fstab is defined
+        - storage_mount_fstab.backup_file is defined
+    - name: Stop after storage rollback
+      ansible.builtin.fail:
+        msg: Mount activation failed or read-back disagreed; the prior fstab was restored when changed.

@@ -1,20 +1,20 @@
 network.host: "{{ ansible_host }}"
 node.name: "{{ inventory_hostname }}"
-cluster.name: "enterprise-wazuh"
+cluster.name: "{{ wazuh_indexer_cluster_name }}"
 cluster.initial_master_nodes: {{ groups['wazuh_indexer'] | to_json }}
 discovery.seed_hosts: {{ groups['wazuh_indexer'] | map('extract', hostvars, 'ansible_host') | list | to_json }}
 node.max_local_storage_nodes: "1"
 path.data: /var/lib/wazuh-indexer/data
 path.logs: /var/log/wazuh-indexer
-path.repo: ["/mnt/soc-backup"]
-plugins.security.ssl.http.pemcert_filepath: /etc/wazuh-indexer/certs/indexer.pem
-plugins.security.ssl.http.pemkey_filepath: /etc/wazuh-indexer/certs/indexer-key.pem
-plugins.security.ssl.http.pemtrustedcas_filepath: /etc/wazuh-indexer/certs/root-ca.pem
-plugins.security.ssl.transport.pemcert_filepath: /etc/wazuh-indexer/certs/indexer.pem
-plugins.security.ssl.transport.pemkey_filepath: /etc/wazuh-indexer/certs/indexer-key.pem
-plugins.security.ssl.transport.pemtrustedcas_filepath: /etc/wazuh-indexer/certs/root-ca.pem
+path.repo: ["{{ wazuh_indexer_repository_path }}"]
+plugins.security.ssl.http.pemcert_filepath: {{ wazuh_indexer_certificate }}
+plugins.security.ssl.http.pemkey_filepath: {{ wazuh_indexer_private_key }}
+plugins.security.ssl.http.pemtrustedcas_filepath: {{ wazuh_indexer_ca }}
+plugins.security.ssl.transport.pemcert_filepath: {{ wazuh_indexer_certificate }}
+plugins.security.ssl.transport.pemkey_filepath: {{ wazuh_indexer_private_key }}
+plugins.security.ssl.transport.pemtrustedcas_filepath: {{ wazuh_indexer_ca }}
 plugins.security.ssl.http.enabled: true
-plugins.security.ssl.transport.enforce_hostname_verification: false
+plugins.security.ssl.transport.enforce_hostname_verification: true
 plugins.security.ssl.transport.resolve_hostname: false
 plugins.security.authcz.admin_dn:
   - "CN=admin,OU=Wazuh,O=Wazuh,L=California,C=US"

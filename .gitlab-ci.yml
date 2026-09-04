@@ -32,10 +32,25 @@ repository-integrity:
               counts["shell"] += 1
       print(json.dumps({"status": "ok", "validated": counts}, sort_keys=True))
       PY
-    - /usr/bin/python3 -m unittest tests.test_iac_public_contract -v
+    - /usr/bin/python3 -m unittest discover -s tests -v
     - /usr/bin/python3 -m unittest tests.test_security_portal tests.test_security_portal_server -v
     - /usr/bin/python3 scripts/cerebro_validate.py --config config/cerebro.example.json
     - /usr/bin/python3 scripts/scrub_check.py .
+
+native-ansible:
+  stage: validate
+  script:
+    - |
+      set -euo pipefail
+      export REGISTRY_AUTH_FILE="$(mktemp)"
+      trap 'rm -f "$REGISTRY_AUTH_FILE"' EXIT
+      chmod 0600 "$REGISTRY_AUTH_FILE"
+      printf '{"auths":{}}' >"$REGISTRY_AUTH_FILE"
+      command -v podman
+      grep -q ansible-lint ansible/tests/run_ansible_validation.sh
+      grep -q ansible-playbook ansible/tests/run_ansible_validation.sh
+      bash ansible/tests/run_ansible_validation.sh
+      bash ansible/tests/run_common_baseline_convergence.sh
 
 secret-pattern-history:
   stage: secret-scan

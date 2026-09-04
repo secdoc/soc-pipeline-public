@@ -1,2 +1,9 @@
 ---
 wazuh_dashboard_config_path: /etc/wazuh-dashboard/opensearch_dashboards.yml
+wazuh_dashboard_package_name: wazuh-dashboard
+wazuh_dashboard_package_version: ""
+wazuh_dashboard_install_package: true
+wazuh_dashboard_update_cache: false
+wazuh_dashboard_service_name: wazuh-dashboard
+wazuh_dashboard_api_config_path: /usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml
+wazuh_dashboard_validation_command: []

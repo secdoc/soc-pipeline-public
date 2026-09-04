@@ -1,8 +1,156 @@
 ---
-- name: Keep the public siem_edge role skeleton non-mutating
+- name: Require explicit apply approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - siem_edge_keepalived_peer | length > 0
+      - siem_edge_keepalived_priority | int >= 1
+      - siem_edge_keepalived_priority | int <= 254
+      - not (siem_edge_install_packages | bool) or siem_edge_haproxy_version | length > 0
+      - not (siem_edge_install_packages | bool) or siem_edge_keepalived_version | length > 0
+
+- name: Require restart approval before edge activation
+  ansible.builtin.assert:
+    that: soc_iac_restart_confirmed | bool
+  when: siem_edge_activation_confirmed | bool
+
+- name: Install adopter-selected edge packages
+  ansible.builtin.apt:
+    name:
+      - "haproxy={{ siem_edge_haproxy_version }}"
+      - "keepalived={{ siem_edge_keepalived_version }}"
+    state: present
+    update_cache: "{{ siem_edge_update_cache | bool }}"
+    policy_rc_d: 101
+  when: siem_edge_install_packages | bool
+
+- name: Create protected edge candidate directory
+  ansible.builtin.file:
+    path: "{{ soc_iac_candidate_root }}/siem-edge"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Stage bounded HAProxy backend health checker
+  ansible.builtin.copy:
+    src: check-haproxy-backend
+    dest: "{{ soc_iac_candidate_root }}/siem-edge/check-haproxy-backend"
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Render and validate HAProxy candidate
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: "{{ soc_iac_candidate_root }}/siem-edge/haproxy.cfg"
+    owner: root
+    group: root
+    mode: "0600"
+    validate: /usr/sbin/haproxy -c -f %s
+
+- name: Render and validate Keepalived candidate
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: "{{ soc_iac_candidate_root }}/siem-edge/keepalived.conf"
+    owner: root
+    group: root
+    mode: "0600"
+    validate: /usr/sbin/keepalived --config-test --use-file=%s
+
+- name: Activate validated edge configuration
+  when: siem_edge_activation_confirmed | bool
+  block:
+    - name: Install HAProxy configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/siem-edge/haproxy.cfg"
+        dest: "{{ siem_edge_haproxy_config_path }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0644"
+        backup: true
+      register: siem_edge_haproxy_active_copy
+      notify: Restart HAProxy
+    - name: Install Keepalived configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/siem-edge/keepalived.conf"
+        dest: "{{ siem_edge_keepalived_config_path }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0644"
+        backup: true
+      register: siem_edge_keepalived_active_copy
+      notify: Restart Keepalived
+    - name: Install edge health checker
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/siem-edge/check-haproxy-backend"
+        dest: "{{ siem_edge_health_check_path }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0755"
+        backup: true
+      register: siem_edge_health_check_active_copy
+  rescue:
+    - name: Restore prior HAProxy configuration
+      ansible.builtin.copy:
+        src: "{{ siem_edge_haproxy_active_copy.backup_file }}"
+        dest: "{{ siem_edge_haproxy_config_path }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0644"
+      when:
+        - siem_edge_haproxy_active_copy is defined
+        - siem_edge_haproxy_active_copy.backup_file is defined
+    - name: Restore prior Keepalived configuration
+      ansible.builtin.copy:
+        src: "{{ siem_edge_keepalived_active_copy.backup_file }}"
+        dest: "{{ siem_edge_keepalived_config_path }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0644"
+      when:
+        - siem_edge_keepalived_active_copy is defined
+        - siem_edge_keepalived_active_copy.backup_file is defined
+    - name: Restore prior edge health checker
+      ansible.builtin.copy:
+        src: "{{ siem_edge_health_check_active_copy.backup_file }}"
+        dest: "{{ siem_edge_health_check_path }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0755"
+      when:
+        - siem_edge_health_check_active_copy is defined
+        - siem_edge_health_check_active_copy.backup_file is defined
+    - name: Remove newly created HAProxy configuration
+      ansible.builtin.file:
+        path: "{{ siem_edge_haproxy_config_path }}"
+        state: absent
+      when:
+        - siem_edge_haproxy_active_copy is defined
+        - siem_edge_haproxy_active_copy.changed | default(false)
+        - siem_edge_haproxy_active_copy.backup_file is not defined
+    - name: Remove newly created Keepalived configuration
+      ansible.builtin.file:
+        path: "{{ siem_edge_keepalived_config_path }}"
+        state: absent
+      when:
+        - siem_edge_keepalived_active_copy is defined
+        - siem_edge_keepalived_active_copy.changed | default(false)
+        - siem_edge_keepalived_active_copy.backup_file is not defined
+    - name: Remove newly created edge health checker
+      ansible.builtin.file:
+        path: "{{ siem_edge_health_check_path }}"
+        state: absent
+      when:
+        - siem_edge_health_check_active_copy is defined
+        - siem_edge_health_check_active_copy.changed | default(false)
+        - siem_edge_health_check_active_copy.backup_file is not defined
+    - name: Stop after edge activation rollback
+      ansible.builtin.fail:
+        msg: Edge activation failed; prior files were restored when available and services were not intentionally restarted.

@@ -1,8 +1,111 @@
 ---
-- name: Keep the public soc_collector role skeleton non-mutating
+- name: Require explicit apply approval
+  ansible.builtin.assert:
+    that: soc_iac_apply_confirmed | bool
+
+- name: Require restart approval before timer activation
+  ansible.builtin.assert:
+    that: soc_iac_restart_confirmed | bool
+  when: soc_collector_activation_confirmed | bool
+
+- name: Validate collector job contracts
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - item.name is match('^[a-z0-9-]+$')
+      - >-
+        item.executable is match(
+        '^' ~ (soc_collector_root | regex_escape) ~ '/[A-Za-z0-9_./-]+$')
+      - "'..' not in item.executable"
+      - >-
+        item.arguments | default([]) | reject('match', '^[A-Za-z0-9_./:=@+-]+$') | list | length == 0
+      - item.schedule is match('^[A-Za-z0-9*,:./ _-]+$')
+      - item.user | default('root') is match('^[a-z_][a-z0-9_-]*$')
+      - item.randomized_delay | default('30s') is match('^[0-9]+(ms|s|min|h|d)$')
+      - >-
+        item.write_paths | default(soc_collector_default_write_paths) |
+        reject('match', '^/[A-Za-z0-9_./-]+$') | list | length == 0
+  loop: "{{ soc_collector_jobs }}"
+  no_log: true
+
+- name: Resolve and verify collector executable integrity
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - |
+        import os
+        import pathlib
+        import sys
+        root = pathlib.Path(sys.argv[1]).resolve(strict=True)
+        target = pathlib.Path(sys.argv[2]).resolve(strict=True)
+        target.relative_to(root)
+        chain = [target]
+        current = target.parent
+        while current != root:
+            chain.append(current)
+            current = current.parent
+        chain.append(root)
+        for path in chain:
+            info = path.stat()
+            if info.st_uid != 0 or info.st_mode & 0o022:
+                raise PermissionError(str(path))
+        if not target.is_file() or not os.access(target, os.X_OK):
+            raise PermissionError(str(target))
+        print(target)
+      - "{{ soc_collector_root }}"
+      - "{{ item.executable }}"
+  loop: "{{ soc_collector_jobs }}"
+  register: soc_collector_executable_checks
+  changed_when: false
+
+- name: Canonicalize collector write paths under approved roots
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - |
+        import json
+        import pathlib
+        import sys
+        roots = [pathlib.Path(value).resolve(strict=False) for value in json.loads(sys.argv[1])]
+        requested = [pathlib.Path(value).resolve(strict=False) for value in json.loads(sys.argv[2])]
+        for target in requested:
+            if not any(target == root or target.is_relative_to(root) for root in roots):
+                raise PermissionError(str(target))
+        print(" ".join(str(target) for target in requested))
+      - "{{ soc_collector_allowed_write_roots | to_json }}"
+      - "{{ item.write_paths | default(soc_collector_default_write_paths) | to_json }}"
+  loop: "{{ soc_collector_jobs }}"
+  register: soc_collector_write_path_checks
+  changed_when: false
+
+- name: Install collector systemd services
+  ansible.builtin.template:
+    src: collector.service.j2
+    dest: "/etc/systemd/system/soc-{{ item.name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ soc_collector_jobs }}"
+  loop_control:
+    index_var: soc_collector_job_index
+  notify: Reload systemd
+
+- name: Install collector systemd timers
+  ansible.builtin.template:
+    src: collector.timer.j2
+    dest: "/etc/systemd/system/soc-{{ item.name }}.timer"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ soc_collector_jobs }}"
+  notify: Reload systemd
+
+- name: Enable approved collector timers
+  ansible.builtin.systemd_service:
+    name: "soc-{{ item.name }}.timer"
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop: "{{ soc_collector_jobs }}"
+  when: soc_collector_activation_confirmed | bool

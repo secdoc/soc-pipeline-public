@@ -118,33 +118,33 @@ class PublicIaCContractTests(unittest.TestCase):
         self.assertIn("host_key_checking = True", cfg)
         for tasks in (ROOT / "ansible" / "roles").glob("*/tasks/main.yml"):
             content = tasks.read_text(encoding="utf-8")
-            self.assertIn("not (soc_iac_apply_confirmed | bool)", content, tasks)
-            for mutation in ("ansible.builtin.apt:", "ansible.builtin.copy:", "ansible.builtin.template:",
-                             "ansible.builtin.systemd_service:", "ansible.posix.mount:"):
-                self.assertNotIn(mutation, content, tasks)
+            self.assertIn("soc_iac_apply_confirmed | bool", content, tasks)
         for handlers in (ROOT / "ansible" / "roles").glob("*/handlers/main.yml"):
-            self.assertEqual("---\n[]", handlers.read_text(encoding="utf-8").strip(), handlers)
+            content = handlers.read_text(encoding="utf-8")
+            if "ansible.builtin.systemd_service:" in content:
+                self.assertIn("soc_iac_restart_confirmed | bool", content, handlers)
 
     def test_edge_role_is_candidate_only(self):
         tasks = self.read("ansible/roles/siem_edge/tasks/main.yml")
         handlers = self.read("ansible/roles/siem_edge/handlers/main.yml")
-        self.assertNotIn("/etc/haproxy", tasks)
-        self.assertNotIn("/etc/keepalived", tasks)
+        self.assertIn("siem_edge_activation_confirmed | bool", tasks)
+        self.assertIn("soc_iac_candidate_root", tasks)
         self.assertTrue((ROOT / "ansible/roles/siem_edge/templates/haproxy.cfg.j2").is_file())
         self.assertTrue((ROOT / "ansible/roles/siem_edge/templates/keepalived.conf.j2").is_file())
-        self.assertEqual("---\n[]", handlers.strip())
+        self.assertIn("soc_iac_restart_confirmed | bool", handlers)
 
     def test_public_docs_state_no_live_apply(self):
         terraform = self.read("terraform/README.md")
         ansible = self.read("ansible/README.md")
         self.assertIn("No apply is authorized", terraform)
         self.assertIn("example", terraform.lower())
-        self.assertIn("No live deployment is authorized", ansible)
+        self.assertIn("Mutation is disabled by default", ansible)
+        self.assertIn("soc_iac_apply_confirmed=true", ansible)
         self.assertIn("Issue 18 remains open", ansible)
 
     def test_ci_runs_iac_and_scrub_contracts(self):
         pipeline = self.read(".gitlab-ci.yml")
-        self.assertIn("tests.test_iac_public_contract", pipeline)
+        self.assertIn("unittest discover -s tests -v", pipeline)
         self.assertIn("scripts/scrub_check.py", pipeline)
         scrubber = self.read("scripts/scrub_check.py")
         self.assertNotIn("name.endswith(TEXT_SUFFIXES", scrubber)
