@@ -34,7 +34,7 @@ repository-integrity:
       PY
     - /usr/bin/python3 -m unittest tests.test_iac_public_contract -v
     - /usr/bin/python3 -m unittest tests.test_security_portal tests.test_security_portal_server -v
-    - /usr/bin/python3 scripts/security_portal_validate.py --config config/security-portal.example.json
+    - /usr/bin/python3 scripts/cerebro_validate.py --config config/cerebro.example.json
     - /usr/bin/python3 scripts/scrub_check.py .
 
 secret-pattern-history:

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1244" height="1792" viewBox="0 0 1244 1792" role="img" aria-labelledby="diagram-title diagram-desc" font-family="Arial,Helvetica,sans-serif">
-<title id="diagram-title">Security Visibility Portal, Physical Placement</title><desc id="diagram-desc">Spec-driven architecture diagram with nested trust boundaries and numbered traffic flows.</desc>
+<title id="diagram-title">Cerebro, Physical Placement</title><desc id="diagram-desc">Spec-driven architecture diagram with nested trust boundaries and numbered traffic flows.</desc>
 <defs><marker id="arw" markerWidth="10" markerHeight="10" refX="7.5" refY="3.4" orient="auto"><path d="M0,0 L7.5,3.4 L0,6.8 Z" fill="#7f8b98" /></marker></defs>
 <g transform="scale(2)"><rect width="622" height="896" fill="#f4f6fa" />
-<text x="311" y="42" text-anchor="middle" fill="#232f3e" font-size="44" font-weight="800" transform="translate(311 42) scale(0.5) translate(-311 -42)">Security Visibility Portal, Physical Placement</text>
+<text x="311" y="42" text-anchor="middle" fill="#232f3e" font-size="44" font-weight="800" transform="translate(311 42) scale(0.5) translate(-311 -42)">Cerebro, Physical Placement</text>
 <rect x="40" y="64" width="541.9280000000001" height="159" rx="10" fill="#ffffff" stroke="#147eba" stroke-width="2.2" />
 <rect x="54" y="76" width="30" height="30" rx="5" fill="#147eba" />
 <g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="91.0" r="3.5" fill="none" /><circle cx="69.0" cy="91.0" r="6.6" fill="none" /><line x1="75.6" y1="91.0" x2="78.2" y2="91.0" /><line x1="73.7" y1="95.7" x2="75.5" y2="97.5" /><line x1="69.0" y1="97.6" x2="69.0" y2="100.2" /><line x1="64.3" y1="95.7" x2="62.5" y2="97.5" /><line x1="62.4" y1="91.0" x2="59.8" y2="91.0" /><line x1="64.3" y1="86.3" x2="62.5" y2="84.5" /><line x1="69.0" y1="84.4" x2="69.0" y2="81.8" /><line x1="73.7" y1="86.3" x2="75.5" y2="84.5" /></g>

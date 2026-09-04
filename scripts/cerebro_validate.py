@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a Security Visibility Portal configuration without starting a listener."""
+"""Validate a Cerebro configuration without starting a listener."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 {
-  "title": "Security Visibility Portal, Logical Architecture",
+  "title": "Cerebro, Logical Architecture",
   "flows": [
     {"id": 1, "label": "Analyst reads summaries and follows native-console links."},
     {"id": 2, "label": "Portal reads snapshots and bounded GET APIs only."},

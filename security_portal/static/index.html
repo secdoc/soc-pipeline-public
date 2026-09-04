@@ -3,16 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Security Visibility Portal</title>
+  <meta name="theme-color" content="#1a1a1a">
+  <title>Cerebro | Secdoc Security Operations</title>
+  <link rel="icon" type="image/png" href="/assets/secdoc-logo.png">
   <link rel="stylesheet" href="/styles.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
   <header>
-    <div>
-      <p class="eyebrow">SOC PIPELINE</p>
-      <h1 id="title">Security Visibility Portal</h1>
-      <p id="classification" class="classification">Internal</p>
+    <div class="brand-lockup">
+      <img class="brand-mark" src="/assets/secdoc-logo.png" alt="Secdoc logo" width="64" height="64">
+      <div>
+        <p class="eyebrow">SECDOC SECURITY OPERATIONS</p>
+        <h1 id="title">Cerebro</h1>
+        <p class="tagline">Centralized security visibility</p>
+        <p id="classification" class="classification">Internal</p>
+      </div>
     </div>
     <div class="updated"><span>Last refresh</span><strong id="updated">Loading</strong></div>
   </header>
@@ -29,6 +35,6 @@
       <div id="integrations" class="cards" aria-live="polite"></div>
     </section>
   </main>
-  <footer>Read-only visibility. No response or configuration actions are exposed by this portal.</footer>
+  <footer>Cerebro provides read-only visibility. No response or configuration actions are exposed.</footer>
 </body>
 </html>

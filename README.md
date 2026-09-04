@@ -8,7 +8,7 @@ Build an **end-to-end Security Operations pipeline** that brings network, DNS, e
 
 ## Why
 
-Standing each security tool up as its own silo means another console, another login, and context that never reaches the analyst making the decision. This build treats every tool as **one source in one pipeline**: the same `log → event → alert → incident` path for all of them. Wazuh remains the authoritative detection plane. The read-only Security Visibility Portal provides cross-tool posture, freshness, health, and native-console navigation without duplicating SIEM data or replacing any tool.
+Standing each security tool up as its own silo means another console, another login, and context that never reaches the analyst making the decision. This build treats every tool as **one source in one pipeline**: the same `log → event → alert → incident` path for all of them. Wazuh remains the authoritative detection plane. Cerebro provides read-only cross-tool posture, freshness, health, and native-console navigation without duplicating SIEM data or replacing any tool.
 
 Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 
@@ -31,9 +31,9 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 - **Response:** SOAR workflows (enrich → notify → contain-with-approval) and DFIR (hunt, collect, isolate host).
 - **Reproducibility:** portable collectors, deterministic generators, a no-op-by-default Terraform scaffold, eleven non-mutating Ansible role skeletons, tests, sanitization controls, and CI are published.
 
-## Security Visibility Portal
+## Cerebro
 
-A deployable read-only portal is included under `security_portal/`. It aggregates allowlisted summaries, shows freshness and failure states, and links to native consoles without replacing them. Start with [`config/security-portal.example.json`](config/security-portal.example.json) and [`docs/security-visibility-portal.md`](docs/security-visibility-portal.md).
+Cerebro is the deployable read-only security visibility layer under `security_portal/`. It aggregates allowlisted summaries, shows freshness and failure states, and links to native consoles without replacing them. Start with [`config/cerebro.example.json`](config/cerebro.example.json) and [`docs/cerebro.md`](docs/cerebro.md).
 
 ## Architecture
 

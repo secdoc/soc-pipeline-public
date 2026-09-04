@@ -1,5 +1,5 @@
 {
-  "title": "Security Visibility Portal, Physical Placement",
+  "title": "Cerebro, Physical Placement",
   "flows": [
     {"id": 1, "label": "Authenticated HTTPS reaches the portal."},
     {"id": 2, "label": "Portal reads local sanitized snapshots."},

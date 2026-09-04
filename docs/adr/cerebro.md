@@ -1,11 +1,11 @@
-# ADR: Read-Only Central Security Visibility
+# ADR: Cerebro as the Read-Only Security Visibility Layer
 
 Status: Accepted  
 Date: 2026-09-04
 
 ## Decision
 
-Provide centralized security visibility through a stateless read-only portal. Keep every native tool and console authoritative. Normalize only allowlisted summaries, explicit data freshness, failure reason codes, and native-console links.
+Provide centralized security visibility through Cerebro, a stateless read-only portal. Keep every native tool and console authoritative. Normalize only allowlisted summaries, explicit data freshness, failure reason codes, and native-console links.
 
 The first implementation is a standard-library Python modular monolith. It binds to loopback and requires an authenticated TLS reverse proxy before network exposure. Source connectors are JSON snapshots, exact-origin HTTPS GET requests, or explicit static catalog entries. The portal has no mutating endpoint.
 

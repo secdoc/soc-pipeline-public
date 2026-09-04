@@ -1,6 +1,6 @@
 {
   "portal": {
-    "title": "Security Visibility Portal",
+    "title": "Cerebro",
     "classification": "Internal",
     "refresh_seconds": 60
   },
@@ -10,7 +10,7 @@
       "name": "SIEM Health",
       "category": "SOC",
       "connector": "json_file",
-      "path": "/var/lib/security-portal/snapshots/siem-health.json",
+      "path": "/var/lib/cerebro/snapshots/siem-health.json",
       "collected_at_path": "collected_at",
       "healthy_path": "healthy",
       "summary_paths": {

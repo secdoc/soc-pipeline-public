@@ -1,4 +1,4 @@
-security.example.com {
+cerebro.example.com {
     tls internal
 
     # Replace this placeholder with an authenticated reverse-proxy policy.

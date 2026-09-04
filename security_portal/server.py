@@ -65,7 +65,7 @@ class PortalHandler(BaseHTTPRequestHandler):
     def _file(self, name: str) -> None:
         portal_server = cast(PortalServer, self.server)
         path = (portal_server.static_root / name).resolve()
-        if path.parent != portal_server.static_root or not path.is_file():
+        if not path.is_relative_to(portal_server.static_root) or not path.is_file():
             self._json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
             return
         body = path.read_bytes()
@@ -93,6 +93,8 @@ class PortalHandler(BaseHTTPRequestHandler):
             self._file("index.html")
         elif path in {"/app.js", "/styles.css"}:
             self._file(path.removeprefix("/"))
+        elif path == "/assets/secdoc-logo.png":
+            self._file("assets/secdoc-logo.png")
         else:
             self._json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
 
@@ -109,7 +111,7 @@ class PortalHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Read-only Security Visibility Portal")
+    parser = argparse.ArgumentParser(description="Cerebro read-only security visibility")
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--bind", default="localhost")
     parser.add_argument("--port", type=int, default=8080)

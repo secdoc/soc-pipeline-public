@@ -45,7 +45,7 @@ IaC is built alongside each phase so the whole pipeline is reproducible (`terraf
 
 ## Design principles (the transferable part)
 
-- **One detection plane plus one operational overview.** Wazuh remains the authoritative detection and correlation pane. The Security Visibility Portal adds read-only cross-tool posture, freshness, health, and navigation without duplicating SIEM data or replacing native consoles.
+- **One detection plane plus one operational overview.** Wazuh remains the authoritative detection and correlation pane. Cerebro adds read-only cross-tool posture, freshness, health, and navigation without duplicating SIEM data or replacing native consoles.
 - **Read-only, human-in-the-loop.** Collectors and AI agents only read. Response actions (Shuffle/Velociraptor) are staged by risk-if-wrong, with human approval on containment.
 - **Offline-validate before any live change.** `wazuh-logtest`, config backup, read-back verification. No production surprise.
 - **Dedicated rule-ID ranges per source.** No collisions between feeds (e.g. vuln rules never touch the UniFi 110xxx range).

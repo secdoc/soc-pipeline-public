@@ -1,14 +1,14 @@
 [Unit]
-Description=Security Visibility Portal
+Description=Cerebro Central Security Visibility
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-User=security-portal
-Group=security-portal
-WorkingDirectory=/srv/example/security-portal
-ExecStart=/usr/bin/python3 -m security_portal.server --config /etc/security-portal/config.json --bind localhost --port 8080
+User=cerebro
+Group=cerebro
+WorkingDirectory=/srv/example/cerebro
+ExecStart=/usr/bin/python3 -m security_portal.server --config /etc/cerebro/config.json --bind localhost --port 8080
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true
@@ -22,7 +22,7 @@ RestrictSUIDSGID=true
 RestrictRealtime=true
 LockPersonality=true
 MemoryDenyWriteExecute=true
-ReadOnlyPaths=/var/lib/security-portal/snapshots
+ReadOnlyPaths=/var/lib/cerebro/snapshots
 UMask=0077
 
 [Install]

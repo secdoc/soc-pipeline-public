@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import threading
 import unittest
@@ -18,7 +19,7 @@ NOW = datetime(2026, 9, 4, 22, 54, 39, tzinfo=timezone.utc)
 class PayloadTests(unittest.TestCase):
     def test_payload_contains_portal_overview_and_integrations(self) -> None:
         config = {
-            "portal": {"title": "Security Visibility", "refresh_seconds": 30},
+            "portal": {"title": "Cerebro", "refresh_seconds": 30},
             "integrations": [
                 {
                     "id": "wazuh",
@@ -36,7 +37,7 @@ class PayloadTests(unittest.TestCase):
 
         payload = build_payload(config, now=NOW)
 
-        self.assertEqual(payload["portal"]["title"], "Security Visibility")
+        self.assertEqual(payload["portal"]["title"], "Cerebro")
         self.assertEqual(payload["overview"]["critical_alerts"], 2)
         self.assertEqual(payload["integrations"][0]["state"], "healthy")
         self.assertNotIn("connector", payload["integrations"][0])
@@ -46,7 +47,7 @@ class HTTPTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         config = {
-            "portal": {"title": "Security Visibility", "refresh_seconds": 30},
+            "portal": {"title": "Cerebro", "refresh_seconds": 30},
             "integrations": [
                 {
                     "id": "catalog",
@@ -87,19 +88,34 @@ class HTTPTests(unittest.TestCase):
         with urllib.request.urlopen(self.base + "/api/v1/overview", timeout=2) as response:
             body = json.load(response)
 
-        self.assertEqual(body["portal"]["title"], "Security Visibility")
+        self.assertEqual(body["portal"]["title"], "Cerebro")
         self.assertEqual(body["integrations"][0]["id"], "catalog")
 
-    def test_index_and_assets_are_served_without_external_dependencies(self) -> None:
+    def test_index_assets_and_brand_tokens_are_served(self) -> None:
         with urllib.request.urlopen(self.base + "/", timeout=2) as response:
             html = response.read().decode()
         with urllib.request.urlopen(self.base + "/app.js", timeout=2) as response:
             script = response.read().decode()
+        with urllib.request.urlopen(self.base + "/styles.css", timeout=2) as response:
+            styles = response.read().decode()
+        with urllib.request.urlopen(self.base + "/assets/secdoc-logo.png", timeout=2) as response:
+            logo = response.read()
+            logo_type = response.headers.get_content_type()
 
-        self.assertIn("Security Visibility Portal", html)
+        self.assertIn("Cerebro", html)
+        self.assertIn('/assets/secdoc-logo.png', html)
         self.assertIn("/api/v1/overview", script)
+        self.assertIn("--brand:#b28b30", styles)
+        self.assertIn("--bg:#1a1a1a", styles)
+        self.assertIn("--panel:#1f1f1f", styles)
+        self.assertIn("--text:#e6e6e6", styles)
+        self.assertIn("--muted:#b3b3b3", styles)
+        self.assertIn("--line:#2e2e2e", styles)
         self.assertNotIn("https://", html)
         self.assertNotIn("http://", html)
+        self.assertEqual(logo_type, "image/png")
+        self.assertTrue(logo.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(hashlib.sha256(logo).hexdigest(), "97475375dead46f9eb3b40091e517a465199059cdecd189bfd3253eb5ee7cbd5")
 
     def test_post_is_rejected(self) -> None:
         request = urllib.request.Request(self.base + "/api/v1/overview", data=b"{}", method="POST")

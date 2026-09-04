@@ -1,4 +1,4 @@
-# Security Visibility Portal
+# Cerebro
 
 Status: deployable reference implementation  
 Classification: adopter-defined  
@@ -7,6 +7,14 @@ State date: 2026-09-04 UTC
 ## Purpose
 
 This portal provides centralized, read-only security visibility without replacing native SIEM, log-management, vulnerability, SOAR, DFIR, infrastructure, identity, secrets, or network consoles. It normalizes small allowlisted summaries and links analysts back to the source system for investigation and administration.
+
+## Brand identity
+
+![Secdoc logo](assets/cerebro/secdoc-logo.png)
+
+The product name is Cerebro. The dashboard includes a deterministic transparent reconstruction of the supplied Secdoc dot-matrix mark, with the exact `#ffcc57` logo gold from secdoc.tech. The attachment bytes were not available to the build process, so the repository does not claim byte identity. Reproducible source: [`secdoc-logo-source.svg`](assets/cerebro/secdoc-logo-source.svg). PNG SHA-256: `97475375dead46f9eb3b40091e517a465199059cdecd189bfd3253eb5ee7cbd5`.
+
+The live secdoc.tech CSS supplied the visual tokens: accent `#b28b30`, logo gold `#ffcc57`, background `#1a1a1a`, raised surface `#1f1f1f`, border `#2e2e2e`, primary text `#e6e6e6`, muted text `#b3b3b3`, success `#48c774`, and error `#fc365e`.
 
 ## What is implemented
 
@@ -23,9 +31,9 @@ This portal provides centralized, read-only security visibility without replacin
 
 ## Architecture
 
-![Logical architecture](architecture/security-portal/logical.svg)
+![Logical architecture](architecture/cerebro/logical.svg)
 
-![Physical placement](architecture/security-portal/physical.svg)
+![Physical placement](architecture/cerebro/physical.svg)
 
 The portal is a stateless modular monolith:
 
@@ -58,9 +66,9 @@ python3 -m unittest discover -s tests -v
 Validate and collect the sample configuration. Copy the sample snapshot first:
 
 ```bash
-install -d -m 0750 /var/lib/security-portal/snapshots
-install -m 0640 samples/security-portal-siem-health.json /var/lib/security-portal/snapshots/siem-health.json
-python3 scripts/security_portal_validate.py --config config/security-portal.example.json --collect
+install -d -m 0750 /var/lib/cerebro/snapshots
+install -m 0640 samples/cerebro-siem-health.json /var/lib/cerebro/snapshots/siem-health.json
+python3 scripts/cerebro_validate.py --config config/cerebro.example.json --collect
 ```
 
 The sample HTTP connector intentionally references an example endpoint and will report unavailable unless you replace it. This is a visible failure state, not a failed installation.
@@ -69,7 +77,7 @@ Start on loopback:
 
 ```bash
 python3 -m security_portal.server \
-  --config config/security-portal.example.json \
+  --config config/cerebro.example.json \
   --bind localhost \
   --port 8080
 ```
@@ -107,11 +115,11 @@ Static connectors are explicit catalog entries. Use `planned` when a tool is lin
 
 ## Deployment
 
-1. Install the repository at `/srv/example/security-portal`.
-2. Create a locked `security-portal` service account.
-3. Copy the validated config to `/etc/security-portal/config.json` with no secret values.
-4. Create `/var/lib/security-portal/snapshots` and grant only required read access.
-5. Install `deploy/security-portal.service.example` as a local systemd unit.
+1. Install the repository at `/srv/example/cerebro`.
+2. Create a locked `cerebro` service account.
+3. Copy the validated config to `/etc/cerebro/config.json` with no secret values.
+4. Create `/var/lib/cerebro/snapshots` and grant only required read access.
+5. Install `deploy/cerebro.service.example` as a local systemd unit.
 6. Start on loopback and run positive and negative HTTP checks.
 7. Configure an authenticated TLS reverse proxy. The Caddy example is a policy placeholder, not a complete identity integration.
 8. Prove unauthenticated denial, authorized access, logout, session expiry, and role policy.

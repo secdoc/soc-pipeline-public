@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Secdoc dot-matrix logo</title>
+  <desc id="logo-desc">Five columns and five rows of gold circles increasing in size from left to right.</desc>
+  <g fill="#ffcc57">
+    <circle cx="84" cy="108" r="14"/><circle cx="84" cy="182" r="14"/><circle cx="84" cy="256" r="14"/><circle cx="84" cy="330" r="14"/><circle cx="84" cy="404" r="14"/>
+    <circle cx="146" cy="108" r="20"/><circle cx="146" cy="182" r="20"/><circle cx="146" cy="256" r="20"/><circle cx="146" cy="330" r="20"/><circle cx="146" cy="404" r="20"/>
+    <circle cx="221" cy="108" r="26"/><circle cx="221" cy="182" r="26"/><circle cx="221" cy="256" r="26"/><circle cx="221" cy="330" r="26"/><circle cx="221" cy="404" r="26"/>
+    <circle cx="307" cy="108" r="32"/><circle cx="307" cy="182" r="32"/><circle cx="307" cy="256" r="32"/><circle cx="307" cy="330" r="32"/><circle cx="307" cy="404" r="32"/>
+    <circle cx="404" cy="108" r="38"/><circle cx="404" cy="182" r="38"/><circle cx="404" cy="256" r="38"/><circle cx="404" cy="330" r="38"/><circle cx="404" cy="404" r="38"/>
+  </g>
+</svg>

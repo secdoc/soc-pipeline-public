@@ -1,4 +1,4 @@
-# 20260904_22:54:39 Security Visibility Portal Threat Model
+# 20260904_22:54:39 Cerebro Threat Model
 
 Assessment start: 2026-09-04 22:54:39 UTC  
 Assessment type: Design-stage rapid threat analysis, not exhaustive  
