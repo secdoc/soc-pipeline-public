@@ -1,0 +1,3 @@
+---
+soc_collector_root: /opt/example/soc-pipeline
+soc_collector_jobs: []

@@ -1,0 +1,15 @@
+server.host: "{{ ansible_host }}"
+server.port: 443
+opensearch.hosts: [{% for host in groups['wazuh_indexer'] %}"https://{{ hostvars[host].ansible_host }}:9200"{% if not loop.last %}, {% endif %}{% endfor %}]
+opensearch.ssl.verificationMode: full
+opensearch.requestHeadersAllowlist: ["securitytenant", "Authorization"]
+opensearch_security.multitenancy.enabled: false
+opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+server.ssl.enabled: true
+server.ssl.key: /etc/wazuh-dashboard/certs/dashboard-key.pem
+server.ssl.certificate: /etc/wazuh-dashboard/certs/dashboard.pem
+opensearch.ssl.certificateAuthorities: [/etc/wazuh-dashboard/certs/root-ca.pem]
+uiSettings.overrides.defaultRoute: /app/wz-home
+opensearch_security.cookie.secure: true
+opensearch_security.session.ttl: 900000
+opensearch_security.session.keepalive: true

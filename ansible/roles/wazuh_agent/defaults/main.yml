@@ -1,0 +1,4 @@
+---
+wazuh_agent_version: 4.14.7-1
+wazuh_agent_manager: wazuh-agent.example.internal
+wazuh_agent_name: "{{ inventory_hostname }}"

@@ -1,0 +1,2 @@
+---
+wazuh_dashboard_config_path: /etc/wazuh-dashboard/opensearch_dashboards.yml

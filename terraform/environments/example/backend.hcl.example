@@ -1,0 +1,7 @@
+# Example only. Copy to ignored backend.hcl and use runtime credentials.
+address        = "https://gitlab.example.com/api/v4/projects/PROJECT_ID/terraform/state/soc-reference"
+lock_address   = "https://gitlab.example.com/api/v4/projects/PROJECT_ID/terraform/state/soc-reference/lock"
+unlock_address = "https://gitlab.example.com/api/v4/projects/PROJECT_ID/terraform/state/soc-reference/lock"
+lock_method    = "POST"
+unlock_method  = "DELETE"
+retry_wait_min = 5

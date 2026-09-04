@@ -1,0 +1,50 @@
+---
+- name: Apply common baseline serially
+  hosts: graylog_core:graylog_datanode:wazuh_manager:wazuh_indexer:wazuh_dashboard:siem_edge
+  serial: 1
+  pre_tasks:
+    - name: Require the explicit live-apply gate
+      ansible.builtin.assert:
+        that: [soc_iac_apply_confirmed | bool]
+        fail_msg: Set soc_iac_apply_confirmed=true only after approved plan and backup gates.
+  roles: [common_baseline]
+
+- name: Configure Graylog cores serially
+  hosts: graylog_core
+  serial: 1
+  roles: [storage_mount, graylog_core]
+
+- name: Configure Graylog data nodes serially
+  hosts: graylog_datanode
+  serial: 1
+  roles: [storage_mount, graylog_datanode]
+
+- name: Configure Wazuh indexers serially
+  hosts: wazuh_indexer
+  serial: 1
+  roles: [storage_mount, wazuh_indexer]
+
+- name: Configure Wazuh managers serially
+  hosts: wazuh_manager
+  serial: 1
+  roles: [wazuh_manager]
+
+- name: Configure Wazuh dashboards serially
+  hosts: wazuh_dashboard
+  serial: 1
+  roles: [wazuh_dashboard]
+
+- name: Configure SIEM edges serially
+  hosts: siem_edge
+  serial: 1
+  roles: [siem_edge]
+
+- name: Configure collector controller
+  hosts: soc_collectors
+  serial: 1
+  roles: [soc_collector]
+
+- name: Reconcile approval-gated Shuffle workflows
+  hosts: shuffle
+  serial: 1
+  roles: [shuffle_workflow]

@@ -1,0 +1,7 @@
+---
+soc_iac_apply_confirmed: false
+soc_iac_restart_confirmed: false
+soc_iac_backup_root: /var/backups/example-soc-iac
+soc_iac_candidate_root: /var/lib/example-soc-iac/candidates
+soc_iac_managed_by: example/soc-reference
+soc_iac_environment: example.internal

@@ -1,0 +1,2 @@
+---
+common_baseline_packages: [ca-certificates, curl, jq, python3]

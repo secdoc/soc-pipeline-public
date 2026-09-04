@@ -1,0 +1,5 @@
+# Copy one block into untracked imports.tf only after live inventory reconciliation.
+# import {
+#   to = module.enterprise_siem_vm["graylog-core-01"].proxmox_virtual_environment_vm.this
+#   id = "pve-a/9001"
+# }

@@ -1,0 +1,20 @@
+---
+- name: Read-only SOC component validation
+  hosts: all
+  gather_facts: false
+  check_mode: true
+  tasks:
+    - name: Confirm target identity and reachable Python runtime
+      ansible.builtin.command: python3 -c "import platform; print(platform.node())"
+      check_mode: false
+      changed_when: false
+    - name: Read failed service units
+      ansible.builtin.command: systemctl --failed --no-legend --plain
+      check_mode: false
+      register: failed_units
+      changed_when: false
+      failed_when: failed_units.rc not in [0, 1]
+      tags: [skip_ansible_lint]
+    - name: Require no failed units
+      ansible.builtin.assert:
+        that: failed_units.stdout_lines | length == 0

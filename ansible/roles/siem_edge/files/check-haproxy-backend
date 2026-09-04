@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import csv
+import io
+import socket
+import sys
+
+if len(sys.argv) != 2:
+    raise SystemExit(2)
+backend = sys.argv[1]
+with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+    client.settimeout(2)
+    client.connect("/run/haproxy/admin.sock")
+    client.sendall(b"show stat\n")
+    chunks = []
+    while True:
+        chunk = client.recv(65536)
+        if not chunk:
+            break
+        chunks.append(chunk)
+reader = csv.DictReader(io.StringIO(b"".join(chunks).decode().lstrip("# ")))
+for row in reader:
+    if row.get("pxname") == backend and row.get("svname") != "BACKEND" and row.get("status") == "UP":
+        raise SystemExit(0)
+raise SystemExit(1)

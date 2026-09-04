@@ -1,0 +1,8 @@
+---
+- name: Keep the public storage_mount role skeleton non-mutating
+  ansible.builtin.assert:
+    that:
+      - not (soc_iac_apply_confirmed | bool)
+    fail_msg: >-
+      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
+      adapt, test, and independently review the role before enabling mutations in your environment.

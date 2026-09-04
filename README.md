@@ -29,7 +29,7 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 - **Cross-correlation:** an alert on a host that also has a known critical vuln (or a suspicious identity event) is a higher-priority incident than the same alert on a hardened host.
 - **AI enrichment:** dense signal turned into ranked, plain-language triage and remediation.
 - **Response:** SOAR workflows (enrich → notify → contain-with-approval) and DFIR (hunt, collect, isolate host).
-- **Reproducibility target:** portable collectors, deterministic generators, tests, sanitization controls, and CI are published now. Complete Terraform and Ansible coverage remains open work.
+- **Reproducibility:** portable collectors, deterministic generators, a no-op-by-default Terraform scaffold, eleven non-mutating Ansible role skeletons, tests, sanitization controls, and CI are published.
 
 ## Architecture
 
@@ -55,15 +55,15 @@ Tracked on the [public project board](https://github.com/users/secdoc/projects/3
 
 ## Implementation status
 
-Status below reflects verified work through **2026-09-02**. It distinguishes the tested implementation from artifacts already generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
+Status below reflects verified work through **2026-09-04**. It distinguishes the tested implementation from artifacts generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
 
 | Phase | Verified implementation checkpoint | Public artifact status |
 |---|---|---|
-| P0, foundations and access | Required source access is substantially complete. The least-privilege DFIR API credential remains outstanding. | Access tracking remains [in progress](https://github.com/secdoc/soc-pipeline-public/issues/10). Terraform and Ansible scaffolding is [deferred](https://github.com/secdoc/soc-pipeline-public/issues/11), not complete. |
+| P0, foundations and access | Required source access is substantially complete. The least-privilege DFIR API credential remains outstanding. | The sanitized [Terraform and Ansible scaffold](terraform/README.md) is published with synthetic inventory, import-first controls, eleven non-mutating role skeletons, and native validation. Access tracking remains [in progress](https://github.com/secdoc/soc-pipeline-public/issues/10). |
 | P1 and P2, vulnerability slice and first live change | The vulnerability path, dual-consumer delivery, severity gating, stable event identity, dashboards, backup, rollback, and read-back verification are accepted. | The portable collector, rules, dashboard generators, migration helpers, tests, and standalone [Greenbone lane](https://github.com/secdoc/greenbone-wazuh-graylog) are published. |
 | P3, source lanes | Seven source lanes have passed target-only delivery acceptance: vulnerability, DNS, WAF, firewall, camera metadata, secrets-manager audit, and password-vault audit. Identity telemetry and endpoint expansion are still in progress. Firewall and IDS sensor placement is intentionally last and requires a traffic-visibility architecture decision first. | Standalone public WAF, Greenbone, and DNS lanes are published. Endpoint [coverage](https://github.com/secdoc/soc-pipeline-public/issues/14), [identity](https://github.com/secdoc/soc-pipeline-public/issues/15), and the final [firewall/IDS lane](https://github.com/secdoc/soc-pipeline-public/issues/13) remain open. |
 | P4, enrich and respond | Local-observation enrichment, anti-flood alerting, read-only egress hunting, threat-intelligence context, and enrichment-first SOAR are active. Automatic blocking and host isolation are not enabled. | Core transactional and migration tooling is published. Portable DFIR [investigation and isolation](https://github.com/secdoc/soc-pipeline-public/issues/17) remains open. Default-deny egress is [held](https://github.com/secdoc/soc-pipeline-public/issues/24) until visibility and dependency prerequisites are met. |
-| P5, reproduce and publish | A consolidated article has been drafted from tested implementation. The complete adopter lab and end-to-end IaC have not been delivered. | The sanitized [build guide](https://github.com/secdoc/soc-pipeline-public/issues/8), [article publication](https://github.com/secdoc/soc-pipeline-public/issues/9), and complete [Ansible roles](https://github.com/secdoc/soc-pipeline-public/issues/18) remain open. |
+| P5, reproduce and publish | A consolidated article has been drafted from tested implementation. Live Terraform adoption and the complete adopter lab remain controlled follow-on work. | The Terraform scaffold and non-mutating Ansible skeletons satisfy [issue 11](https://github.com/secdoc/soc-pipeline-public/issues/11). Complete clean-environment idempotent deployment roles remain open in [issue 18](https://github.com/secdoc/soc-pipeline-public/issues/18), along with the sanitized [build guide](https://github.com/secdoc/soc-pipeline-public/issues/8) and [article publication](https://github.com/secdoc/soc-pipeline-public/issues/9). |
 
 The enterprise Graylog and Wazuh migration is operationally advanced but not represented here as a turnkey cluster installer. Source cutover, high-availability frontends, health checks, backup and restore controls, parser recovery, certificate rotation, and progressive agent migration have been exercised. Remaining endpoint migration, historical-data decisions, and decommission gates are not complete.
 
@@ -116,9 +116,18 @@ Validation gates:
 ```bash
 python3 -m unittest discover -s tests -v
 python3 scripts/scrub_check.py .
+cd terraform && tofu fmt -check -recursive && tofu init -backend=false && tofu validate && tofu test
+cd ../ansible && ansible-lint .
 ```
 
 GitLab is the development source of truth. The verified public state is mirrored to GitHub after its pipeline passes. The CI baseline performs repository integrity checks and centralized malware scanning on an isolated runner.
+
+## Infrastructure as code
+
+- [`terraform/`](terraform/README.md): synthetic Proxmox inventory, reusable VM module, remote-state example, import-first adoption, and no-op tests.
+- [`ansible/`](ansible/README.md): eleven non-mutating role skeletons, serial orchestration examples, defaults, and candidate templates. Issue 18 remains open for tested deployment roles.
+
+These are adaptable scaffolds, not permission to apply against an environment. Supply your own inventory and secrets, preserve one-target rollout controls, and validate product configuration before restart.
 
 ## Adapting to a different stack
 

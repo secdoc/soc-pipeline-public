@@ -1,0 +1,4 @@
+---
+siem_edge_keepalived_priority: "{{ keepalived_priority | default(100) }}"
+siem_edge_keepalived_peer: "{{ keepalived_peer | default('') }}"
+siem_edge_interface: eth0

@@ -1,0 +1,14 @@
+[Unit]
+Description=SOC collector {{ item.name }}
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User={{ item.user | default('root') }}
+ExecStart={{ item.command }}
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths={{ item.write_paths | default(['/var/lib/example-soc', '/var/log/example-soc']) | join(' ') }}
