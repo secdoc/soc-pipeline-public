@@ -1,0 +1,68 @@
+{
+  "title": "Security Visibility Portal, Physical Placement",
+  "flows": [
+    {"id": 1, "label": "Authenticated HTTPS reaches the portal."},
+    {"id": 2, "label": "Portal reads local sanitized snapshots."},
+    {"id": 3, "label": "Exact-origin HTTPS GET reaches source APIs."}
+  ],
+  "edges": [
+    {"from": "analyst", "to": "portal-host", "flow": 1},
+    {"from": "portal-host", "to": "snapshots", "flow": 2},
+    {"from": "portal-host", "to": "security-tools", "flow": 3, "style": "dashed"},
+    {"from": "portal-host", "to": "control-tools", "flow": 3, "style": "dashed"}
+  ],
+  "root": {
+    "kind": "sheet",
+    "axis": "col",
+    "children": [
+      {
+        "kind": "account",
+        "title": "Analyst Network",
+        "sub": "Documentation network 192.0.2.0/24",
+        "color": "mgmt",
+        "axis": "row",
+        "children": [
+          {"kind": "node", "icon": "computer", "title": "Analyst Workstation", "subs": ["analyst-01", "Authenticated browser"], "id": "analyst", "color": "mgmt"},
+          {"kind": "node", "icon": "firewall", "title": "Policy Enforcement", "subs": ["Exact access policy", "Adopter supplied"], "color": "net"}
+        ]
+      },
+      {
+        "kind": "account",
+        "title": "Portal Service Network",
+        "sub": "Documentation network 198.51.100.0/24",
+        "color": "int",
+        "axis": "row",
+        "children": [
+          {"kind": "node", "icon": "server", "title": "portal-01", "subs": ["198.51.100.10", "Loopback application"], "id": "portal-host", "color": "int"},
+          {"kind": "node", "icon": "database", "title": "Snapshot Directory", "subs": ["Allowlisted summaries", "Read-only portal input"], "id": "snapshots", "color": "store"},
+          {"kind": "node", "icon": "shield", "title": "Authentication Proxy", "subs": ["TLS and user identity", "Required before exposure"], "color": "idn"}
+        ]
+      },
+      {
+        "kind": "account",
+        "title": "Security Tool Network",
+        "sub": "Documentation network 203.0.113.0/24",
+        "color": "soc",
+        "axis": "row",
+        "id": "security-tools",
+        "children": [
+          {"kind": "node", "icon": "shield", "title": "Detection and Logs", "subs": ["SIEM and log platform", "Native access preserved"], "color": "soc"},
+          {"kind": "node", "icon": "search", "title": "Security Services", "subs": ["Scanner, SOAR, DFIR", "Read-only portal identities"], "color": "sec"}
+        ]
+      },
+      {
+        "kind": "account",
+        "title": "Control, Identity, Secrets, and Recovery",
+        "sub": "Adopter-defined routed zones",
+        "color": "dev",
+        "axis": "row",
+        "id": "control-tools",
+        "children": [
+          {"kind": "node", "icon": "git", "title": "DevSecOps", "subs": ["Source and pipelines", "Supply-chain findings"], "color": "dev"},
+          {"kind": "node", "icon": "lock", "title": "Identity and Secrets", "subs": ["Identity provider", "No secret-value display"], "color": "idn"},
+          {"kind": "node", "icon": "database", "title": "Infrastructure and Recovery", "subs": ["Virtualization", "Backup status"], "color": "store"}
+        ]
+      }
+    ]
+  }
+}

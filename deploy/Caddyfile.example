@@ -1,0 +1,15 @@
+security.example.com {
+    tls internal
+
+    # Replace this placeholder with an authenticated reverse-proxy policy.
+    # Do not expose the portal until the identity gate is proven.
+    @unauthenticated not header X-Authenticated-User *
+    respond @unauthenticated 401
+
+    reverse_proxy localhost:8080
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        -Server
+    }
+}

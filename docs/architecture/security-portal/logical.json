@@ -1,0 +1,59 @@
+{
+  "title": "Security Visibility Portal, Logical Architecture",
+  "flows": [
+    {"id": 1, "label": "Analyst reads summaries and follows native-console links."},
+    {"id": 2, "label": "Portal reads snapshots and bounded GET APIs only."},
+    {"id": 3, "label": "Native tools remain authoritative."}
+  ],
+  "edges": [
+    {"from": "analyst", "to": "auth-gate", "flow": 1},
+    {"from": "auth-gate", "to": "portal", "flow": 1},
+    {"from": "portal", "to": "adapters", "flow": 2},
+    {"from": "adapters", "to": "sources", "flow": 2},
+    {"from": "portal", "to": "sources", "flow": 3, "style": "dashed"}
+  ],
+  "root": {
+    "kind": "sheet",
+    "axis": "col",
+    "children": [
+      {
+        "kind": "account",
+        "title": "User and Access Boundary",
+        "sub": "Authenticated reverse proxy required before network exposure",
+        "color": "acc",
+        "axis": "row",
+        "children": [
+          {"kind": "node", "icon": "user", "title": "SOC Analyst", "subs": ["Browser", "Read-only visibility"], "id": "analyst", "color": "acc"},
+          {"kind": "node", "icon": "shield", "title": "Authentication Gate", "subs": ["OIDC proxy or equivalent", "Adopter supplied"], "id": "auth-gate", "color": "idn"}
+        ]
+      },
+      {
+        "kind": "account",
+        "title": "Portal Trust Boundary",
+        "sub": "Deployable reference, activation remains adopter controlled",
+        "color": "soc",
+        "axis": "row",
+        "children": [
+          {"kind": "node", "icon": "dashboard", "title": "Portal UI and API", "subs": ["GET-only", "Loopback by default"], "id": "portal", "color": "soc"},
+          {"kind": "node", "icon": "gear", "title": "Connector Adapters", "subs": ["JSON file", "Exact-origin HTTPS GET", "Static catalog"], "id": "adapters", "color": "soc"},
+          {"kind": "node", "icon": "database", "title": "Normalized Snapshot", "subs": ["Freshness and reason codes", "No secret values"], "color": "store"}
+        ]
+      },
+      {
+        "kind": "account",
+        "title": "Existing Tool Boundaries",
+        "sub": "Unchanged authoritative systems and native access",
+        "color": "sec",
+        "axis": "row",
+        "id": "sources",
+        "children": [
+          {"kind": "node", "icon": "shield", "title": "Detection and Logs", "subs": ["SIEM", "Log management"], "color": "soc"},
+          {"kind": "node", "icon": "search", "title": "Exposure and DFIR", "subs": ["Vulnerability scanner", "DFIR platform"], "color": "sec"},
+          {"kind": "node", "icon": "gear", "title": "Response", "subs": ["SOAR", "No portal actions"], "color": "warn"},
+          {"kind": "node", "icon": "server", "title": "Platform", "subs": ["Virtualization and backup", "DevSecOps and network"], "color": "dev"},
+          {"kind": "node", "icon": "lock", "title": "Identity and Secrets", "subs": ["Identity provider", "Secret managers"], "color": "idn"}
+        ]
+      }
+    ]
+  }
+}

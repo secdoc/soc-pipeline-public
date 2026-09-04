@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1244" height="1792" viewBox="0 0 1244 1792" role="img" aria-labelledby="diagram-title diagram-desc" font-family="Arial,Helvetica,sans-serif">
+<title id="diagram-title">Security Visibility Portal, Physical Placement</title><desc id="diagram-desc">Spec-driven architecture diagram with nested trust boundaries and numbered traffic flows.</desc>
+<defs><marker id="arw" markerWidth="10" markerHeight="10" refX="7.5" refY="3.4" orient="auto"><path d="M0,0 L7.5,3.4 L0,6.8 Z" fill="#7f8b98" /></marker></defs>
+<g transform="scale(2)"><rect width="622" height="896" fill="#f4f6fa" />
+<text x="311" y="42" text-anchor="middle" fill="#232f3e" font-size="44" font-weight="800" transform="translate(311 42) scale(0.5) translate(-311 -42)">Security Visibility Portal, Physical Placement</text>
+<rect x="40" y="64" width="541.9280000000001" height="159" rx="10" fill="#ffffff" stroke="#147eba" stroke-width="2.2" />
+<rect x="54" y="76" width="30" height="30" rx="5" fill="#147eba" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="91.0" r="3.5" fill="none" /><circle cx="69.0" cy="91.0" r="6.6" fill="none" /><line x1="75.6" y1="91.0" x2="78.2" y2="91.0" /><line x1="73.7" y1="95.7" x2="75.5" y2="97.5" /><line x1="69.0" y1="97.6" x2="69.0" y2="100.2" /><line x1="64.3" y1="95.7" x2="62.5" y2="97.5" /><line x1="62.4" y1="91.0" x2="59.8" y2="91.0" /><line x1="64.3" y1="86.3" x2="62.5" y2="84.5" /><line x1="69.0" y1="84.4" x2="69.0" y2="81.8" /><line x1="73.7" y1="86.3" x2="75.5" y2="84.5" /></g>
+<text x="94" y="90" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 90) scale(0.5) translate(-94 -90)">Analyst Network</text>
+<text x="94" y="105" fill="#5b6b7c" font-size="23" transform="translate(94 105) scale(0.5) translate(-94 -105)">Documentation network 192.0.2.0/24</text>
+<rect x="40" y="237" width="541.9280000000001" height="159" rx="10" fill="#ffffff" stroke="#3f51b5" stroke-width="2.2" />
+<rect x="54" y="249" width="30" height="30" rx="5" fill="#3f51b5" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="264.0" r="3.5" fill="none" /><circle cx="69.0" cy="264.0" r="6.6" fill="none" /><line x1="75.6" y1="264.0" x2="78.2" y2="264.0" /><line x1="73.7" y1="268.7" x2="75.5" y2="270.5" /><line x1="69.0" y1="270.6" x2="69.0" y2="273.2" /><line x1="64.3" y1="268.7" x2="62.5" y2="270.5" /><line x1="62.4" y1="264.0" x2="59.8" y2="264.0" /><line x1="64.3" y1="259.3" x2="62.5" y2="257.5" /><line x1="69.0" y1="257.4" x2="69.0" y2="254.8" /><line x1="73.7" y1="259.3" x2="75.5" y2="257.5" /></g>
+<text x="94" y="263" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 263) scale(0.5) translate(-94 -263)">Portal Service Network</text>
+<text x="94" y="278" fill="#5b6b7c" font-size="23" transform="translate(94 278) scale(0.5) translate(-94 -278)">Documentation network 198.51.100.0/24</text>
+<rect x="40" y="410" width="541.9280000000001" height="159" rx="10" fill="#ffffff" stroke="#c0392b" stroke-width="2.2" />
+<rect x="54" y="422" width="30" height="30" rx="5" fill="#c0392b" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="437.0" r="3.5" fill="none" /><circle cx="69.0" cy="437.0" r="6.6" fill="none" /><line x1="75.6" y1="437.0" x2="78.2" y2="437.0" /><line x1="73.7" y1="441.7" x2="75.5" y2="443.5" /><line x1="69.0" y1="443.6" x2="69.0" y2="446.2" /><line x1="64.3" y1="441.7" x2="62.5" y2="443.5" /><line x1="62.4" y1="437.0" x2="59.8" y2="437.0" /><line x1="64.3" y1="432.3" x2="62.5" y2="430.5" /><line x1="69.0" y1="430.4" x2="69.0" y2="427.8" /><line x1="73.7" y1="432.3" x2="75.5" y2="430.5" /></g>
+<text x="94" y="436" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 436) scale(0.5) translate(-94 -436)">Security Tool Network</text>
+<text x="94" y="451" fill="#5b6b7c" font-size="23" transform="translate(94 451) scale(0.5) translate(-94 -451)">Documentation network 203.0.113.0/24</text>
+<rect x="40" y="583" width="541.9280000000001" height="159" rx="10" fill="#ffffff" stroke="#2e7d32" stroke-width="2.2" />
+<rect x="54" y="595" width="30" height="30" rx="5" fill="#2e7d32" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="610.0" r="3.5" fill="none" /><circle cx="69.0" cy="610.0" r="6.6" fill="none" /><line x1="75.6" y1="610.0" x2="78.2" y2="610.0" /><line x1="73.7" y1="614.7" x2="75.5" y2="616.5" /><line x1="69.0" y1="616.6" x2="69.0" y2="619.2" /><line x1="64.3" y1="614.7" x2="62.5" y2="616.5" /><line x1="62.4" y1="610.0" x2="59.8" y2="610.0" /><line x1="64.3" y1="605.3" x2="62.5" y2="603.5" /><line x1="69.0" y1="603.4" x2="69.0" y2="600.8" /><line x1="73.7" y1="605.3" x2="75.5" y2="603.5" /></g>
+<text x="94" y="609" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 609) scale(0.5) translate(-94 -609)">Control, Identity, Secrets, and Recovery</text>
+<text x="94" y="624" fill="#5b6b7c" font-size="23" transform="translate(94 624) scale(0.5) translate(-94 -624)">Adopter-defined routed zones</text>
+<path d="M125.18,209 L125.18,245.0 L118.88,245.0 L118.88,281" fill="none" stroke="#1a73e8" stroke-width="2.1" marker-end="url(#arw)" />
+<circle cx="118.88" cy="267" r="11" fill="#1a73e8" stroke="#ffffff" stroke-width="1.5" />
+<text x="118.88" y="271" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(118.88 271) scale(0.5) translate(-118.88 -271)">1</text>
+<path d="M118.88,281 L118.88,281.0 L272.128,281.0 L272.128,281" fill="none" stroke="#2e9e4f" stroke-width="2.1" marker-end="url(#arw)" />
+<circle cx="272.128" cy="267" r="11" fill="#2e9e4f" stroke="#ffffff" stroke-width="1.5" />
+<text x="272.128" y="271" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(272.128 271) scale(0.5) translate(-272.128 -271)">2</text>
+<path d="M118.88,382 L118.88,396.0 L310.96400000000006,396.0 L310.96400000000006,410" fill="none" stroke="#9c6b2e" stroke-width="2.1" stroke-dasharray="7 5" marker-end="url(#arw)" />
+<circle cx="310.96400000000006" cy="396" r="11" fill="#9c6b2e" stroke="#ffffff" stroke-width="1.5" />
+<text x="310.96400000000006" y="400" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(310.96400000000006 400) scale(0.5) translate(-310.96400000000006 -400)">3</text>
+<path d="M118.88,382 L118.88,482.5 L310.96400000000006,482.5 L310.96400000000006,583" fill="none" stroke="#9c6b2e" stroke-width="2.1" stroke-dasharray="7 5" marker-end="url(#arw)" />
+<circle cx="310.96400000000006" cy="569" r="11" fill="#9c6b2e" stroke="#ffffff" stroke-width="1.5" />
+<text x="310.96400000000006" y="573" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(310.96400000000006 573) scale(0.5) translate(-310.96400000000006 -573)">3</text>
+<g fill="none" stroke="#147eba" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="115.0" y="114.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="125.18" y="155" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(125.18 155) scale(0.5) translate(-125.18 -155)">Analyst Workstation</text>
+<text x="125.18" y="168" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(125.18 168) scale(0.5) translate(-125.18 -168)">analyst-01</text>
+<text x="125.18" y="180" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(125.18 180) scale(0.5) translate(-125.18 -180)">Authenticated browser</text>
+<g fill="none" stroke="#7a3fb5" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="272.1" y="114.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="282.32000000000005" y="155" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(282.32000000000005 155) scale(0.5) translate(-282.32000000000005 -155)">Policy Enforcement</text>
+<text x="282.32000000000005" y="168" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(282.32000000000005 168) scale(0.5) translate(-282.32000000000005 -168)">Exact access policy</text>
+<text x="282.32000000000005" y="180" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(282.32000000000005 180) scale(0.5) translate(-282.32000000000005 -180)">Adopter supplied</text>
+<g fill="none" stroke="#3f51b5" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="108.7" y="286.4" width="20.4" height="10.2" rx="1.7" /><rect x="108.7" y="299.4" width="20.4" height="10.2" rx="1.7" /><circle cx="112.1" cy="291.5" r="1.4" fill="#3f51b5" stroke="none" /><circle cx="112.1" cy="304.5" r="1.4" fill="#3f51b5" stroke="none" /><line x1="116.2" y1="291.5" x2="125.0" y2="291.5" /><line x1="116.2" y1="304.5" x2="125.0" y2="304.5" /></g>
+<text x="118.88" y="328" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(118.88 328) scale(0.5) translate(-118.88 -328)">portal-01</text>
+<text x="118.88" y="341" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(118.88 341) scale(0.5) translate(-118.88 -341)">198.51.100.10</text>
+<text x="118.88" y="353" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(118.88 353) scale(0.5) translate(-118.88 -353)">Loopback application</text>
+<g fill="none" stroke="#00838f" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="272.1" cy="289.2" rx="10.9" ry="4.1" /><line x1="261.2" y1="289.2" x2="261.2" y2="306.8" /><line x1="283.0" y1="289.2" x2="283.0" y2="306.8" /><path d="M 261.2 306.8 a 10.9 4.1 0 0 0 21.8 0" fill="none" /><path d="M 261.2 298.0 a 10.9 4.1 0 0 0 21.8 0" fill="none" /></g>
+<text x="272.128" y="328" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(272.128 328) scale(0.5) translate(-272.128 -328)">Snapshot Directory</text>
+<text x="272.128" y="341" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(272.128 341) scale(0.5) translate(-272.128 -341)">Allowlisted summaries</text>
+<text x="272.128" y="353" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(272.128 353) scale(0.5) translate(-272.128 -353)">Read-only portal input</text>
+<g fill="none" stroke="#8a3ffb" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><path d="M436.4,285.1 L448.6,289.8 L448.6,298.7 L436.4,310.9 L424.1,298.7 L424.1,289.8 Z" fill="none" /></g>
+<text x="436.352" y="328" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(436.352 328) scale(0.5) translate(-436.352 -328)">Authentication Proxy</text>
+<text x="436.352" y="341" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(436.352 341) scale(0.5) translate(-436.352 -341)">TLS and user identity</text>
+<text x="436.352" y="353" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(436.352 353) scale(0.5) translate(-436.352 -353)">Required before exposure</text>
+<g fill="none" stroke="#c0392b" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><path d="M127.1,458.1 L139.4,462.8 L139.4,471.7 L127.1,483.9 L114.9,471.7 L114.9,462.8 Z" fill="none" /></g>
+<text x="127.11200000000001" y="501" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(127.11200000000001 501) scale(0.5) translate(-127.11200000000001 -501)">Detection and Logs</text>
+<text x="127.11200000000001" y="514" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(127.11200000000001 514) scale(0.5) translate(-127.11200000000001 -514)">SIEM and log platform</text>
+<text x="127.11200000000001" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(127.11200000000001 526) scale(0.5) translate(-127.11200000000001 -526)">Native access preserved</text>
+<g fill="none" stroke="#c79008" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="292.1" y="460.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="302.312" y="501" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(302.312 501) scale(0.5) translate(-302.312 -501)">Security Services</text>
+<text x="302.312" y="514" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(302.312 514) scale(0.5) translate(-302.312 -514)">Scanner, SOAR, DFIR</text>
+<text x="302.312" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(302.312 526) scale(0.5) translate(-302.312 -526)">Read-only portal identities</text>
+<g fill="none" stroke="#2e7d32" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="111.4" y="633.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="121.62400000000001" y="674" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(121.62400000000001 674) scale(0.5) translate(-121.62400000000001 -674)">DevSecOps</text>
+<text x="121.62400000000001" y="687" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(121.62400000000001 687) scale(0.5) translate(-121.62400000000001 -687)">Source and pipelines</text>
+<text x="121.62400000000001" y="699" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(121.62400000000001 699) scale(0.5) translate(-121.62400000000001 -699)">Supply-chain findings</text>
+<g fill="none" stroke="#8a3ffb" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="273.5" y="642.6" width="16.3" height="13.6" rx="2.7" /><path d="M 276.2 642.6 L 276.2 638.6 a 5.4 5.4 0 0 1 10.9 0 L 287.1 642.6" fill="none" /><circle cx="281.6" cy="648.8" r="1.5" fill="#8a3ffb" stroke="none" /></g>
+<text x="281.648" y="674" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(281.648 674) scale(0.5) translate(-281.648 -674)">Identity and Secrets</text>
+<text x="281.648" y="687" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(281.648 687) scale(0.5) translate(-281.648 -687)">Identity provider</text>
+<text x="281.648" y="699" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(281.648 699) scale(0.5) translate(-281.648 -699)">No secret-value display</text>
+<g fill="none" stroke="#00838f" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="471.0" cy="635.2" rx="10.9" ry="4.1" /><line x1="460.1" y1="635.2" x2="460.1" y2="652.8" /><line x1="481.9" y1="635.2" x2="481.9" y2="652.8" /><path d="M 460.1 652.8 a 10.9 4.1 0 0 0 21.8 0" fill="none" /><path d="M 460.1 644.0 a 10.9 4.1 0 0 0 21.8 0" fill="none" /></g>
+<text x="470.988" y="674" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(470.988 674) scale(0.5) translate(-470.988 -674)">Infrastructure and Recovery</text>
+<text x="470.988" y="687" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(470.988 687) scale(0.5) translate(-470.988 -687)">Virtualization</text>
+<text x="470.988" y="699" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(470.988 699) scale(0.5) translate(-470.988 -699)">Backup status</text>
+<rect x="40" y="766" width="541.9280000000001" height="100" rx="10" fill="#ffffff" stroke="#8a97a6" stroke-width="1.6" />
+<text x="58" y="792" fill="#232f3e" font-size="30" font-weight="800" transform="translate(58 792) scale(0.5) translate(-58 -792)">Traffic flows</text>
+<circle cx="72.0" cy="814" r="11" fill="#1a73e8" stroke="#ffffff" stroke-width="1.5" />
+<text x="72.0" y="818" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(72.0 818) scale(0.5) translate(-72.0 -818)">1</text>
+<text x="92.0" y="818" fill="#232f3e" font-size="22.6" font-weight="500" transform="translate(92.0 818) scale(0.5) translate(-92.0 -818)">Authenticated HTTPS reaches the portal.</text>
+<circle cx="72.0" cy="842" r="11" fill="#2e9e4f" stroke="#ffffff" stroke-width="1.5" />
+<text x="72.0" y="846" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(72.0 846) scale(0.5) translate(-72.0 -846)">2</text>
+<text x="92.0" y="846" fill="#232f3e" font-size="22.6" font-weight="500" transform="translate(92.0 846) scale(0.5) translate(-92.0 -846)">Portal reads local sanitized snapshots.</text>
+<circle cx="324.96400000000006" cy="814" r="11" fill="#9c6b2e" stroke="#ffffff" stroke-width="1.5" />
+<text x="324.96400000000006" y="818" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(324.96400000000006 818) scale(0.5) translate(-324.96400000000006 -818)">3</text>
+<text x="344.96400000000006" y="818" fill="#232f3e" font-size="22.6" font-weight="500" transform="translate(344.96400000000006 818) scale(0.5) translate(-344.96400000000006 -818)">Exact-origin HTTPS GET reaches source APIs.</text>
+</g></svg>

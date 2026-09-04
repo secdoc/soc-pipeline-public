@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1740" height="1470" viewBox="0 0 1740 1470" role="img" aria-labelledby="diagram-title diagram-desc" font-family="Arial,Helvetica,sans-serif">
+<title id="diagram-title">Security Visibility Portal, Logical Architecture</title><desc id="diagram-desc">Spec-driven architecture diagram with nested trust boundaries and numbered traffic flows.</desc>
+<defs><marker id="arw" markerWidth="10" markerHeight="10" refX="7.5" refY="3.4" orient="auto"><path d="M0,0 L7.5,3.4 L0,6.8 Z" fill="#7f8b98" /></marker></defs>
+<g transform="scale(2)"><rect width="870" height="735" fill="#f4f6fa" />
+<text x="435" y="42" text-anchor="middle" fill="#232f3e" font-size="44" font-weight="800" transform="translate(435 42) scale(0.5) translate(-435 -42)">Security Visibility Portal, Logical Architecture</text>
+<rect x="40" y="64" width="790.464" height="159" rx="10" fill="#ffffff" stroke="#1a73e8" stroke-width="2.2" />
+<rect x="54" y="76" width="30" height="30" rx="5" fill="#1a73e8" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="91.0" r="3.5" fill="none" /><circle cx="69.0" cy="91.0" r="6.6" fill="none" /><line x1="75.6" y1="91.0" x2="78.2" y2="91.0" /><line x1="73.7" y1="95.7" x2="75.5" y2="97.5" /><line x1="69.0" y1="97.6" x2="69.0" y2="100.2" /><line x1="64.3" y1="95.7" x2="62.5" y2="97.5" /><line x1="62.4" y1="91.0" x2="59.8" y2="91.0" /><line x1="64.3" y1="86.3" x2="62.5" y2="84.5" /><line x1="69.0" y1="84.4" x2="69.0" y2="81.8" /><line x1="73.7" y1="86.3" x2="75.5" y2="84.5" /></g>
+<text x="94" y="90" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 90) scale(0.5) translate(-94 -90)">User and Access Boundary</text>
+<text x="94" y="105" fill="#5b6b7c" font-size="23" transform="translate(94 105) scale(0.5) translate(-94 -105)">Authenticated reverse proxy required before network exposure</text>
+<rect x="40" y="237" width="790.464" height="171" rx="10" fill="#ffffff" stroke="#c0392b" stroke-width="2.2" />
+<rect x="54" y="249" width="30" height="30" rx="5" fill="#c0392b" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="264.0" r="3.5" fill="none" /><circle cx="69.0" cy="264.0" r="6.6" fill="none" /><line x1="75.6" y1="264.0" x2="78.2" y2="264.0" /><line x1="73.7" y1="268.7" x2="75.5" y2="270.5" /><line x1="69.0" y1="270.6" x2="69.0" y2="273.2" /><line x1="64.3" y1="268.7" x2="62.5" y2="270.5" /><line x1="62.4" y1="264.0" x2="59.8" y2="264.0" /><line x1="64.3" y1="259.3" x2="62.5" y2="257.5" /><line x1="69.0" y1="257.4" x2="69.0" y2="254.8" /><line x1="73.7" y1="259.3" x2="75.5" y2="257.5" /></g>
+<text x="94" y="263" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 263) scale(0.5) translate(-94 -263)">Portal Trust Boundary</text>
+<text x="94" y="278" fill="#5b6b7c" font-size="23" transform="translate(94 278) scale(0.5) translate(-94 -278)">Deployable reference, activation remains adopter controlled</text>
+<rect x="40" y="422" width="790.464" height="159" rx="10" fill="#ffffff" stroke="#c79008" stroke-width="2.2" />
+<rect x="54" y="434" width="30" height="30" rx="5" fill="#c79008" />
+<g fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="69.0" cy="449.0" r="3.5" fill="none" /><circle cx="69.0" cy="449.0" r="6.6" fill="none" /><line x1="75.6" y1="449.0" x2="78.2" y2="449.0" /><line x1="73.7" y1="453.7" x2="75.5" y2="455.5" /><line x1="69.0" y1="455.6" x2="69.0" y2="458.2" /><line x1="64.3" y1="453.7" x2="62.5" y2="455.5" /><line x1="62.4" y1="449.0" x2="59.8" y2="449.0" /><line x1="64.3" y1="444.3" x2="62.5" y2="442.5" /><line x1="69.0" y1="442.4" x2="69.0" y2="439.8" /><line x1="73.7" y1="444.3" x2="75.5" y2="442.5" /></g>
+<text x="94" y="448" fill="#232f3e" font-size="34" font-weight="700" transform="translate(94 448) scale(0.5) translate(-94 -448)">Existing Tool Boundaries</text>
+<text x="94" y="463" fill="#5b6b7c" font-size="23" transform="translate(94 463) scale(0.5) translate(-94 -463)">Unchanged authoritative systems and native access</text>
+<path d="M118.88,108 L118.88,108.0 L277.616,108.0 L277.616,108" fill="none" stroke="#1a73e8" stroke-width="2.1" marker-end="url(#arw)" />
+<circle cx="277.616" cy="94" r="11" fill="#1a73e8" stroke="#ffffff" stroke-width="1.5" />
+<text x="277.616" y="98" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(277.616 98) scale(0.5) translate(-277.616 -98)">1</text>
+<path d="M277.616,209 L277.616,245.0 L118.74000000000001,245.0 L118.74000000000001,281" fill="none" stroke="#1a73e8" stroke-width="2.1" marker-end="url(#arw)" />
+<circle cx="118.74000000000001" cy="267" r="11" fill="#1a73e8" stroke="#ffffff" stroke-width="1.5" />
+<text x="118.74000000000001" y="271" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(118.74000000000001 271) scale(0.5) translate(-118.74000000000001 -271)">1</text>
+<path d="M118.74000000000001,281 L118.74000000000001,281.0 L271.848,281.0 L271.848,281" fill="none" stroke="#2e9e4f" stroke-width="2.1" marker-end="url(#arw)" />
+<circle cx="271.848" cy="267" r="11" fill="#2e9e4f" stroke="#ffffff" stroke-width="1.5" />
+<text x="271.848" y="271" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(271.848 271) scale(0.5) translate(-271.848 -271)">2</text>
+<path d="M271.848,394 L271.848,408.0 L435.232,408.0 L435.232,422" fill="none" stroke="#2e9e4f" stroke-width="2.1" marker-end="url(#arw)" />
+<circle cx="435.232" cy="408" r="11" fill="#2e9e4f" stroke="#ffffff" stroke-width="1.5" />
+<text x="435.232" y="412" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(435.232 412) scale(0.5) translate(-435.232 -412)">2</text>
+<path d="M118.74000000000001,394 L118.74000000000001,408.0 L435.232,408.0 L435.232,422" fill="none" stroke="#9c6b2e" stroke-width="2.1" stroke-dasharray="7 5" marker-end="url(#arw)" />
+<circle cx="435.232" cy="408" r="11" fill="#9c6b2e" stroke="#ffffff" stroke-width="1.5" />
+<text x="435.232" y="412" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(435.232 412) scale(0.5) translate(-435.232 -412)">3</text>
+<g fill="none" stroke="#1a73e8" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="108.7" y="114.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="118.88" y="155" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(118.88 155) scale(0.5) translate(-118.88 -155)">SOC Analyst</text>
+<text x="118.88" y="168" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(118.88 168) scale(0.5) translate(-118.88 -168)">Browser</text>
+<text x="118.88" y="180" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(118.88 180) scale(0.5) translate(-118.88 -180)">Read-only visibility</text>
+<g fill="none" stroke="#8a3ffb" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><path d="M277.6,112.1 L289.9,116.8 L289.9,125.7 L277.6,137.9 L265.4,125.7 L265.4,116.8 Z" fill="none" /></g>
+<text x="277.616" y="155" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(277.616 155) scale(0.5) translate(-277.616 -155)">Authentication Gate</text>
+<text x="277.616" y="168" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(277.616 168) scale(0.5) translate(-277.616 -168)">OIDC proxy or equivalent</text>
+<text x="277.616" y="180" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(277.616 180) scale(0.5) translate(-277.616 -180)">Adopter supplied</text>
+<g fill="none" stroke="#c0392b" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="108.5" y="287.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="118.74000000000001" y="328" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(118.74000000000001 328) scale(0.5) translate(-118.74000000000001 -328)">Portal UI and API</text>
+<text x="118.74000000000001" y="341" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(118.74000000000001 341) scale(0.5) translate(-118.74000000000001 -341)">GET-only</text>
+<text x="118.74000000000001" y="353" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(118.74000000000001 353) scale(0.5) translate(-118.74000000000001 -353)">Loopback by default</text>
+<g fill="none" stroke="#c0392b" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><circle cx="271.8" cy="298.0" r="5.4" fill="none" /><circle cx="271.8" cy="298.0" r="10.2" fill="none" /><line x1="282.0" y1="298.0" x2="286.1" y2="298.0" /><line x1="279.1" y1="305.2" x2="281.9" y2="308.1" /><line x1="271.8" y1="308.2" x2="271.8" y2="312.3" /><line x1="264.6" y1="305.2" x2="261.8" y2="308.1" /><line x1="261.6" y1="298.0" x2="257.6" y2="298.0" /><line x1="264.6" y1="290.8" x2="261.8" y2="287.9" /><line x1="271.8" y1="287.8" x2="271.8" y2="283.7" /><line x1="279.1" y1="290.8" x2="281.9" y2="287.9" /></g>
+<text x="271.848" y="328" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(271.848 328) scale(0.5) translate(-271.848 -328)">Connector Adapters</text>
+<text x="271.848" y="341" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(271.848 341) scale(0.5) translate(-271.848 -341)">JSON file</text>
+<text x="271.848" y="353" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(271.848 353) scale(0.5) translate(-271.848 -353)">Exact-origin HTTPS GET</text>
+<text x="271.848" y="365" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(271.848 365) scale(0.5) translate(-271.848 -365)">Static catalog</text>
+<g fill="none" stroke="#00838f" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="441.6" cy="289.2" rx="10.9" ry="4.1" /><line x1="430.7" y1="289.2" x2="430.7" y2="306.8" /><line x1="452.4" y1="289.2" x2="452.4" y2="306.8" /><path d="M 430.7 306.8 a 10.9 4.1 0 0 0 21.8 0" fill="none" /><path d="M 430.7 298.0 a 10.9 4.1 0 0 0 21.8 0" fill="none" /></g>
+<text x="441.56" y="328" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(441.56 328) scale(0.5) translate(-441.56 -328)">Normalized Snapshot</text>
+<text x="441.56" y="341" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(441.56 341) scale(0.5) translate(-441.56 -341)">Freshness and reason codes</text>
+<text x="441.56" y="353" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(441.56 353) scale(0.5) translate(-441.56 -353)">No secret values</text>
+<g fill="none" stroke="#c0392b" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><path d="M122.0,470.1 L134.2,474.8 L134.2,483.7 L122.0,495.9 L109.7,483.7 L109.7,474.8 Z" fill="none" /></g>
+<text x="121.96000000000001" y="513" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(121.96000000000001 513) scale(0.5) translate(-121.96000000000001 -513)">Detection and Logs</text>
+<text x="121.96000000000001" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(121.96000000000001 526) scale(0.5) translate(-121.96000000000001 -526)">SIEM</text>
+<text x="121.96000000000001" y="538" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(121.96000000000001 538) scale(0.5) translate(-121.96000000000001 -538)">Log management</text>
+<g fill="none" stroke="#c79008" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="265.3" y="472.8" width="20.4" height="20.4" rx="2.7" /></g>
+<text x="275.54400000000004" y="513" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(275.54400000000004 513) scale(0.5) translate(-275.54400000000004 -513)">Exposure and DFIR</text>
+<text x="275.54400000000004" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(275.54400000000004 526) scale(0.5) translate(-275.54400000000004 -526)">Vulnerability scanner</text>
+<text x="275.54400000000004" y="538" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(275.54400000000004 538) scale(0.5) translate(-275.54400000000004 -538)">DFIR platform</text>
+<g fill="none" stroke="#e0a800" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><circle cx="417.8" cy="483.0" r="5.4" fill="none" /><circle cx="417.8" cy="483.0" r="10.2" fill="none" /><line x1="428.0" y1="483.0" x2="432.1" y2="483.0" /><line x1="425.0" y1="490.2" x2="427.9" y2="493.1" /><line x1="417.8" y1="493.2" x2="417.8" y2="497.3" /><line x1="410.6" y1="490.2" x2="407.7" y2="493.1" /><line x1="407.6" y1="483.0" x2="403.5" y2="483.0" /><line x1="410.6" y1="475.8" x2="407.7" y2="472.9" /><line x1="417.8" y1="472.8" x2="417.8" y2="468.7" /><line x1="425.0" y1="475.8" x2="427.9" y2="472.9" /></g>
+<text x="417.81600000000003" y="513" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(417.81600000000003 513) scale(0.5) translate(-417.81600000000003 -513)">Response</text>
+<text x="417.81600000000003" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(417.81600000000003 526) scale(0.5) translate(-417.81600000000003 -526)">SOAR</text>
+<text x="417.81600000000003" y="538" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(417.81600000000003 538) scale(0.5) translate(-417.81600000000003 -538)">No portal actions</text>
+<g fill="none" stroke="#2e7d32" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="560.9" y="471.4" width="20.4" height="10.2" rx="1.7" /><rect x="560.9" y="484.4" width="20.4" height="10.2" rx="1.7" /><circle cx="564.3" cy="476.5" r="1.4" fill="#2e7d32" stroke="none" /><circle cx="564.3" cy="489.5" r="1.4" fill="#2e7d32" stroke="none" /><line x1="568.3" y1="476.5" x2="577.2" y2="476.5" /><line x1="568.3" y1="489.5" x2="577.2" y2="489.5" /></g>
+<text x="571.0640000000001" y="513" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(571.0640000000001 513) scale(0.5) translate(-571.0640000000001 -513)">Platform</text>
+<text x="571.0640000000001" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(571.0640000000001 526) scale(0.5) translate(-571.0640000000001 -526)">Virtualization and backup</text>
+<text x="571.0640000000001" y="538" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(571.0640000000001 538) scale(0.5) translate(-571.0640000000001 -538)">DevSecOps and network</text>
+<g fill="none" stroke="#8a3ffb" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"><rect x="733.9" y="481.6" width="16.3" height="13.6" rx="2.7" /><path d="M 736.6 481.6 L 736.6 477.6 a 5.4 5.4 0 0 1 10.9 0 L 747.5 481.6" fill="none" /><circle cx="742.1" cy="487.8" r="1.5" fill="#8a3ffb" stroke="none" /></g>
+<text x="742.0640000000001" y="513" text-anchor="middle" fill="#232f3e" font-size="23" font-weight="600" transform="translate(742.0640000000001 513) scale(0.5) translate(-742.0640000000001 -513)">Identity and Secrets</text>
+<text x="742.0640000000001" y="526" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(742.0640000000001 526) scale(0.5) translate(-742.0640000000001 -526)">Identity provider</text>
+<text x="742.0640000000001" y="538" text-anchor="middle" fill="#5b6b7c" font-size="19.6" transform="translate(742.0640000000001 538) scale(0.5) translate(-742.0640000000001 -538)">Secret managers</text>
+<rect x="40" y="605" width="790.464" height="100" rx="10" fill="#ffffff" stroke="#8a97a6" stroke-width="1.6" />
+<text x="58" y="631" fill="#232f3e" font-size="30" font-weight="800" transform="translate(58 631) scale(0.5) translate(-58 -631)">Traffic flows</text>
+<circle cx="72.0" cy="653" r="11" fill="#1a73e8" stroke="#ffffff" stroke-width="1.5" />
+<text x="72.0" y="657" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(72.0 657) scale(0.5) translate(-72.0 -657)">1</text>
+<text x="92.0" y="657" fill="#232f3e" font-size="22.6" font-weight="500" transform="translate(92.0 657) scale(0.5) translate(-92.0 -657)">Analyst reads summaries and follows native-console links.</text>
+<circle cx="72.0" cy="681" r="11" fill="#2e9e4f" stroke="#ffffff" stroke-width="1.5" />
+<text x="72.0" y="685" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(72.0 685) scale(0.5) translate(-72.0 -685)">2</text>
+<text x="92.0" y="685" fill="#232f3e" font-size="22.6" font-weight="500" transform="translate(92.0 685) scale(0.5) translate(-92.0 -685)">Portal reads snapshots and bounded GET APIs only.</text>
+<circle cx="449.232" cy="653" r="11" fill="#9c6b2e" stroke="#ffffff" stroke-width="1.5" />
+<text x="449.232" y="657" text-anchor="middle" fill="#ffffff" font-size="25" font-weight="800" transform="translate(449.232 657) scale(0.5) translate(-449.232 -657)">3</text>
+<text x="469.232" y="657" fill="#232f3e" font-size="22.6" font-weight="500" transform="translate(469.232 657) scale(0.5) translate(-469.232 -657)">Native tools remain authoritative.</text>
+</g></svg>

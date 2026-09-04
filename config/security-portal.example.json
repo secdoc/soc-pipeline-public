@@ -1,0 +1,54 @@
+{
+  "portal": {
+    "title": "Security Visibility Portal",
+    "classification": "Internal",
+    "refresh_seconds": 60
+  },
+  "integrations": [
+    {
+      "id": "siem-health",
+      "name": "SIEM Health",
+      "category": "SOC",
+      "connector": "json_file",
+      "path": "/var/lib/security-portal/snapshots/siem-health.json",
+      "collected_at_path": "collected_at",
+      "healthy_path": "healthy",
+      "summary_paths": {
+        "active_findings": "findings",
+        "critical_alerts": "critical_alerts",
+        "cluster_health": "cluster.health",
+        "backup_state": "backup.state"
+      },
+      "max_age_seconds": 600,
+      "deep_link": "https://siem.example.com/"
+    },
+    {
+      "id": "vulnerability-scanner",
+      "name": "Vulnerability Scanner",
+      "category": "Vulnerability",
+      "connector": "http_json",
+      "url": "https://scanner.example.com/api/health",
+      "allowed_origins": ["https://scanner.example.com:443"],
+      "header_env": {"Authorization": "SCANNER_AUTHORIZATION"},
+      "collected_at_path": "generated_at",
+      "state_path": "state",
+      "summary_paths": {
+        "critical_findings": "summary.critical",
+        "high_findings": "summary.high"
+      },
+      "timeout_seconds": 5,
+      "max_age_seconds": 3600,
+      "deep_link": "https://scanner.example.com/"
+    },
+    {
+      "id": "soar",
+      "name": "SOAR",
+      "category": "Response",
+      "connector": "static",
+      "state": "planned",
+      "summary": {"actions": "not exposed", "native_access": "preserved"},
+      "max_age_seconds": 600,
+      "deep_link": "https://soar.example.com/"
+    }
+  ]
+}

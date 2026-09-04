@@ -1,0 +1,8 @@
+{
+  "collected_at": "2026-01-01T12:00:00Z",
+  "healthy": true,
+  "findings": [],
+  "critical_alerts": 0,
+  "cluster": {"health": "green"},
+  "backup": {"state": "SUCCESS"}
+}

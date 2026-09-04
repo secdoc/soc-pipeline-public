@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security Visibility Portal</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <div>
+      <p class="eyebrow">SOC PIPELINE</p>
+      <h1 id="title">Security Visibility Portal</h1>
+      <p id="classification" class="classification">Internal</p>
+    </div>
+    <div class="updated"><span>Last refresh</span><strong id="updated">Loading</strong></div>
+  </header>
+  <main>
+    <section aria-labelledby="overview-heading">
+      <h2 id="overview-heading">Current security posture</h2>
+      <div id="overview" class="kpis" aria-live="polite"></div>
+    </section>
+    <section aria-labelledby="integrations-heading">
+      <div class="section-heading">
+        <div><h2 id="integrations-heading">Integrated tools and feeds</h2><p>Native consoles remain authoritative for investigation and administration.</p></div>
+        <label>Category <select id="category"><option value="all">All</option></select></label>
+      </div>
+      <div id="integrations" class="cards" aria-live="polite"></div>
+    </section>
+  </main>
+  <footer>Read-only visibility. No response or configuration actions are exposed by this portal.</footer>
+</body>
+</html>
