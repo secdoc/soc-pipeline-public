@@ -40,14 +40,14 @@ else
   "$engine" exec --env ANSIBLE_CORE_VERSION="$ansible_core_version" "$name" sh -ec 'apt-get update >/dev/null && DEBIAN_FRONTEND=noninteractive apt-get install -y "ansible-core=$ANSIBLE_CORE_VERSION" ca-certificates >/dev/null'
 fi
 
-if "$engine" exec "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml \
+if "$engine" exec --workdir /workspace/ansible "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml \
   -e soc_iac_apply_confirmed=false >"$output_dir/gate.out" 2>&1; then
   echo "refusal gate unexpectedly allowed soc_iac_apply_confirmed=false" >&2
   exit 1
 fi
 
-"$engine" exec "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml >"$output_dir/first.out"
-"$engine" exec "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml >"$output_dir/second.out"
+"$engine" exec --workdir /workspace/ansible "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml >"$output_dir/first.out"
+"$engine" exec --workdir /workspace/ansible "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml >"$output_dir/second.out"
 
 grep -Eq 'changed=0 .*failed=0' "$output_dir/second.out"
 printf 'common_baseline convergence passed; second run changed=0\n'

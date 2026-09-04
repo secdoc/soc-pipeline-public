@@ -39,7 +39,7 @@ else
   "$engine" exec --env ANSIBLE_CORE_VERSION="$ansible_core_version" --env ANSIBLE_LINT_VERSION="$ansible_lint_version" "$name" sh -ec 'apt-get update >/dev/null && DEBIAN_FRONTEND=noninteractive apt-get install -y "ansible-core=$ANSIBLE_CORE_VERSION" "ansible-lint=$ANSIBLE_LINT_VERSION" ca-certificates >/dev/null'
 fi
 
-"$engine" exec --workdir /workspace "$name" ansible-lint ansible
+"$engine" exec --workdir /workspace/ansible "$name" ansible-lint .
 for playbook in site.yml validate.yml wazuh_agents.yml; do
   "$engine" exec --workdir /workspace/ansible "$name" \
     ansible-playbook -i inventories/example/hosts.yml "playbooks/$playbook" --syntax-check

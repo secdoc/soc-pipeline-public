@@ -68,9 +68,13 @@ class ComponentDeploymentContractTests(unittest.TestCase):
 
     def test_ci_executes_native_ansible_and_convergence_gates(self):
         pipeline = self.read(".gitlab-ci.yml")
+        validation = self.read("ansible/tests/run_ansible_validation.sh")
+        convergence = self.read("ansible/tests/run_common_baseline_convergence.sh")
         self.assertIn("ansible-lint", pipeline)
         self.assertIn("ansible-playbook", pipeline)
         self.assertIn("run_common_baseline_convergence.sh", pipeline)
+        self.assertIn('--workdir /workspace/ansible "$name" ansible-lint .', validation)
+        self.assertGreaterEqual(convergence.count("--workdir /workspace/ansible"), 3)
 
     def test_templates_use_adopter_variables_not_fixed_topology(self):
         templates = {
