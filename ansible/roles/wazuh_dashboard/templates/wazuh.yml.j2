@@ -1,0 +1,7 @@
+hosts:
+  - default:
+      url: https://{{ hostvars[groups['wazuh_manager'][0]].ansible_host }}
+      port: 55000
+      username: wazuh-wui
+      password: "{{ wazuh_dashboard_api_password }}"
+      run_as: true

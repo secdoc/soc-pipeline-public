@@ -1,0 +1,48 @@
+global
+    log /dev/log local0
+    user haproxy
+    group haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    ssl-default-bind-options ssl-min-ver TLSv1.2
+    ssl-default-server-options ssl-min-ver TLSv1.2
+
+defaults
+    log global
+    mode tcp
+    timeout connect 5s
+    timeout client 1m
+    timeout server 1m
+
+frontend graylog_ui
+    bind 192.0.2.36:9000 ssl crt /etc/haproxy/certs/graylog-target.pem
+    default_backend graylog_core
+backend graylog_core
+    balance roundrobin
+{% for host in groups['graylog_core'] %}
+    server {{ host }} {{ hostvars[host].ansible_host }}:9000 ssl check check-sni {{ host }}.example.internal sni str({{ host }}.example.internal) verify required ca-file /etc/haproxy/ca/example-internal-ca.pem
+{% endfor %}
+frontend wazuh_agent
+    bind 192.0.2.39:1514
+    default_backend wazuh_agents
+backend wazuh_agents
+    balance leastconn
+{% for host in groups['wazuh_manager'] %}
+    server {{ host }} {{ hostvars[host].ansible_host }}:1514 check
+{% endfor %}
+frontend wazuh_enrollment_frontend
+    bind 192.0.2.39:1515
+    default_backend wazuh_enrollment
+backend wazuh_enrollment
+    server {{ groups['wazuh_manager'][0] }} {{ hostvars[groups['wazuh_manager'][0]].ansible_host }}:1515 check
+frontend wazuh_api_frontend
+    bind 192.0.2.39:55000 ssl crt /etc/haproxy/certs/wazuh-api.pem
+    default_backend wazuh_api
+backend wazuh_api
+    server {{ groups['wazuh_manager'][0] }} {{ hostvars[groups['wazuh_manager'][0]].ansible_host }}:55000 ssl check verify required ca-file /etc/haproxy/ca/wazuh-root-ca.pem verifyhost {{ groups['wazuh_manager'][0] }}
+frontend wazuh_dashboard
+    bind 192.0.2.40:443 ssl crt /etc/haproxy/certs/wazuh-dashboard.pem
+    default_backend wazuh_dashboards
+backend wazuh_dashboards
+{% for host in groups['wazuh_dashboard'] %}
+    server {{ host }} {{ hostvars[host].ansible_host }}:443 ssl check verify required ca-file /etc/haproxy/ca/wazuh-root-ca.pem verifyhost {{ host }}
+{% endfor %}

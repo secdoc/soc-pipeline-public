@@ -1,0 +1,6 @@
+---
+storage_mount_enabled: false
+storage_mount_source: ""
+storage_mount_path: ""
+storage_mount_fstype: ext4
+storage_mount_options: defaults,noatime,x-systemd.device-timeout=30s

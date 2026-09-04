@@ -32,6 +32,8 @@ repository-integrity:
               counts["shell"] += 1
       print(json.dumps({"status": "ok", "validated": counts}, sort_keys=True))
       PY
+    - /usr/bin/python3 -m unittest tests.test_iac_public_contract -v
+    - /usr/bin/python3 scripts/scrub_check.py .
 
 secret-pattern-history:
   stage: secret-scan

@@ -1,0 +1,3 @@
+---
+wazuh_indexer_config_path: /etc/wazuh-indexer/opensearch.yml
+wazuh_indexer_heap: 16g

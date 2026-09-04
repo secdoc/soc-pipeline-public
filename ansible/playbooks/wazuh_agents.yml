@@ -1,0 +1,11 @@
+---
+- name: Deploy one approved Wazuh agent target
+  hosts: wazuh_agent_targets
+  serial: 1
+  pre_tasks:
+    - name: Require explicit target and apply approval
+      ansible.builtin.assert:
+        that:
+          - soc_iac_apply_confirmed | bool
+          - wazuh_agent_change_id | default('') | length > 0
+  roles: [wazuh_agent]

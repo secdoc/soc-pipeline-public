@@ -1,0 +1,11 @@
+[Unit]
+Description=Schedule SOC collector {{ item.name }}
+
+[Timer]
+OnCalendar={{ item.schedule }}
+Persistent=true
+RandomizedDelaySec={{ item.randomized_delay | default('30s') }}
+Unit=soc-{{ item.name }}.service
+
+[Install]
+WantedBy=timers.target

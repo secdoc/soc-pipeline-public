@@ -3,3 +3,12 @@
 __pycache__/
 .venv/
 venv/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+backend.hcl
+imports.tf
+*.auto.tfvars
+!terraform/environments/example/soc.auto.tfvars.json
+vault.yml

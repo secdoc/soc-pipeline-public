@@ -1,0 +1,4 @@
+---
+shuffle_workflow_host: https://shuffle.example.internal:3443
+shuffle_workflow_evidence_dir: "{{ playbook_dir }}/../../exports/shuffle-ir/ansible"
+shuffle_workflow_activation_confirmed: false
