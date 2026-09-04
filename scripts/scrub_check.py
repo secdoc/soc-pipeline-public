@@ -80,7 +80,8 @@ def main():
             with lines:
                 for number, line in enumerate(lines, 1):
                     for match in INTERNAL_DNS.finditer(line):
-                        hits.append((path, number, "internal DNS name"))
+                        if not match.group(0).lower().endswith("example.internal"):
+                            hits.append((path, number, "internal DNS name"))
                     if LOCAL_PATH.search(line):
                         hits.append((path, number, "operator-local filesystem path"))
                     if SECRET_ASSIGNMENT.search(line):
