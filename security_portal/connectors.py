@@ -61,7 +61,8 @@ def _analytics(document: dict, paths: dict[str, str]) -> dict[str, Any]:
 def _source_state(document: dict, spec: dict) -> str:
     explicit = dotted_get(document, spec.get("state_path"), _MISSING)
     if explicit is not _MISSING:
-        return str(explicit).lower()
+        source_state = str(explicit).lower()
+        return (spec.get("state_map") or {}).get(source_state, source_state)
     healthy = dotted_get(document, spec.get("healthy_path"), _MISSING)
     if healthy is True:
         return "healthy"

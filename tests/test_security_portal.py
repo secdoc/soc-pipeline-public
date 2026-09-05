@@ -196,8 +196,94 @@ class ConfigTests(unittest.TestCase):
 
         self.assertEqual(config["integrations"][0]["id"], "api")
 
+    def test_load_config_rejects_invalid_state_map_target(self) -> None:
+        path = self.write_config(
+            {
+                "portal": {"title": "SOC", "refresh_seconds": 30},
+                "integrations": [
+                    {
+                        "id": "graylog",
+                        "name": "Graylog",
+                        "category": "soc",
+                        "connector": "json_file",
+                        "path": "/run/cerebro/latest.json",
+                        "state_path": "graylog.health",
+                        "state_map": {"green": "up"},
+                        "max_age_seconds": 60,
+                    }
+                ],
+            }
+        )
+
+        with self.assertRaisesRegex(ConfigError, "state_map"):
+            load_config(path)
+
+    def test_load_config_rejects_non_lowercase_state_map_key(self) -> None:
+        path = self.write_config(
+            {
+                "portal": {"title": "SOC", "refresh_seconds": 30},
+                "integrations": [{
+                    "id": "graylog", "name": "Graylog", "category": "soc",
+                    "connector": "json_file", "path": "/run/cerebro/latest.json",
+                    "state_path": "graylog.health", "state_map": {"GREEN": "healthy"},
+                    "max_age_seconds": 60,
+                }],
+            }
+        )
+
+        with self.assertRaisesRegex(ConfigError, "state_map"):
+            load_config(path)
+
 
 class ConnectorTests(unittest.TestCase):
+    def test_json_file_connector_maps_source_state_to_portal_state(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = Path(directory) / "latest.json"
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "collected_at": "2026-09-04T22:53:39Z",
+                        "graylog": {"health": "green", "nodes": 3},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            spec = {
+                "id": "graylog",
+                "name": "Graylog",
+                "category": "soc",
+                "connector": "json_file",
+                "path": str(evidence),
+                "collected_at_path": "collected_at",
+                "state_path": "graylog.health",
+                "state_map": {"green": "healthy", "yellow": "degraded", "red": "degraded"},
+                "summary_paths": {"nodes": "graylog.nodes"},
+                "max_age_seconds": 300,
+            }
+
+            result = collect_integration(spec, now=NOW)
+
+        self.assertEqual(result["state"], "healthy")
+        self.assertEqual(result["summary"]["nodes"], 3)
+
+    def test_state_map_degrades_yellow_and_red_and_stales_old_health(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = Path(directory) / "latest.json"
+            spec = {
+                "id": "graylog", "name": "Graylog", "category": "soc",
+                "connector": "json_file", "path": str(evidence),
+                "collected_at_path": "collected_at", "state_path": "health",
+                "state_map": {"green": "healthy", "yellow": "degraded", "red": "degraded"},
+                "max_age_seconds": 300,
+            }
+            for source_state in ("yellow", "red"):
+                evidence.write_text(json.dumps({"collected_at": "2026-09-04T22:53:39Z", "health": source_state}))
+                self.assertEqual(collect_integration(spec, now=NOW)["state"], "degraded")
+            evidence.write_text(json.dumps({"collected_at": "2026-09-04T22:40:00Z", "health": "green"}))
+            self.assertEqual(collect_integration(spec, now=NOW)["state"], "stale")
+            evidence.write_text(json.dumps({"collected_at": "2026-09-04T22:53:39Z", "health": "blue"}))
+            self.assertEqual(collect_integration(spec, now=NOW)["state"], "unknown")
+
     def test_json_file_connector_exposes_only_allowlisted_aggregate_analytics(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             evidence = Path(directory) / "latest.json"

@@ -64,6 +64,13 @@ def load_config(path: Path) -> dict:
                 for key, value in paths.items()
             ):
                 raise ConfigError(f"integration {integration_id} has invalid {field}")
+        state_map = spec.get("state_map", {})
+        if not isinstance(state_map, dict) or not all(
+            isinstance(key, str) and key and key == key.lower()
+            and isinstance(value, str) and value in _ALLOWED_STATES
+            for key, value in state_map.items()
+        ):
+            raise ConfigError(f"integration {integration_id} has invalid state_map")
         if spec.get("deep_link") is not None:
             _web_url(spec["deep_link"], "deep_link")
         if connector == "json_file" and not isinstance(spec.get("path"), str):

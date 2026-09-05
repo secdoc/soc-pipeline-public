@@ -97,7 +97,7 @@ Do not bind to a network address. Put an authenticated TLS reverse proxy in fron
 
 Every integration requires a unique `id`, display `name`, `category`, connector type, and positive `max_age_seconds`.
 
-JSON-file connectors require a path and should use a dedicated producer-generated snapshot. Grant the portal account read-only access only to the exact snapshot directory.
+JSON-file connectors require a path and should use a dedicated producer-generated snapshot. Grant the portal account read-only access only to the exact snapshot directory. When a source uses native state names, `state_map` may translate exact lower-case source values into the portal's validated state vocabulary. Unmapped or invalid values remain `unknown`.
 
 HTTP JSON connectors require `url` and `allowed_origins`. An origin is matched by exact scheme, host, and effective port. Only GET is supported and redirects are refused. Normal certificate validation is enabled. Use `ca_file` for a private CA. `header_env` maps an HTTP header name to an environment variable name. Secret values never belong in the JSON config.
 
