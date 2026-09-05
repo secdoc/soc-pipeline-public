@@ -30,19 +30,20 @@
       "id": "vulnerability-scanner",
       "name": "Vulnerability Scanner",
       "category": "Vulnerability",
-      "connector": "http_json",
-      "url": "https://scanner.example.com/api/health",
-      "allowed_origins": ["https://scanner.example.com:443"],
-      "header_env": {"Authorization": "SCANNER_AUTHORIZATION"},
-      "collected_at_path": "generated_at",
-      "state_path": "state",
-      "state_map": {"ok": "healthy", "warning": "degraded", "critical": "degraded"},
+      "connector": "json_file",
+      "path": "/var/lib/cerebro/snapshots/vulnerability-health.json",
+      "collected_at_path": "collected_at",
+      "healthy_path": "healthy",
       "summary_paths": {
-        "critical_findings": "summary.critical",
-        "high_findings": "summary.high"
+        "total_findings": "total_findings",
+        "affected_hosts": "affected_hosts",
+        "critical_findings": "severity.critical",
+        "high_findings": "severity.high",
+        "medium_findings": "severity.medium",
+        "low_findings": "severity.low",
+        "latest_scan_end": "latest_scan_end"
       },
-      "timeout_seconds": 5,
-      "max_age_seconds": 3600,
+      "max_age_seconds": 691200,
       "deep_link": "https://scanner.example.com/"
     },
     {

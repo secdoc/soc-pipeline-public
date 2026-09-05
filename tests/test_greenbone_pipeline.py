@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -147,6 +148,32 @@ class GreenbonePipelineTests(unittest.TestCase):
         expected = dict(event)
         expected["event_hash"] = self.module.stable_event_hash(event)
         self.assertEqual(expected, json.loads(payload))
+
+    def test_health_snapshot_contains_only_bounded_aggregates(self):
+        findings = [
+            {"host": "192.0.2.10", "severity": 9.8, "scan_end": "2026-09-05T06:00:00Z", "name": "finding text"},
+            {"host": "192.0.2.10", "severity": 7.2, "scan_end": "2026-09-05T06:00:00Z", "cves": ["CVE-2026-0001"]},
+            {"host": "192.0.2.20", "severity": 5.0, "scan_end": "2026-09-04T06:00:00Z"},
+            {"host": "192.0.2.30", "severity": 2.0, "scan_end": ""},
+        ]
+        snapshot = self.module.build_health_snapshot(
+            findings, 3, 2, 2, datetime(2026, 9, 5, 7, 0, tzinfo=timezone.utc)
+        )
+        self.assertEqual(snapshot["severity"], {"critical": 1, "high": 1, "medium": 1, "low": 1})
+        self.assertEqual(snapshot["affected_hosts"], 3)
+        self.assertEqual(snapshot["total_findings"], 4)
+        serialized = json.dumps(snapshot)
+        self.assertNotIn("192.0.2.10", serialized)
+        self.assertNotIn("CVE-2026-0001", serialized)
+        self.assertNotIn("finding text", serialized)
+
+    def test_health_snapshot_write_is_atomic(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "latest.json"
+            snapshot = {"collected_at": "2026-09-05T07:00:00Z", "healthy": True}
+            self.module.save_health_snapshot(target, snapshot)
+            self.assertEqual(json.loads(target.read_text()), snapshot)
+            self.assertFalse(target.with_suffix(".json.tmp").exists())
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ Env (from ~/.config/soc-pipeline/env): GVM_USER, GVM_PASS, GRAYLOG_HOST,
   WAZUH_SSH_USER, WAZUH_SSH_HOST, WAZUH_SSH_KEY
 """
 import argparse
+import datetime as dt
 import hashlib
 import http.client
 import json
@@ -285,6 +286,50 @@ def save_state(path, delivered):
     os.replace(temporary, target)
 
 
+def build_health_snapshot(findings, task_count, new_findings, delivered, collected_at=None):
+    """Return a bounded aggregate snapshot suitable for a read-only portal."""
+    severity = {"critical": 0, "high": 0, "medium": 0, "low": 0}
+    hosts = set()
+    scan_ends = []
+    for finding in findings:
+        hosts.add(str(finding.get("host", "")))
+        scan_end = finding.get("scan_end")
+        if isinstance(scan_end, str) and scan_end:
+            scan_ends.append(scan_end)
+        try:
+            score = float(finding.get("severity", 0))
+        except (TypeError, ValueError):
+            score = 0.0
+        if score >= 9:
+            severity["critical"] += 1
+        elif score >= 7:
+            severity["high"] += 1
+        elif score >= 4:
+            severity["medium"] += 1
+        else:
+            severity["low"] += 1
+    timestamp = collected_at or dt.datetime.now(dt.timezone.utc)
+    return {
+        "collected_at": timestamp.astimezone(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "healthy": True,
+        "total_findings": len(findings),
+        "affected_hosts": len(hosts - {""}),
+        "task_count": task_count,
+        "latest_scan_end": max(scan_ends, default=""),
+        "new_findings": new_findings,
+        "delivered": delivered,
+        "severity": severity,
+    }
+
+
+def save_health_snapshot(path, snapshot):
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    temporary.write_text(json.dumps(snapshot, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(temporary, target)
+
+
 def deliver_then_commit(state_path, delivered, events, deliveries):
     results = {name: deliver(events) for name, deliver in deliveries}
     updated = set(delivered)
@@ -308,6 +353,7 @@ def main():
     ap.add_argument("--no-graylog", action="store_true")
     ap.add_argument("--no-wazuh", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--health-output")
     args = ap.parse_args()
 
     env = load_env()
@@ -321,6 +367,7 @@ def main():
     if not jl:
         print("no findings file produced"); return
     findings = [json.loads(l) for l in open(os.path.join(workdir, jl[-1])) if l.strip()]
+    task_count = len({str(finding.get("task", "")) for finding in findings} - {""})
 
     # 2. dedupe against delivered state
     delivered = set()
@@ -333,6 +380,8 @@ def main():
         print("dry-run: would deliver", len(new), "new findings")
         return
     if not new:
+        if args.health_output:
+            save_health_snapshot(args.health_output, build_health_snapshot(findings, task_count, 0, 0))
         print("nothing new to deliver"); return
 
     endpoints = resolve_graylog_endpoints(
@@ -398,6 +447,11 @@ def main():
         f"delivered {len(new)} new findings; state now tracks {len(delivered)} keys:",
         json.dumps(results, sort_keys=True),
     )
+    if args.health_output:
+        save_health_snapshot(
+            args.health_output,
+            build_health_snapshot(findings, task_count, len(new), len(new)),
+        )
 
 if __name__ == "__main__":
     main()

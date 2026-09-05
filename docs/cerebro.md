@@ -99,6 +99,8 @@ Every integration requires a unique `id`, display `name`, `category`, connector 
 
 JSON-file connectors require a path and should use a dedicated producer-generated snapshot. Grant the portal account read-only access only to the exact snapshot directory. When a source uses native state names, `state_map` may translate exact lower-case source values into the portal's validated state vocabulary. Unmapped or invalid values remain `unknown`.
 
+For vulnerability scanners, the Greenbone runner can write a bounded aggregate with `--health-output`. The snapshot contains counts and timestamps only. It excludes host identifiers, CVEs, report IDs, finding names, descriptions, credentials, and raw source responses. The runner publishes it atomically only after required downstream deliveries succeed, so a failed cycle preserves the prior last-known-good snapshot and becomes stale rather than falsely healthy.
+
 HTTP JSON connectors require `url` and `allowed_origins`. An origin is matched by exact scheme, host, and effective port. Only GET is supported and redirects are refused. Normal certificate validation is enabled. Use `ca_file` for a private CA. `header_env` maps an HTTP header name to an environment variable name. Secret values never belong in the JSON config.
 
 Static connectors are explicit catalog entries. Use `planned` when a tool is linked but has no data connector. A static entry is not health evidence.
