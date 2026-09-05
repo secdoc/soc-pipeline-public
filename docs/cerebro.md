@@ -2,7 +2,7 @@
 
 Status: deployable reference implementation  
 Classification: adopter-defined  
-State date: 2026-09-04 UTC
+State date: 2026-09-05 UTC
 
 ## Purpose
 
@@ -19,7 +19,7 @@ The live secdoc.tech CSS supplied the visual tokens: accent `#b28b30`, logo gold
 ## What is implemented
 
 * Dependency-free Python service and self-contained browser UI.
-* Versioned JSON API and process health routes.
+* Versioned JSON API, machine-readable response schema, and process health routes.
 * JSON-file, HTTPS JSON GET, and explicit static catalog connectors.
 * Exact scheme, host, and port allowlists for HTTP connectors.
 * Redirect refusal so credentials do not cross to an unreviewed target.
@@ -96,6 +96,8 @@ Do not bind to a network address. Put an authenticated TLS reverse proxy in fron
 ## Configuration contract
 
 Every integration requires a unique `id`, display `name`, `category`, connector type, and positive `max_age_seconds`.
+
+The adopter-facing provider workflow, canonical fields, compatibility rules, acceptance tests, and examples are defined in [`cerebro-provider-integration.md`](cerebro-provider-integration.md). The normative response schema is [`cerebro-integration-v1.schema.json`](../contracts/cerebro-integration-v1.schema.json). The API also returns its stable vocabulary in `data_contract` so clients can inspect the implemented contract.
 
 JSON-file connectors require a path and should use a dedicated producer-generated snapshot. Grant the portal account read-only access only to the exact snapshot directory. When a source uses native state names, `state_map` may translate exact lower-case source values into the portal's validated state vocabulary. Unmapped or invalid values remain `unknown`.
 

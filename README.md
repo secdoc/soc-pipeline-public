@@ -33,7 +33,7 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Cerebro
 
-Cerebro is the deployable read-only security visibility layer under `security_portal/`. It aggregates allowlisted summaries, shows freshness and failure states, and links to native consoles without replacing them. Start with [`config/cerebro.example.json`](config/cerebro.example.json) and [`docs/cerebro.md`](docs/cerebro.md).
+Cerebro is the deployable read-only security visibility layer under `security_portal/`. It aggregates allowlisted summaries, shows freshness and failure states, and links to native consoles without replacing them. Its provider contract is versioned as `cerebro.integration.v1` and defined by a machine-readable JSON Schema. Start with [`config/cerebro.example.json`](config/cerebro.example.json), [`docs/cerebro.md`](docs/cerebro.md), and the [`provider integration guide`](docs/cerebro-provider-integration.md).
 
 ## Architecture
 
@@ -59,7 +59,7 @@ Tracked on the [public project board](https://github.com/users/secdoc/projects/3
 
 ## Implementation status
 
-Status below reflects verified work through **2026-09-04**. It distinguishes the tested implementation from artifacts generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
+Status below reflects verified work through **2026-09-05**. It distinguishes the tested implementation from artifacts generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
 
 | Phase | Verified implementation checkpoint | Public artifact status |
 |---|---|---|
@@ -69,7 +69,7 @@ Status below reflects verified work through **2026-09-04**. It distinguishes the
 | P4, enrich and respond | Local-observation enrichment, anti-flood alerting, read-only egress hunting, threat-intelligence context, and enrichment-first SOAR are active. Automatic blocking and host isolation are not enabled. | Core transactional and migration tooling is published. Portable DFIR [investigation and isolation](https://github.com/secdoc/soc-pipeline-public/issues/17) remains open. Default-deny egress is [held](https://github.com/secdoc/soc-pipeline-public/issues/24) until visibility and dependency prerequisites are met. |
 | P5, reproduce and publish | A consolidated article has been drafted from tested implementation. Live Terraform adoption and the complete adopter lab remain controlled follow-on work. | The Terraform scaffold and non-mutating Ansible skeletons satisfy [issue 11](https://github.com/secdoc/soc-pipeline-public/issues/11). Complete clean-environment idempotent deployment roles remain open in [issue 18](https://github.com/secdoc/soc-pipeline-public/issues/18), along with the sanitized [build guide](https://github.com/secdoc/soc-pipeline-public/issues/8) and [article publication](https://github.com/secdoc/soc-pipeline-public/issues/9). |
 
-The enterprise Graylog and Wazuh migration is operationally advanced but not represented here as a turnkey cluster installer. Source cutover, high-availability frontends, health checks, backup and restore controls, parser recovery, certificate rotation, and progressive agent migration have been exercised. Remaining endpoint migration, historical-data decisions, and decommission gates are not complete.
+The enterprise Graylog and Wazuh migration is operationally advanced but not represented here as a turnkey cluster installer. Seven source lanes use target-only enterprise delivery, and the retired Graylog and Wazuh systems were deleted after verified recovery backups. High-availability frontends, health checks, backup and restore controls, parser recovery, certificate rotation, and progressive agent migration have been exercised. Remaining endpoint coverage and historical-data policy decisions are separate follow-on work.
 
 ## Safety model
 

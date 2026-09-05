@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/secdoc/soc-pipeline-public/blob/main/contracts/cerebro-integration-v1.schema.json",
+  "title": "Cerebro Integration API v1 response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "data_contract", "portal", "overview", "integrations"],
+  "properties": {
+    "schema_version": {"const": "cerebro.integration.v1"},
+    "data_contract": {"$ref": "#/$defs/data_contract"},
+    "portal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "refresh_seconds", "classification"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "refresh_seconds": {"type": "integer", "minimum": 10, "maximum": 3600},
+        "classification": {"type": "string", "minLength": 1}
+      }
+    },
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generated_at", "state", "integration_count", "nonhealthy_count", "critical_alerts", "counts"],
+      "properties": {
+        "generated_at": {"$ref": "#/$defs/timestamp"},
+        "state": {"enum": ["healthy", "degraded", "unknown"]},
+        "integration_count": {"type": "integer", "minimum": 0},
+        "nonhealthy_count": {"type": "integer", "minimum": 0},
+        "critical_alerts": {"type": "number", "minimum": 0},
+        "counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "integrations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/integration"}
+    }
+  },
+  "$defs": {
+    "timestamp": {"type": "string", "format": "date-time"},
+    "nullable_timestamp": {"anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]},
+    "state": {"enum": ["healthy", "degraded", "stale", "unavailable", "unauthorized", "unknown", "planned"]},
+    "freshness": {"enum": ["fresh", "stale", "unknown"]},
+    "nullable_nonnegative_integer": {
+      "anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]
+    },
+    "nullable_string": {
+      "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_system", "source_kind", "source_owner", "collection_cadence_seconds"],
+      "properties": {
+        "source_system": {"type": "string", "minLength": 1},
+        "source_kind": {"enum": ["sanitized_snapshot", "read_only_api", "catalog", "unknown"]},
+        "source_owner": {"$ref": "#/$defs/nullable_string"},
+        "collection_cadence_seconds": {
+          "anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]
+        }
+      }
+    },
+    "connector_health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "freshness", "last_success_at", "collection_duration_ms", "record_count", "reason_code"],
+      "properties": {
+        "state": {"$ref": "#/$defs/state"},
+        "freshness": {"$ref": "#/$defs/freshness"},
+        "last_success_at": {"$ref": "#/$defs/nullable_timestamp"},
+        "collection_duration_ms": {"$ref": "#/$defs/nullable_nonnegative_integer"},
+        "record_count": {"$ref": "#/$defs/nullable_nonnegative_integer"},
+        "reason_code": {"$ref": "#/$defs/nullable_string"}
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "label", "provenance"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {"enum": ["ip_address", "asset", "alert", "finding", "cve", "threat_model", "attack_technique", "atlas_technique", "source_system"]},
+        "label": {"type": "string", "minLength": 1},
+        "attributes": {"type": "object"},
+        "provenance": {"$ref": "#/$defs/provenance"}
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "source_ref", "target_ref", "provenance"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {"enum": ["affects", "associated_with", "detected_by", "maps_to", "observed_by", "supports"]},
+        "source_ref": {"type": "string", "minLength": 1},
+        "target_ref": {"type": "string", "minLength": 1},
+        "attributes": {"type": "object"},
+        "provenance": {"$ref": "#/$defs/provenance"}
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "category", "state", "freshness", "collected_at", "age_seconds", "max_age_seconds", "summary", "deep_link", "provenance", "connector_health", "entities", "relationships"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "category": {"type": "string", "minLength": 1},
+        "state": {"$ref": "#/$defs/state"},
+        "freshness": {"$ref": "#/$defs/freshness"},
+        "collected_at": {"$ref": "#/$defs/nullable_timestamp"},
+        "age_seconds": {"$ref": "#/$defs/nullable_nonnegative_integer"},
+        "max_age_seconds": {"type": "integer", "minimum": 1},
+        "summary": {"type": "object"},
+        "deep_link": {
+          "anyOf": [
+            {"type": "string", "format": "uri", "pattern": "^https?://"},
+            {"type": "null"}
+          ]
+        },
+        "analytics": {"type": "object"},
+        "reason_code": {"type": "string", "minLength": 1},
+        "detail": {"type": "string", "minLength": 1},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "connector_health": {"$ref": "#/$defs/connector_health"},
+        "entities": {"type": "array", "items": {"$ref": "#/$defs/entity"}},
+        "relationships": {"type": "array", "items": {"$ref": "#/$defs/relationship"}}
+      }
+    },
+    "data_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_types", "relationship_types", "entity_required_fields", "relationship_required_fields", "provenance_fields", "connector_health_fields"],
+      "properties": {
+        "entity_types": {"const": ["ip_address", "asset", "alert", "finding", "cve", "threat_model", "attack_technique", "atlas_technique", "source_system"]},
+        "relationship_types": {"const": ["affects", "associated_with", "detected_by", "maps_to", "observed_by", "supports"]},
+        "entity_required_fields": {"const": ["id", "type", "label", "provenance"]},
+        "relationship_required_fields": {"const": ["id", "type", "source_ref", "target_ref", "provenance"]},
+        "provenance_fields": {"const": ["source_system", "source_kind", "source_owner", "collection_cadence_seconds"]},
+        "connector_health_fields": {"const": ["state", "freshness", "last_success_at", "collection_duration_ms", "record_count", "reason_code"]}
+      }
+    }
+  }
+}
