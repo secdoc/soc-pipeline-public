@@ -6,9 +6,9 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 User={{ item.user | default('root') }}
-ExecStart={{ item.command }}
+ExecStart={{ soc_collector_executable_checks.results[soc_collector_job_index].stdout }}{% for argument in item.arguments | default([]) %} {{ argument }}{% endfor %}
 PrivateTmp=true
 NoNewPrivileges=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths={{ item.write_paths | default(['/var/lib/example-soc', '/var/log/example-soc']) | join(' ') }}
+ReadWritePaths={{ soc_collector_write_path_checks.results[soc_collector_job_index].stdout }}

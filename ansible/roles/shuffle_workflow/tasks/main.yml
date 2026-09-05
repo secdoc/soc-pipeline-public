@@ -1,8 +1,38 @@
 ---
-- name: Keep the public shuffle_workflow role skeleton non-mutating
+- name: Require explicit workflow activation approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - shuffle_workflow_activation_confirmed | bool
+      - shuffle_workflow_api_key is defined
+      - shuffle_workflow_api_key | string | length >= 20
+      - shuffle_workflow_host is match('^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?$')
+  no_log: true
+
+- name: Validate adopter-supplied workflow contracts
+  ansible.builtin.assert:
+    that:
+      - item.name is match('^[A-Za-z0-9_. -]+$')
+      - item.endpoint is match('^/api/[A-Za-z0-9_./-]+$')
+      - "'..' not in item.endpoint"
+      - (item.method | default('PUT')) in ['POST', 'PUT', 'PATCH']
+      - item.definition is mapping
+  loop: "{{ shuffle_workflow_definitions }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+
+- name: Reconcile approved Shuffle workflows
+  ansible.builtin.uri:
+    url: "{{ shuffle_workflow_host }}{{ item.endpoint }}"
+    method: "{{ item.method | default('PUT') }}"
+    headers:
+      Authorization: "Bearer {{ shuffle_workflow_api_key }}"
+    body_format: json
+    body: "{{ item.definition }}"
+    status_code: "{{ item.status_codes | default([200, 201]) }}"
+    validate_certs: true
+  loop: "{{ shuffle_workflow_definitions }}"
+  register: shuffle_workflow_reconcile
+  changed_when: shuffle_workflow_reconcile.status == 201
+  no_log: true

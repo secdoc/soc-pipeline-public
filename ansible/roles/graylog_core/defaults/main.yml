@@ -1,3 +1,16 @@
 ---
 graylog_core_package_version: "7.1.8-1"
+graylog_core_package_name: graylog-server
+graylog_core_install_package: true
+graylog_core_update_cache: false
 graylog_core_config_path: /etc/graylog/server/server.conf
+graylog_core_service_name: graylog-server
+graylog_core_domain: example.internal
+graylog_core_bind_address: "{{ ansible_host }}"
+graylog_core_http_port: 9000
+graylog_core_tls_certificate: /etc/graylog/server/tls/server-chain.pem
+graylog_core_tls_key: /etc/graylog/server/tls/server-key.pem
+graylog_core_journal_path: /var/lib/graylog-server/journal/data
+graylog_core_journal_max_age: 72h
+graylog_core_journal_max_size: 80gb
+graylog_core_validation_command: []

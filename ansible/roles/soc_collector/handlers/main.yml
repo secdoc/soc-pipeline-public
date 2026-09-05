@@ -1,2 +1,6 @@
 ---
-[]
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  when: soc_iac_restart_confirmed | bool
+  listen: Reload systemd

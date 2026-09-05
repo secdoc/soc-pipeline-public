@@ -2,3 +2,21 @@
 siem_edge_keepalived_priority: "{{ keepalived_priority | default(100) }}"
 siem_edge_keepalived_peer: "{{ keepalived_peer | default('') }}"
 siem_edge_interface: eth0
+siem_edge_install_packages: true
+siem_edge_haproxy_version: ""
+siem_edge_keepalived_version: ""
+siem_edge_update_cache: false
+siem_edge_activation_confirmed: false
+siem_edge_domain: example.internal
+siem_edge_prefix_length: 25
+siem_edge_graylog_vip: 192.0.2.36
+siem_edge_wazuh_vip: 192.0.2.39
+siem_edge_dashboard_vip: 192.0.2.40
+siem_edge_graylog_certificate: /etc/haproxy/certs/graylog.pem
+siem_edge_wazuh_api_certificate: /etc/haproxy/certs/wazuh-api.pem
+siem_edge_dashboard_certificate: /etc/haproxy/certs/wazuh-dashboard.pem
+siem_edge_graylog_ca: /etc/haproxy/ca/graylog-ca.pem
+siem_edge_wazuh_ca: /etc/haproxy/ca/wazuh-ca.pem
+siem_edge_haproxy_config_path: /etc/haproxy/haproxy.cfg
+siem_edge_keepalived_config_path: /etc/keepalived/keepalived.conf
+siem_edge_health_check_path: /usr/local/sbin/check-haproxy-backend

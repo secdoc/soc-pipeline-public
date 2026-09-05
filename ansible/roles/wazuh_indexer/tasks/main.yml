@@ -1,8 +1,75 @@
 ---
-- name: Keep the public wazuh_indexer role skeleton non-mutating
+- name: Require explicit apply and restart approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - soc_iac_restart_confirmed | bool
+      - groups['wazuh_indexer'] | length == wazuh_indexer_expected_nodes | int
+      - not (wazuh_indexer_install_package | bool) or wazuh_indexer_package_version | length > 0
+      - wazuh_indexer_validation_command | length > 0
+
+- name: Install the adopter-selected Wazuh indexer package
+  ansible.builtin.apt:
+    name: "{{ wazuh_indexer_package_name }}{{ ('=' + wazuh_indexer_package_version) if wazuh_indexer_package_version | length > 0 else '' }}"
+    state: present
+    update_cache: "{{ wazuh_indexer_update_cache | bool }}"
+    policy_rc_d: 101
+  when: wazuh_indexer_install_package | bool
+
+- name: Create protected indexer candidate directory
+  ansible.builtin.file:
+    path: "{{ soc_iac_candidate_root }}/wazuh-indexer"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Render Wazuh indexer candidate
+  ansible.builtin.template:
+    src: opensearch.yml.j2
+    dest: "{{ soc_iac_candidate_root }}/wazuh-indexer/opensearch.yml"
+    owner: wazuh-indexer
+    group: wazuh-indexer
+    mode: "0640"
+
+- name: Validate and activate the indexer candidate
+  when: not ansible_check_mode
+  block:
+    - name: Validate the candidate Wazuh indexer configuration
+      ansible.builtin.command:
+        argv: "{{ wazuh_indexer_validation_command + [soc_iac_candidate_root + '/wazuh-indexer/opensearch.yml'] }}"
+      changed_when: false
+    - name: Install the validated Wazuh indexer configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/wazuh-indexer/opensearch.yml"
+        dest: "{{ wazuh_indexer_config_path }}"
+        remote_src: true
+        owner: wazuh-indexer
+        group: wazuh-indexer
+        mode: "0640"
+        backup: true
+      register: wazuh_indexer_active_copy
+      notify: Restart Wazuh indexer
+  rescue:
+    - name: Restore prior Wazuh indexer configuration
+      ansible.builtin.copy:
+        src: "{{ wazuh_indexer_active_copy.backup_file }}"
+        dest: "{{ wazuh_indexer_config_path }}"
+        remote_src: true
+        owner: wazuh-indexer
+        group: wazuh-indexer
+        mode: "0640"
+      when:
+        - wazuh_indexer_active_copy is defined
+        - wazuh_indexer_active_copy.backup_file is defined
+    - name: Remove newly created Wazuh indexer configuration
+      ansible.builtin.file:
+        path: "{{ wazuh_indexer_config_path }}"
+        state: absent
+      when:
+        - wazuh_indexer_active_copy is defined
+        - wazuh_indexer_active_copy.changed | default(false)
+        - wazuh_indexer_active_copy.backup_file is not defined
+    - name: Stop after Wazuh indexer rollback
+      ansible.builtin.fail:
+        msg: Indexer candidate validation or activation failed; prior configuration was restored when available.

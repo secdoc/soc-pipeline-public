@@ -1,8 +1,32 @@
 ---
-- name: Keep the public common_baseline role skeleton non-mutating
+- name: Require explicit apply approval
   ansible.builtin.assert:
-    that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+    that: soc_iac_apply_confirmed | bool
+    fail_msg: Set soc_iac_apply_confirmed=true only for an approved adopter-owned target.
+
+- name: Require a supported Debian-family target
+  ansible.builtin.assert:
+    that: ansible_facts.os_family == "Debian"
+
+- name: Install baseline packages
+  ansible.builtin.apt:
+    name: "{{ common_baseline_packages }}"
+    state: present
+    update_cache: "{{ common_baseline_update_cache | bool }}"
+    policy_rc_d: 101
+
+- name: Create the protected configuration backup root
+  ansible.builtin.file:
+    path: "{{ soc_iac_backup_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Create the protected candidate configuration root
+  ansible.builtin.file:
+    path: "{{ soc_iac_candidate_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"

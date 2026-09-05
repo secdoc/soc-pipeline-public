@@ -4,19 +4,19 @@ global_defs {
     enable_script_security
 }
 vrrp_script chk_graylog {
-    script "/usr/local/sbin/check-haproxy-backend graylog_core"
+    script "{{ siem_edge_health_check_path }} graylog_core"
     interval 2
     fall 2
     rise 2
 }
 vrrp_script chk_wazuh {
-    script "/usr/local/sbin/check-haproxy-backend wazuh_agents"
+    script "{{ siem_edge_health_check_path }} wazuh_agents"
     interval 2
     fall 2
     rise 2
 }
 vrrp_script chk_dashboard {
-    script "/usr/local/sbin/check-haproxy-backend wazuh_dashboards"
+    script "{{ siem_edge_health_check_path }} wazuh_dashboards"
     interval 2
     fall 2
     rise 2
@@ -30,7 +30,7 @@ vrrp_instance VI_GRAYLOG {
     advert_int 1
     unicast_src_ip {{ ansible_host }}
     unicast_peer { {{ siem_edge_keepalived_peer }} }
-    virtual_ipaddress { 192.0.2.36/25 dev {{ siem_edge_interface }} }
+    virtual_ipaddress { {{ siem_edge_graylog_vip }}/{{ siem_edge_prefix_length }} dev {{ siem_edge_interface }} }
     track_script { chk_graylog }
 }
 vrrp_instance VI_WAZUH {
@@ -42,7 +42,7 @@ vrrp_instance VI_WAZUH {
     advert_int 1
     unicast_src_ip {{ ansible_host }}
     unicast_peer { {{ siem_edge_keepalived_peer }} }
-    virtual_ipaddress { 192.0.2.39/25 dev {{ siem_edge_interface }} }
+    virtual_ipaddress { {{ siem_edge_wazuh_vip }}/{{ siem_edge_prefix_length }} dev {{ siem_edge_interface }} }
     track_script { chk_wazuh }
 }
 vrrp_instance VI_DASHBOARD {
@@ -54,6 +54,6 @@ vrrp_instance VI_DASHBOARD {
     advert_int 1
     unicast_src_ip {{ ansible_host }}
     unicast_peer { {{ siem_edge_keepalived_peer }} }
-    virtual_ipaddress { 192.0.2.40/25 dev {{ siem_edge_interface }} }
+    virtual_ipaddress { {{ siem_edge_dashboard_vip }}/{{ siem_edge_prefix_length }} dev {{ siem_edge_interface }} }
     track_script { chk_dashboard }
 }

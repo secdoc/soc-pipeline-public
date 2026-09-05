@@ -1,8 +1,86 @@
 ---
-- name: Keep the public graylog_datanode role skeleton non-mutating
+- name: Require explicit apply and restart approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - soc_iac_restart_confirmed | bool
+
+- name: Validate protected Graylog Data Node inputs
+  ansible.builtin.assert:
+    that:
+      - graylog_datanode_password_secret is defined
+      - graylog_datanode_password_secret | string | length >= 16
+      - graylog_datanode_mongodb_uri is defined
+      - graylog_datanode_mongodb_uri is match('^mongodb://')
+      - graylog_datanode_validation_command | length > 0
+  no_log: true
+
+- name: Install the adopter-selected Graylog Data Node package
+  ansible.builtin.apt:
+    name: "{{ graylog_datanode_package_name }}={{ graylog_datanode_package_version }}"
+    state: present
+    update_cache: "{{ graylog_datanode_update_cache | bool }}"
+    policy_rc_d: 101
+  when: graylog_datanode_install_package | bool
+
+- name: Create protected Data Node candidate directory
+  ansible.builtin.file:
+    path: "{{ soc_iac_candidate_root }}/graylog-datanode"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Render Graylog Data Node candidate
+  ansible.builtin.template:
+    src: datanode.conf.j2
+    dest: "{{ soc_iac_candidate_root }}/graylog-datanode/datanode.conf"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Validate and activate the Data Node candidate
+  when: not ansible_check_mode
+  block:
+    - name: Validate the candidate Data Node configuration
+      ansible.builtin.command:
+        argv: "{{ graylog_datanode_validation_command + [soc_iac_candidate_root + '/graylog-datanode/datanode.conf'] }}"
+      changed_when: false
+      no_log: true
+    - name: Install the validated Data Node configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/graylog-datanode/datanode.conf"
+        dest: "{{ graylog_datanode_config_path }}"
+        remote_src: true
+        owner: root
+        group: graylog-datanode
+        mode: "0640"
+        backup: true
+      register: graylog_datanode_active_copy
+      no_log: true
+      notify: Restart Graylog Data Node
+  rescue:
+    - name: Restore prior Data Node configuration
+      ansible.builtin.copy:
+        src: "{{ graylog_datanode_active_copy.backup_file }}"
+        dest: "{{ graylog_datanode_config_path }}"
+        remote_src: true
+        owner: root
+        group: graylog-datanode
+        mode: "0640"
+      when:
+        - graylog_datanode_active_copy is defined
+        - graylog_datanode_active_copy.backup_file is defined
+      no_log: true
+    - name: Remove newly created Data Node configuration
+      ansible.builtin.file:
+        path: "{{ graylog_datanode_config_path }}"
+        state: absent
+      when:
+        - graylog_datanode_active_copy is defined
+        - graylog_datanode_active_copy.changed | default(false)
+        - graylog_datanode_active_copy.backup_file is not defined
+    - name: Stop after Data Node candidate rollback
+      ansible.builtin.fail:
+        msg: Data Node candidate validation or activation failed; prior configuration was restored when available.

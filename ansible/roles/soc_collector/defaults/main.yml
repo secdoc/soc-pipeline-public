@@ -1,3 +1,6 @@
 ---
 soc_collector_root: /opt/example/soc-pipeline
 soc_collector_jobs: []
+soc_collector_activation_confirmed: false
+soc_collector_default_write_paths: [/var/lib/example-soc, /var/log/example-soc]
+soc_collector_allowed_write_roots: [/var/lib/example-soc, /var/log/example-soc]

@@ -1,2 +1,7 @@
 ---
-[]
+- name: Restart Wazuh agent
+  ansible.builtin.systemd_service:
+    name: "{{ wazuh_agent_service_name }}"
+    state: restarted
+  when: soc_iac_restart_confirmed | bool
+  listen: Restart Wazuh agent

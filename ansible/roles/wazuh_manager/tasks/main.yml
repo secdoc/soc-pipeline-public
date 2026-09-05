@@ -1,8 +1,181 @@
 ---
-- name: Keep the public wazuh_manager role skeleton non-mutating
+- name: Require explicit apply and restart approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - soc_iac_restart_confirmed | bool
+      - not (wazuh_manager_install_package | bool) or wazuh_manager_package_version | length > 0
+
+- name: Validate protected Wazuh manager configuration
+  ansible.builtin.assert:
+    that:
+      - wazuh_manager_config_content is defined
+      - "'<ossec_config>' in wazuh_manager_config_content"
+      - "'</ossec_config>' in wazuh_manager_config_content"
+  no_log: true
+
+- name: Validate adopter artifact paths
+  ansible.builtin.assert:
+    that:
+      - item.src is match('^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$')
+      - "'..' not in item.src"
+      - item.dest is match('^/var/ossec/etc/(rules|decoders)/[A-Za-z0-9_.-]+$')
+      - item.sha256 is match('^[0-9a-f]{64}$')
+  loop: "{{ wazuh_manager_artifacts }}"
+
+- name: Resolve and verify adopter artifact provenance on the controller
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - |
+        import hashlib
+        import pathlib
+        import sys
+        root_input = pathlib.Path(sys.argv[1])
+        if root_input.is_symlink():
+            raise PermissionError(str(root_input))
+        root = root_input.resolve(strict=True)
+        current = root_input
+        for component in pathlib.Path(sys.argv[2]).parts:
+            current = current / component
+            if current.is_symlink():
+                raise PermissionError(str(current))
+        source = current.resolve(strict=True)
+        source.relative_to(root)
+        if not source.is_file():
+            raise PermissionError(str(source))
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        if digest != sys.argv[3]:
+            raise ValueError(digest)
+        print(source)
+      - "{{ wazuh_manager_artifact_root }}"
+      - "{{ item.src }}"
+      - "{{ item.sha256 }}"
+  loop: "{{ wazuh_manager_artifacts }}"
+  register: wazuh_manager_artifact_source_checks
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+- name: Install the adopter-selected Wazuh manager package
+  ansible.builtin.apt:
+    name: "{{ wazuh_manager_package_name }}={{ wazuh_manager_package_version }}"
+    state: present
+    update_cache: "{{ wazuh_manager_update_cache | bool }}"
+    policy_rc_d: 101
+  when: wazuh_manager_install_package | bool
+
+- name: Create protected Wazuh manager candidate directory
+  ansible.builtin.file:
+    path: "{{ soc_iac_candidate_root }}/wazuh-manager"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Render the Wazuh manager XML candidate
+  ansible.builtin.copy:
+    content: "{{ wazuh_manager_config_content }}"
+    dest: "{{ soc_iac_candidate_root }}/wazuh-manager/ossec.conf"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Validate the candidate Wazuh manager XML
+  ansible.builtin.command:
+    argv: "{{ wazuh_manager_validation_command + [soc_iac_candidate_root + '/wazuh-manager/ossec.conf'] }}"
+  changed_when: false
+  when: not ansible_check_mode
+  no_log: true
+
+- name: Install and validate the Wazuh manager transaction
+  when: not ansible_check_mode
+  block:
+    - name: Install rendered manager configuration
+      ansible.builtin.copy:
+        src: "{{ soc_iac_candidate_root }}/wazuh-manager/ossec.conf"
+        dest: "{{ wazuh_manager_config_path }}"
+        remote_src: true
+        owner: root
+        group: wazuh
+        mode: "0660"
+        backup: true
+      register: wazuh_manager_config_copy
+      no_log: true
+      notify: Restart Wazuh manager
+    - name: Install adopter-supplied Wazuh rules and decoders
+      ansible.builtin.copy:
+        src: "{{ item.stdout }}"
+        dest: "{{ item.item.dest }}"
+        owner: root
+        group: wazuh
+        mode: "0660"
+        backup: true
+      loop: "{{ wazuh_manager_artifact_source_checks.results }}"
+      register: wazuh_manager_artifact_copy
+      notify: Restart Wazuh manager
+    - name: Verify installed Wazuh artifact checksums
+      ansible.builtin.stat:
+        path: "{{ item.dest }}"
+        get_checksum: true
+        checksum_algorithm: sha256
+        follow: false
+      loop: "{{ wazuh_manager_artifacts }}"
+      register: wazuh_manager_installed_artifact_checks
+    - name: Require installed Wazuh artifacts to match approved content
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.isreg
+          - not (item.stat.islnk | default(false))
+          - item.stat.checksum == item.item.sha256
+      loop: "{{ wazuh_manager_installed_artifact_checks.results }}"
+    - name: Validate the installed Wazuh ruleset
+      ansible.builtin.command: /var/ossec/bin/wazuh-analysisd -t
+      check_mode: false
+      changed_when: false
+      when: not ansible_check_mode
+  rescue:
+    - name: Restore the prior manager configuration
+      ansible.builtin.copy:
+        src: "{{ wazuh_manager_config_copy.backup_file }}"
+        dest: "{{ wazuh_manager_config_path }}"
+        remote_src: true
+        owner: root
+        group: wazuh
+        mode: "0660"
+      when:
+        - wazuh_manager_config_copy is defined
+        - wazuh_manager_config_copy.backup_file is defined
+      no_log: true
+    - name: Remove a newly created manager configuration
+      ansible.builtin.file:
+        path: "{{ wazuh_manager_config_path }}"
+        state: absent
+      when:
+        - wazuh_manager_config_copy is defined
+        - wazuh_manager_config_copy.changed | default(false)
+        - wazuh_manager_config_copy.backup_file is not defined
+    - name: Restore prior Wazuh artifacts in reverse order
+      ansible.builtin.copy:
+        src: "{{ item.backup_file }}"
+        dest: "{{ item.item.item.dest }}"
+        remote_src: true
+        owner: root
+        group: wazuh
+        mode: "0660"
+      loop: "{{ wazuh_manager_artifact_copy.results | default([]) | reverse | list }}"
+      when: item.backup_file is defined
+    - name: Remove newly created Wazuh artifacts after validation failure
+      ansible.builtin.file:
+        path: "{{ item.item.item.dest }}"
+        state: absent
+      loop: "{{ wazuh_manager_artifact_copy.results | default([]) | reverse | list }}"
+      when:
+        - item.changed | default(false)
+        - item.backup_file is not defined
+    - name: Stop after Wazuh manager rollback
+      ansible.builtin.fail:
+        msg: Wazuh validation failed; changed manager artifacts were restored or removed.

@@ -1,0 +1,12 @@
+---
+- name: Converge the adopter baseline in an isolated target
+  hosts: all
+  gather_facts: true
+  become: false
+  vars:
+    soc_iac_apply_confirmed: true
+    soc_iac_backup_root: /var/backups/example-soc-iac
+    soc_iac_candidate_root: /var/lib/example-soc-iac/candidates
+    common_baseline_update_cache: false
+  roles:
+    - common_baseline

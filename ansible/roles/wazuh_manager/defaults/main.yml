@@ -1,11 +1,13 @@
 ---
 wazuh_manager_config_path: /var/ossec/etc/ossec.conf
-wazuh_manager_artifacts:
-  - {src: wazuh/rules/dns_rules.xml, dest: /var/ossec/etc/rules/dns_rules.xml}
-  - {src: wazuh/rules/greenbone_rules.xml, dest: /var/ossec/etc/rules/greenbone_rules.xml}
-  - {src: wazuh/rules/hashicorp_vault_rules.xml, dest: /var/ossec/etc/rules/hashicorp_vault_rules.xml}
-  - {src: wazuh/rules/unifi_efg_contract_rules.xml, dest: /var/ossec/etc/rules/unifi_efg_contract_rules.xml}
-  - {src: wazuh/rules/unifi_protect_rules.xml, dest: /var/ossec/etc/rules/unifi_protect_rules.xml}
-  - {src: wazuh/rules/vaultwarden_rules.xml, dest: /var/ossec/etc/rules/vaultwarden_rules.xml}
-  - {src: wazuh/waf_rules.xml, dest: /var/ossec/etc/rules/waf_rules.xml}
-  - {src: wazuh/decoders/greenbone_decoders.xml, dest: /var/ossec/etc/decoders/greenbone_decoders.xml}
+wazuh_manager_package_name: wazuh-manager
+wazuh_manager_package_version: ""
+wazuh_manager_install_package: true
+wazuh_manager_update_cache: false
+wazuh_manager_service_name: wazuh-manager
+wazuh_manager_artifact_root: "{{ playbook_dir }}/../artifacts"
+wazuh_manager_artifacts: []
+wazuh_manager_validation_command:
+  - /usr/bin/python3
+  - -c
+  - "import sys, xml.etree.ElementTree as ET; ET.parse(sys.argv[1])"

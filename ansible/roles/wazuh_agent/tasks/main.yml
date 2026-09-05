@@ -1,8 +1,177 @@
 ---
-- name: Keep the public wazuh_agent role skeleton non-mutating
+- name: Require explicit apply and restart approval
   ansible.builtin.assert:
     that:
-      - not (soc_iac_apply_confirmed | bool)
-    fail_msg: >-
-      This public role is a configuration skeleton only. Live deployment is intentionally disabled;
-      adapt, test, and independently review the role before enabling mutations in your environment.
+      - soc_iac_apply_confirmed | bool
+      - soc_iac_restart_confirmed | bool
+      - wazuh_agent_client_key is defined
+      - wazuh_agent_client_key.split() | length == 4
+      - wazuh_agent_client_key.split()[1] == wazuh_agent_name
+  no_log: true
+
+- name: Inspect the existing Wazuh agent identity path
+  ansible.builtin.stat:
+    path: /var/ossec/etc/client.keys
+    follow: false
+  register: wazuh_agent_key_stat
+
+- name: Refuse a symlinked Wazuh identity path
+  ansible.builtin.assert:
+    that: not (wazuh_agent_key_stat.stat.islnk | default(false))
+
+- name: Read any existing Wazuh agent identity before package mutation
+  ansible.builtin.slurp:
+    src: /var/ossec/etc/client.keys
+  register: wazuh_agent_existing_key
+  when: wazuh_agent_key_stat.stat.exists
+  no_log: true
+
+- name: Refuse replacement of a different Wazuh identity
+  ansible.builtin.assert:
+    that:
+      - not (wazuh_agent_key_stat.stat.exists) or
+        (wazuh_agent_existing_key.content | b64decode | trim in ['', wazuh_agent_client_key | trim])
+  no_log: true
+
+- name: Inspect the pre-install Wazuh agent configuration
+  ansible.builtin.stat:
+    path: /var/ossec/etc/ossec.conf
+    follow: false
+  register: wazuh_agent_config_stat
+
+- name: Refuse a symlinked Wazuh agent configuration
+  ansible.builtin.assert:
+    that: not (wazuh_agent_config_stat.stat.islnk | default(false))
+
+- name: Read the pre-install Wazuh agent configuration
+  ansible.builtin.slurp:
+    src: /var/ossec/etc/ossec.conf
+  register: wazuh_agent_existing_config
+  when: wazuh_agent_config_stat.stat.exists
+  no_log: true
+
+- name: Install the package without accepting an identity change
+  block:
+    - name: Install the adopter-selected Wazuh agent package
+      ansible.builtin.apt:
+        name: "{{ wazuh_agent_package_name }}={{ wazuh_agent_version }}"
+        state: present
+        update_cache: "{{ wazuh_agent_update_cache | bool }}"
+        policy_rc_d: 101
+      when: wazuh_agent_install_package | bool
+    - name: Read the post-install Wazuh agent identity
+      ansible.builtin.slurp:
+        src: /var/ossec/etc/client.keys
+      register: wazuh_agent_post_install_key
+      no_log: true
+    - name: Refuse replacement of a package-created identity
+      ansible.builtin.assert:
+        that: wazuh_agent_post_install_key.content | b64decode | trim in ['', wazuh_agent_client_key | trim]
+      no_log: true
+  rescue:
+    - name: Restore the pre-install Wazuh identity
+      ansible.builtin.copy:
+        content: "{{ wazuh_agent_existing_key.content | b64decode }}"
+        dest: /var/ossec/etc/client.keys
+        owner: wazuh
+        group: wazuh
+        mode: "0640"
+      when: wazuh_agent_key_stat.stat.exists
+      no_log: true
+    - name: Remove package-created Wazuh identity
+      ansible.builtin.file:
+        path: /var/ossec/etc/client.keys
+        state: absent
+      when: not (wazuh_agent_key_stat.stat.exists)
+    - name: Restore the pre-install Wazuh agent configuration
+      ansible.builtin.copy:
+        content: "{{ wazuh_agent_existing_config.content | b64decode }}"
+        dest: /var/ossec/etc/ossec.conf
+        owner: root
+        group: wazuh
+        mode: "0660"
+      when: wazuh_agent_config_stat.stat.exists
+      no_log: true
+    - name: Remove package-created Wazuh agent configuration
+      ansible.builtin.file:
+        path: /var/ossec/etc/ossec.conf
+        state: absent
+      when: not (wazuh_agent_config_stat.stat.exists)
+    - name: Stop after package identity rollback
+      ansible.builtin.fail:
+        msg: Package installation changed or obscured Wazuh identity; pre-install identity and configuration were restored. The stopped package remains staged.
+
+- name: Count configured manager addresses
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/grep
+      - -Ec
+      - <address>[^<]+</address>
+      - /var/ossec/etc/ossec.conf
+  check_mode: false
+  register: wazuh_agent_manager_address_count
+  changed_when: false
+  failed_when: wazuh_agent_manager_address_count.rc not in [0, 1]
+
+- name: Require exactly one manager address
+  ansible.builtin.assert:
+    that: wazuh_agent_manager_address_count.stdout == "1"
+
+- name: Install and validate the Wazuh agent transaction
+  block:
+    - name: Install the API-approved agent key
+      ansible.builtin.copy:
+        content: "{{ wazuh_agent_client_key | trim }}\n"
+        dest: /var/ossec/etc/client.keys
+        owner: wazuh
+        group: wazuh
+        mode: "0640"
+        backup: true
+      register: wazuh_agent_key_copy
+      no_log: true
+      notify: Restart Wazuh agent
+    - name: Configure the stable manager endpoint
+      ansible.builtin.replace:
+        path: /var/ossec/etc/ossec.conf
+        regexp: <address>[^<]+</address>
+        replace: "<address>{{ wazuh_agent_manager }}</address>"
+        backup: true
+      register: wazuh_agent_config_replace
+      notify: Restart Wazuh agent
+    - name: Validate the agent configuration
+      ansible.builtin.command: /var/ossec/bin/wazuh-agentd -t
+      check_mode: false
+      changed_when: false
+      when: not ansible_check_mode
+  rescue:
+    - name: Restore the pre-install Wazuh identity after validation failure
+      ansible.builtin.copy:
+        content: "{{ wazuh_agent_existing_key.content | b64decode }}"
+        dest: /var/ossec/etc/client.keys
+        owner: wazuh
+        group: wazuh
+        mode: "0640"
+      when: wazuh_agent_key_stat.stat.exists
+      no_log: true
+    - name: Remove package-created Wazuh identity after validation failure
+      ansible.builtin.file:
+        path: /var/ossec/etc/client.keys
+        state: absent
+      when: not (wazuh_agent_key_stat.stat.exists)
+    - name: Restore the pre-install agent configuration after validation failure
+      ansible.builtin.copy:
+        content: "{{ wazuh_agent_existing_config.content | b64decode }}"
+        dest: /var/ossec/etc/ossec.conf
+        owner: root
+        group: wazuh
+        mode: "0660"
+      when: wazuh_agent_config_stat.stat.exists
+      no_log: true
+    - name: Remove package-created configuration after validation failure
+      ansible.builtin.file:
+        path: /var/ossec/etc/ossec.conf
+        state: absent
+      when: not (wazuh_agent_config_stat.stat.exists)
+    - name: Stop after Wazuh agent rollback
+      ansible.builtin.fail:
+        msg: Wazuh agent validation failed; pre-install identity and configuration were restored. The stopped package remains staged for explicit rollback.
