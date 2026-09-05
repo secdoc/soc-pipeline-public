@@ -57,6 +57,13 @@ def load_config(path: Path) -> dict:
         max_age = spec.get("max_age_seconds")
         if not isinstance(max_age, int) or max_age <= 0:
             raise ConfigError(f"integration {integration_id} requires positive max_age_seconds")
+        for field in ("summary_paths", "analytics_paths"):
+            paths = spec.get(field, {})
+            if not isinstance(paths, dict) or not all(
+                isinstance(key, str) and key and isinstance(value, str) and value
+                for key, value in paths.items()
+            ):
+                raise ConfigError(f"integration {integration_id} has invalid {field}")
         if spec.get("deep_link") is not None:
             _web_url(spec["deep_link"], "deep_link")
         if connector == "json_file" and not isinstance(spec.get("path"), str):

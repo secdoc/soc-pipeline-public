@@ -44,6 +44,20 @@ def _summary(document: dict, paths: dict[str, str]) -> dict[str, Any]:
     return result
 
 
+def _analytics(document: dict, paths: dict[str, str]) -> dict[str, Any]:
+    """Copy only explicitly allowlisted, JSON-compatible aggregate structures."""
+    result: dict[str, Any] = {}
+    for label, path in paths.items():
+        value = dotted_get(document, path, _MISSING)
+        if value is _MISSING:
+            continue
+        encoded = json.dumps(value, allow_nan=False)
+        if len(encoded.encode("utf-8")) > 256 * 1024:
+            continue
+        result[label] = json.loads(encoded)
+    return result
+
+
 def _source_state(document: dict, spec: dict) -> str:
     explicit = dotted_get(document, spec.get("state_path"), _MISSING)
     if explicit is not _MISSING:
@@ -57,7 +71,7 @@ def _source_state(document: dict, spec: dict) -> str:
 
 
 def _result(spec: dict, document: dict, now: datetime | None) -> dict:
-    return classify_snapshot(
+    result = classify_snapshot(
         integration_id=spec["id"],
         name=spec["name"],
         category=spec.get("category"),
@@ -68,6 +82,10 @@ def _result(spec: dict, document: dict, now: datetime | None) -> dict:
         deep_link=spec.get("deep_link"),
         now=now,
     )
+    analytics = _analytics(document, spec.get("analytics_paths") or {})
+    if analytics:
+        result["analytics"] = analytics
+    return result
 
 
 def _error(spec: dict, state: str, reason_code: str, now: datetime | None) -> dict:

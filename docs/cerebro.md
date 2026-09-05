@@ -26,6 +26,8 @@ The live secdoc.tech CSS supplied the visual tokens: accent `#b28b30`, logo gold
 * Distinct healthy, degraded, stale, unavailable, unauthorized, unknown, and planned states.
 * GET-only server. POST, PUT, PATCH, and DELETE return 405.
 * Browser security headers and DOM text rendering that does not interpret source values as HTML.
+* Dynamic SVG threat-origin map and hourly event graph over producer-supplied aggregates.
+* Active-host, event, distinct-source, country, and map-cluster values refreshed with each snapshot.
 * Hardened systemd and Caddy examples.
 * Unit, HTTP, configuration, and failure-state tests.
 
@@ -101,7 +103,9 @@ HTTP JSON connectors require `url` and `allowed_origins`. An origin is matched b
 
 Static connectors are explicit catalog entries. Use `planned` when a tool is linked but has no data connector. A static entry is not health evidence.
 
-`summary_paths` is the data-release allowlist. Do not pass complete source responses to the browser.
+`summary_paths` is the scalar data-release allowlist. `analytics_paths` separately allowlists structured aggregate data for maps and graphs, with a 256 KiB limit per field. Do not pass complete source responses or raw events to the browser.
+
+The example snapshot documents the portable `security_activity` contract. A producer should supply a 24-hour event count, distinct-source and country counts, hourly timeline buckets, bounded map centroids with counts, and bounded ranked country, source, and lane lists. Use RFC 5737 addresses in examples. Production producers should aggregate before delivery and should never install SIEM credentials in the portal.
 
 ## API
 

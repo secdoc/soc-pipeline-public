@@ -3,6 +3,35 @@
   "healthy": true,
   "findings": [],
   "critical_alerts": 0,
+  "active_hosts": 12,
+  "security_activity": {
+    "window": "24h",
+    "event_count": 1842,
+    "distinct_sources": 427,
+    "country_count": 38,
+    "timeline": [
+      {"at": "2026-01-01T10:00:00Z", "count": 71},
+      {"at": "2026-01-01T11:00:00Z", "count": 94},
+      {"at": "2026-01-01T12:00:00Z", "count": 83}
+    ],
+    "map_points": [
+      {"lat": 38.0, "lon": -97.0, "count": 420},
+      {"lat": 51.0, "lon": 9.0, "count": 188},
+      {"lat": 35.0, "lon": 103.0, "count": 94}
+    ],
+    "top_countries": [
+      {"key": "Example Country A", "count": 420},
+      {"key": "Example Country B", "count": 188}
+    ],
+    "top_sources": [
+      {"key": "192.0.2.10", "count": 54},
+      {"key": "198.51.100.20", "count": 41}
+    ],
+    "lanes": [
+      {"key": "firewall_block", "count": 1200},
+      {"key": "waf", "count": 642}
+    ]
+  },
   "cluster": {"health": "green"},
   "backup": {"state": "SUCCESS"}
 }

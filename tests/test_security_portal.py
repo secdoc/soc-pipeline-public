@@ -198,6 +198,25 @@ class ConfigTests(unittest.TestCase):
 
 
 class ConnectorTests(unittest.TestCase):
+    def test_json_file_connector_exposes_only_allowlisted_aggregate_analytics(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = Path(directory) / "latest.json"
+            evidence.write_text(json.dumps({
+                "collected_at": "2026-09-04T22:53:39Z", "healthy": True,
+                "activity": {"event_count": 18, "timeline": [{"at": "2026-09-04T22:00:00Z", "count": 7}]},
+                "private_value": "must-not-leak",
+            }), encoding="utf-8")
+            spec = {
+                "id": "siem", "name": "SIEM", "category": "soc", "connector": "json_file",
+                "path": str(evidence), "collected_at_path": "collected_at", "healthy_path": "healthy",
+                "analytics_paths": {"security_activity": "activity"}, "max_age_seconds": 300,
+            }
+
+            result = collect_integration(spec, now=NOW)
+
+        self.assertEqual(result["analytics"]["security_activity"]["event_count"], 18)
+        self.assertNotIn("private_value", json.dumps(result))
+
     def test_json_file_connector_maps_summary_and_classifies_freshness(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             evidence = Path(directory) / "latest.json"
@@ -314,6 +333,18 @@ class OverviewTests(unittest.TestCase):
         self.assertEqual(overview["counts"]["stale"], 1)
         self.assertEqual(overview["counts"]["unauthorized"], 1)
         self.assertEqual(overview["critical_alerts"], 5)
+
+
+class DashboardAssetTests(unittest.TestCase):
+    def test_dashboard_contains_live_security_activity_regions(self) -> None:
+        root = Path(__file__).resolve().parents[1] / "security_portal" / "static"
+        html = (root / "index.html").read_text(encoding="utf-8")
+        script = (root / "app.js").read_text(encoding="utf-8")
+
+        for element_id in ("threat-map", "event-chart", "activity-status"):
+            self.assertIn(f'id="{element_id}"', html)
+        for behavior in ("renderThreatMap", "renderEventChart", "active_hosts", "security_activity"):
+            self.assertIn(behavior, script)
 
 
 if __name__ == "__main__":

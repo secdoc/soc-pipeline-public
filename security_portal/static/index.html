@@ -27,6 +27,28 @@
       <h2 id="overview-heading">Current security posture</h2>
       <div id="overview" class="kpis" aria-live="polite"></div>
     </section>
+    <section class="activity" aria-labelledby="activity-heading">
+      <div class="section-heading">
+        <div><h2 id="activity-heading">Live security activity</h2><p>Public malicious sources and blocked events, using the SOC Pipeline threat-map contract.</p></div>
+        <p id="activity-status" class="live-status">Waiting for current telemetry</p>
+      </div>
+      <div id="activity-kpis" class="activity-kpis" aria-live="polite"></div>
+      <div class="activity-grid">
+        <article class="visual-panel map-panel">
+          <div class="panel-heading"><h3>Threat origin map</h3><span>Last 24 hours</span></div>
+          <svg id="threat-map" class="visualization" viewBox="0 0 960 480" role="img" aria-label="World map of blocked or identified malicious public source IP activity"></svg>
+        </article>
+        <article class="visual-panel chart-panel">
+          <div class="panel-heading"><h3>Active event counter</h3><span>Hourly, last 24 hours</span></div>
+          <svg id="event-chart" class="visualization" viewBox="0 0 720 320" role="img" aria-label="Security event counts over the last 24 hours"></svg>
+        </article>
+      </div>
+      <div class="activity-lists">
+        <article class="visual-panel"><h3>Top source countries</h3><div id="top-countries" class="rank-list"></div></article>
+        <article class="visual-panel"><h3>Top source IPs</h3><div id="top-sources" class="rank-list"></div></article>
+        <article class="visual-panel"><h3>Detection lanes</h3><div id="detection-lanes" class="rank-list"></div></article>
+      </div>
+    </section>
     <section aria-labelledby="integrations-heading">
       <div class="section-heading">
         <div><h2 id="integrations-heading">Integrated tools and feeds</h2><p>Native consoles remain authoritative for investigation and administration.</p></div>

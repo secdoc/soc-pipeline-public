@@ -16,8 +16,12 @@
       "summary_paths": {
         "active_findings": "findings",
         "critical_alerts": "critical_alerts",
+        "active_hosts": "active_hosts",
         "cluster_health": "cluster.health",
         "backup_state": "backup.state"
+      },
+      "analytics_paths": {
+        "security_activity": "security_activity"
       },
       "max_age_seconds": 600,
       "deep_link": "https://siem.example.com/"
