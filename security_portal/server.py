@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 
 from .config import load_config
 from .connectors import collect_integration
-from .model import aggregate_overview
+from .model import SCHEMA_VERSION, aggregate_overview, data_contract
 
 
 LOG = logging.getLogger("security_portal")
@@ -22,6 +22,8 @@ LOG = logging.getLogger("security_portal")
 def build_payload(config: dict, now: datetime | None = None) -> dict[str, Any]:
     integrations = [collect_integration(spec, now=now) for spec in config["integrations"]]
     return {
+        "schema_version": SCHEMA_VERSION,
+        "data_contract": data_contract(),
         "portal": {
             "title": config["portal"]["title"],
             "refresh_seconds": config["portal"].get("refresh_seconds", 60),

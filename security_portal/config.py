@@ -64,6 +64,18 @@ def load_config(path: Path) -> dict:
                 for key, value in paths.items()
             ):
                 raise ConfigError(f"integration {integration_id} has invalid {field}")
+        for field in ("record_count_path", "collection_duration_ms_path"):
+            value = spec.get(field)
+            if value is not None and (not isinstance(value, str) or not value):
+                raise ConfigError(f"integration {integration_id} has invalid {field}")
+        source_owner = spec.get("source_owner")
+        if source_owner is not None and (not isinstance(source_owner, str) or not source_owner):
+            raise ConfigError(f"integration {integration_id} has invalid source_owner")
+        cadence = spec.get("collection_cadence_seconds")
+        if cadence is not None and (
+            not isinstance(cadence, int) or isinstance(cadence, bool) or cadence <= 0
+        ):
+            raise ConfigError(f"integration {integration_id} has invalid collection_cadence_seconds")
         state_map = spec.get("state_map", {})
         if not isinstance(state_map, dict) or not all(
             isinstance(key, str) and key and key == key.lower()

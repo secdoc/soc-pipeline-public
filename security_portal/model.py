@@ -7,6 +7,32 @@ from typing import Any
 
 VALID_STATES = {"healthy", "degraded", "stale", "unavailable", "unauthorized", "unknown", "planned"}
 
+SCHEMA_VERSION = "cerebro.integration.v1"
+ENTITY_TYPES = (
+    "ip_address", "asset", "alert", "finding", "cve", "threat_model",
+    "attack_technique", "atlas_technique", "source_system",
+)
+RELATIONSHIP_TYPES = (
+    "affects", "associated_with", "detected_by", "maps_to", "observed_by", "supports",
+)
+
+
+def data_contract() -> dict[str, Any]:
+    """Return the stable vocabulary implemented by this API version."""
+    return {
+        "entity_types": list(ENTITY_TYPES),
+        "relationship_types": list(RELATIONSHIP_TYPES),
+        "entity_required_fields": ["id", "type", "label", "provenance"],
+        "relationship_required_fields": ["id", "type", "source_ref", "target_ref", "provenance"],
+        "provenance_fields": [
+            "source_system", "source_kind", "source_owner", "collection_cadence_seconds",
+        ],
+        "connector_health_fields": [
+            "state", "freshness", "last_success_at", "collection_duration_ms",
+            "record_count", "reason_code",
+        ],
+    }
+
 
 def parse_timestamp(value: str | None) -> datetime | None:
     if not value or not isinstance(value, str):

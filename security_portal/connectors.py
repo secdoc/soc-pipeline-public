@@ -71,6 +71,43 @@ def _source_state(document: dict, spec: dict) -> str:
     return "unknown"
 
 
+def _nonnegative_int(document: dict, path: str | None) -> int | None:
+    value = dotted_get(document, path, _MISSING)
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value
+    return None
+
+
+def _source_kind(connector: str) -> str:
+    return {
+        "json_file": "sanitized_snapshot",
+        "http_json": "read_only_api",
+        "static": "catalog",
+    }.get(connector, "unknown")
+
+
+def _add_contract_metadata(result: dict, spec: dict, document: dict) -> dict:
+    result["provenance"] = {
+        "source_system": spec["id"],
+        "source_kind": _source_kind(spec["connector"]),
+        "source_owner": spec.get("source_owner"),
+        "collection_cadence_seconds": spec.get("collection_cadence_seconds"),
+    }
+    result["connector_health"] = {
+        "state": result["state"],
+        "freshness": result["freshness"],
+        "last_success_at": result.get("collected_at") if result.get("state") in {"healthy", "degraded", "stale"} else None,
+        "collection_duration_ms": _nonnegative_int(document, spec.get("collection_duration_ms_path")),
+        "record_count": _nonnegative_int(document, spec.get("record_count_path")),
+        "reason_code": result.get("reason_code"),
+    }
+    # Publication is fail-closed until a provider implements and tests bounded
+    # record validators for the versioned entity and relationship contract.
+    result["entities"] = []
+    result["relationships"] = []
+    return result
+
+
 def _result(spec: dict, document: dict, now: datetime | None) -> dict:
     result = classify_snapshot(
         integration_id=spec["id"],
@@ -86,11 +123,11 @@ def _result(spec: dict, document: dict, now: datetime | None) -> dict:
     analytics = _analytics(document, spec.get("analytics_paths") or {})
     if analytics:
         result["analytics"] = analytics
-    return result
+    return _add_contract_metadata(result, spec, document)
 
 
 def _error(spec: dict, state: str, reason_code: str, now: datetime | None) -> dict:
-    return classify_snapshot(
+    result = classify_snapshot(
         integration_id=spec["id"],
         name=spec["name"],
         category=spec.get("category"),
@@ -103,6 +140,7 @@ def _error(spec: dict, state: str, reason_code: str, now: datetime | None) -> di
         reason_code=reason_code,
         detail="The source could not be collected. Review server-side portal logs.",
     )
+    return _add_contract_metadata(result, spec, {})
 
 
 def collect_integration(spec: dict, now: datetime | None = None) -> dict:

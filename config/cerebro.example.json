@@ -23,6 +23,9 @@
       "analytics_paths": {
         "security_activity": "security_activity"
       },
+      "record_count_path": "security_activity.event_count",
+      "source_owner": "Security Operations",
+      "collection_cadence_seconds": 120,
       "max_age_seconds": 600,
       "deep_link": "https://siem.example.com/"
     },
@@ -43,6 +46,9 @@
         "low_findings": "severity.low",
         "latest_scan_end": "latest_scan_end"
       },
+      "record_count_path": "total_findings",
+      "source_owner": "Vulnerability Management",
+      "collection_cadence_seconds": 604800,
       "max_age_seconds": 691200,
       "deep_link": "https://scanner.example.com/"
     },
