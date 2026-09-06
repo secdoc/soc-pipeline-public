@@ -35,7 +35,7 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 Cerebro is the deployable read-only security visibility layer under `security_portal/`. It aggregates allowlisted summaries, shows freshness and failure states, and links to native consoles without replacing them. Its provider contract is versioned as `cerebro.integration.v1` and defined by a machine-readable JSON Schema. Start with [`config/cerebro.example.json`](config/cerebro.example.json), [`docs/cerebro.md`](docs/cerebro.md), and the [`provider integration guide`](docs/cerebro-provider-integration.md).
 
-<img width="1586" height="1066" alt="Screenshot_2026-09-06_10-26-22" src="https://github.com/user-attachments/assets/a51c58a1-28d9-477d-8085-df01cbe562e6" />
+<img width="1578" height="1066" alt="Screenshot_2026-09-06_14-34-09" src="https://github.com/user-attachments/assets/2cee57cf-b603-4d59-b8b3-95b0008419d4" />
 
 ## Architecture
 
