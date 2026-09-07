@@ -40,6 +40,9 @@ Cerebro is the deployable read-only security visibility layer under `security_po
 ### Browser View:
 <img width="1583" height="1065" alt="cerebro_web" src="https://github.com/user-attachments/assets/687060d8-a6f8-408c-a4c4-1b713bcf4dfc" />
 
+#### Category Tool View
+<img width="1503" height="789" alt="Screenshot_2026-09-06_19-02-23" src="https://github.com/user-attachments/assets/d382eee6-50e8-406c-aed2-4a9735f01e16" />
+
 ### Mobile View:
 <img width="1290" height="2796" alt="cerebro_mobile" src="https://github.com/user-attachments/assets/70280289-e67a-4e1f-ac44-e563ae578877" />
 
