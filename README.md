@@ -56,7 +56,7 @@ Full reasoning and stage-by-stage mapping: [`docs/DESIGN.md`](docs/DESIGN.md).
 
 Point-in-time vulnerability posture rendered from a Greenbone findings feed. This sample uses pseudonymized hosts (`host-NN`) and RFC5737 example addresses; it carries no real environment data. Regenerate from any collector output with `scripts/vuln_dashboard_gen.py`.
 
-![Vulnerability dashboard](docs/vuln-dashboard.svg)
+<img width="1560" height="1162" alt="Screenshot_2026-09-08_15-30-39" src="https://github.com/user-attachments/assets/da62c8fe-afe0-481f-8486-0306cdd4509a" />
 
 See [`docs/vuln-dashboard.md`](docs/vuln-dashboard.md) for the tabular breakdown.
 
