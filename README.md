@@ -48,7 +48,7 @@ Cerebro is the deployable read-only security visibility layer under `security_po
 
 ## Architecture
 
-![SOC pipeline architecture](docs/architecture.svg)
+<img width="1672" height="941" alt="soc_pipeline" src="https://github.com/user-attachments/assets/45499319-01c3-4e5a-a387-7bfc62a933da" />
 
 Full reasoning and stage-by-stage mapping: [`docs/DESIGN.md`](docs/DESIGN.md).
 
