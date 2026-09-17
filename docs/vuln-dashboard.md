@@ -4,7 +4,8 @@
 
 *Data class: SANITIZED / SYNTHETIC-SAFE. Generated 2026-08-17 12:48 UTC by `scripts/vuln_dashboard_gen.py`.*
 
-![Vulnerability dashboard](vuln-dashboard.svg)
+<img width="1560" height="1162" alt="Screenshot_2026-09-08_15-30-39" src="https://github.com/user-attachments/assets/f73e6d83-c84d-44bb-be26-195fba02edf6" />
+
 
 ## Key numbers
 
