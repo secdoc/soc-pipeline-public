@@ -6,6 +6,8 @@
 
 ![Vulnerability dashboard](vuln-dashboard.svg)
 
+<img width="1560" height="1162" alt="Rendered vulnerability dashboard" src="https://github.com/user-attachments/assets/f73e6d83-c84d-44bb-be26-195fba02edf6" />
+
 ## Key numbers
 
 | Metric | Value |

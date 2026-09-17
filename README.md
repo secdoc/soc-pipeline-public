@@ -33,11 +33,27 @@ Read the reasoning in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Cerebro
 
+<img width="270" height="120" alt="Cerebro logo" src="https://github.com/user-attachments/assets/32b79a79-ef6d-426c-9552-bdccf6a99270" />
+
 Cerebro is the deployable read-only security visibility layer under `security_portal/`. It aggregates allowlisted summaries, shows freshness and failure states, and links to native consoles without replacing them. Its provider contract is versioned as `cerebro.integration.v1` and defined by a machine-readable JSON Schema. Start with [`config/cerebro.example.json`](config/cerebro.example.json), [`docs/cerebro.md`](docs/cerebro.md), and the [`provider integration guide`](docs/cerebro-provider-integration.md).
+
+### Browser view
+
+<img width="1896" height="1123" alt="Cerebro browser view" src="https://github.com/user-attachments/assets/f4a7b52e-5cd3-489c-893f-7d237821eb39" />
+
+#### Category tool view
+
+<img width="1503" height="789" alt="Cerebro category tool view" src="https://github.com/user-attachments/assets/d382eee6-50e8-406c-aed2-4a9735f01e16" />
+
+### Mobile view
+
+<img width="1290" height="2796" alt="Cerebro mobile view" src="https://github.com/user-attachments/assets/70280289-e67a-4e1f-ac44-e563ae578877" />
 
 ## Architecture
 
 ![SOC pipeline architecture](docs/architecture.svg)
+
+<img width="1672" height="941" alt="SOC pipeline rendered architecture" src="https://github.com/user-attachments/assets/45499319-01c3-4e5a-a387-7bfc62a933da" />
 
 Full reasoning and stage-by-stage mapping: [`docs/DESIGN.md`](docs/DESIGN.md).
 
@@ -54,6 +70,8 @@ Implementation contract, reliability controls, operations, recovery, rollback, a
 Point-in-time vulnerability posture rendered from a Greenbone findings feed. This sample uses pseudonymized hosts (`host-NN`) and RFC5737 example addresses; it carries no real environment data. Regenerate from any collector output with `scripts/vuln_dashboard_gen.py`.
 
 ![Vulnerability dashboard](docs/vuln-dashboard.svg)
+
+<img width="1560" height="1162" alt="Rendered vulnerability dashboard" src="https://github.com/user-attachments/assets/da62c8fe-afe0-481f-8486-0306cdd4509a" />
 
 See [`docs/vuln-dashboard.md`](docs/vuln-dashboard.md) for the tabular breakdown.
 
