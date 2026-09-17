@@ -41,6 +41,14 @@ Cerebro is the deployable read-only security visibility layer under `security_po
 
 Full reasoning and stage-by-stage mapping: [`docs/DESIGN.md`](docs/DESIGN.md).
 
+### OpenCTI full feedback loop
+
+The OpenCTI loop correlates bounded local evidence with threat intelligence, verifies the exact imported Sighting and Note set, and returns independently acknowledged receipts to Graylog and Wazuh.
+
+![OpenCTI full-loop component architecture](docs/architecture/opencti-full-loop.svg)
+
+Implementation contract, reliability controls, operations, recovery, rollback, and security boundaries: [`docs/opencti-full-loop.md`](docs/opencti-full-loop.md).
+
 ### Vulnerability dashboard (sample)
 
 Point-in-time vulnerability posture rendered from a Greenbone findings feed. This sample uses pseudonymized hosts (`host-NN`) and RFC5737 example addresses; it carries no real environment data. Regenerate from any collector output with `scripts/vuln_dashboard_gen.py`.
@@ -59,14 +67,14 @@ Tracked on the [public project board](https://github.com/users/secdoc/projects/3
 
 ## Implementation status
 
-Status below reflects verified work through **2026-09-05**. It distinguishes the tested implementation from artifacts generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
+Status below reflects verified work through **2026-09-17**. It distinguishes the tested implementation from artifacts already generalized and published here. Internal addresses, credentials, event samples, and environment-specific recovery evidence are not copied into this repository.
 
 | Phase | Verified implementation checkpoint | Public artifact status |
 |---|---|---|
 | P0, foundations and access | Required source access is substantially complete. The least-privilege DFIR API credential remains outstanding. | The sanitized [Terraform and Ansible scaffold](terraform/README.md) is published with synthetic inventory, import-first controls, and eleven gated adopter-configurable roles. Clean product convergence remains in progress. Access tracking remains [in progress](https://github.com/secdoc/soc-pipeline-public/issues/10). |
 | P1 and P2, vulnerability slice and first live change | The vulnerability path, dual-consumer delivery, severity gating, stable event identity, dashboards, backup, rollback, and read-back verification are accepted. | The portable collector, rules, dashboard generators, migration helpers, tests, and standalone [Greenbone lane](https://github.com/secdoc/greenbone-wazuh-graylog) are published. |
 | P3, source lanes | Seven source lanes have passed target-only delivery acceptance: vulnerability, DNS, WAF, firewall, camera metadata, secrets-manager audit, and password-vault audit. Identity telemetry and endpoint expansion are still in progress. Firewall and IDS sensor placement is intentionally last and requires a traffic-visibility architecture decision first. | Standalone public WAF, Greenbone, and DNS lanes are published. Endpoint [coverage](https://github.com/secdoc/soc-pipeline-public/issues/14), [identity](https://github.com/secdoc/soc-pipeline-public/issues/15), and the final [firewall/IDS lane](https://github.com/secdoc/soc-pipeline-public/issues/13) remain open. |
-| P4, enrich and respond | Local-observation enrichment, anti-flood alerting, read-only egress hunting, threat-intelligence context, and enrichment-first SOAR are active. Automatic blocking and host isolation are not enabled. | Core transactional and migration tooling is published. Portable DFIR [investigation and isolation](https://github.com/secdoc/soc-pipeline-public/issues/17) remains open. Default-deny egress is [held](https://github.com/secdoc/soc-pipeline-public/issues/24) until visibility and dependency prerequisites are met. |
+| P4, enrich and respond | Local-observation enrichment, anti-flood alerting, read-only egress hunting, threat-intelligence context, and enrichment-first SOAR are active. The OpenCTI feedback loop has passed exact graph read-back, independent Graylog and Wazuh receipt confirmation, duplicate-safe recurrence, and authenticated dashboard acceptance. Automatic blocking and host isolation are not enabled. | The sanitized OpenCTI architecture and integration contract are published. Core transactional and migration tooling is published. Portable DFIR [investigation and isolation](https://github.com/secdoc/soc-pipeline-public/issues/17) remains open. Default-deny egress is [held](https://github.com/secdoc/soc-pipeline-public/issues/24) until visibility and dependency prerequisites are met. |
 | P5, reproduce and publish | A consolidated article has been drafted from tested implementation. Live Terraform adoption and the complete adopter lab remain controlled follow-on work. | The Terraform scaffold and non-mutating Ansible skeletons satisfy [issue 11](https://github.com/secdoc/soc-pipeline-public/issues/11). Complete clean-environment idempotent deployment roles remain open in [issue 18](https://github.com/secdoc/soc-pipeline-public/issues/18), along with the sanitized [build guide](https://github.com/secdoc/soc-pipeline-public/issues/8) and [article publication](https://github.com/secdoc/soc-pipeline-public/issues/9). |
 
 The enterprise Graylog and Wazuh migration is operationally advanced but not represented here as a turnkey cluster installer. Seven source lanes use target-only enterprise delivery, and the retired Graylog and Wazuh systems were deleted after verified recovery backups. High-availability frontends, health checks, backup and restore controls, parser recovery, certificate rotation, and progressive agent migration have been exercised. Remaining endpoint coverage and historical-data policy decisions are separate follow-on work.

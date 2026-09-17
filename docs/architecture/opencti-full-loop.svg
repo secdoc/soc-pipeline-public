@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<title id="title">OpenCTI full-loop component architecture</title>
+<desc id="desc">Component-level logical architecture showing local and public threat-intelligence inputs, bounded correlation and enrichment, OpenCTI graph ingestion and exact read-back, then independently acknowledged feedback to Graylog and Wazuh. The full loop is production accepted.</desc>
+<defs>
+ <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#1e293b" stroke-width="1"/></pattern>
+ <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#38bdf8"/></marker>
+ <marker id="arrow2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#f59e0b"/></marker>
+ <style>
+  text{font-family:Inter,Arial,sans-serif;fill:#e2e8f0}.title{font-size:30px;font-weight:700}.meta{font-size:16px;fill:#94a3b8}.bound{fill:#0f172a;stroke:#475569;stroke-width:2;rx:14}.btitle{font-size:18px;font-weight:700}.box{fill:#111827;stroke-width:2;rx:10}.name{font-size:17px;font-weight:700}.sub{font-size:15px;fill:#cbd5e1}.tiny{font-size:14px;fill:#94a3b8}.flow{fill:none;stroke:#38bdf8;stroke-width:3;marker-end:url(#arrow)}.pending{fill:none;stroke:#f59e0b;stroke-width:3;stroke-dasharray:10 7;marker-end:url(#arrow2)}.internal{fill:none;stroke:#a78bfa;stroke-width:2.5;marker-end:url(#arrow)}.label{font-size:14px;font-weight:700;fill:#e2e8f0;stroke:none}.num{fill:#0ea5e9;stroke:#bae6fd;stroke-width:2}.num2{fill:#d97706;stroke:#fde68a;stroke-width:2}.ntext{font-size:14px;font-weight:700;fill:#fff;text-anchor:middle;dominant-baseline:middle}.active{fill:#22c55e}.amber{fill:#f59e0b}
+ </style>
+</defs>
+<rect width="1800" height="1200" fill="#020617"/><rect width="1800" height="1200" fill="url(#grid)"/>
+<text x="60" y="58" class="title">OpenCTI full-loop component architecture</text>
+<text x="60" y="88" class="meta">Logical view | Sanitized reference architecture | Classification: public</text>
+<circle cx="1370" cy="55" r="7" class="active"/><text x="1387" y="61" class="meta">active path</text>
+<line x1="1500" y1="55" x2="1550" y2="55" class="flow"/><text x="1562" y="61" class="meta">production accepted</text>
+
+<!-- boundaries -->
+<rect x="40" y="120" width="390" height="720" class="bound"/><text x="64" y="153" class="btitle">1. Evidence and intelligence sources</text>
+<rect x="455" y="120" width="430" height="720" class="bound"/><text x="479" y="153" class="btitle">2. Bounded projection and correlation</text>
+<rect x="910" y="120" width="390" height="720" class="bound"/><text x="934" y="153" class="btitle">3. OpenCTI trust domain</text>
+<rect x="1325" y="120" width="435" height="750" class="bound"/><text x="1349" y="153" class="btitle">4. SIEM feedback and read-back</text>
+
+<!-- active flow lines behind boxes -->
+<path d="M400 230 H455 V330 H490" class="flow"/><path d="M400 350 H490" class="flow"/><path d="M400 475 H490" class="flow"/><path d="M400 600 H490" class="flow"/><path d="M400 740 H455 V420 H490" class="flow"/>
+<path d="M670 270 V295" class="flow"/>
+<path d="M850 535 H900 V260 H950" class="flow"/><path d="M1105 335 V395" class="internal"/><path d="M1105 505 V565" class="internal"/>
+<path d="M1105 695 V730" class="flow"/>
+<path d="M950 650 H850" class="flow"/>
+<!-- accepted return paths -->
+<path d="M850 685 H955 V740 H1325 V305 H1370" class="flow"/>
+<path d="M850 710 H925 V800 H1310 V610 H1370" class="flow"/>
+<path d="M1535 400 V455" class="flow"/><path d="M1535 705 V755" class="flow"/>
+
+<!-- source boxes -->
+<rect x="70" y="180" width="330" height="100" class="box" stroke="#94a3b8"/><text x="90" y="208" class="name">Public threat intelligence</text><text x="90" y="235" class="sub">ThreatFox, Feodo, URLhaus</text><text x="90" y="258" class="sub">CISA KEV, FIRST EPSS, Q-Feeds</text>
+<rect x="70" y="305" width="330" height="90" class="box" stroke="#fb7185"/><text x="90" y="334" class="name">SIEM detection index</text><text x="90" y="361" class="sub">Positive local detections and provenance</text><text x="90" y="382" class="tiny">Exact alert, rule, time, and source fields</text>
+<rect x="70" y="430" width="330" height="90" class="box" stroke="#22d3ee"/><text x="90" y="459" class="name">Normalized gateway stream</text><text x="90" y="486" class="sub">Bounded gateway-event lookup</text><text x="90" y="507" class="tiny">Exact tuple and bounded correlation window</text>
+<rect x="70" y="555" width="330" height="90" class="box" stroke="#34d399"/><text x="90" y="584" class="name">Asset inventory API</text><text x="90" y="611" class="sub">Current client lookup, read-only</text><text x="90" y="632" class="tiny">Freshness and uniqueness gate</text>
+<rect x="70" y="680" width="330" height="125" class="box" stroke="#a78bfa"/><text x="90" y="709" class="name">Local CTI and GeoIP context</text><text x="90" y="736" class="sub">Exact-match indicator store</text><text x="90" y="759" class="sub">SIEM-native GeoIP enrichment</text><text x="90" y="782" class="tiny">No external GeoIP dependency required</text>
+
+<!-- projection boxes -->
+<rect x="490" y="180" width="360" height="90" class="box" stroke="#fbbf24"/><text x="510" y="209" class="name">Automation scheduler</text><text x="510" y="236" class="sub">Bounded recurrence, nonblocking run lock</text><text x="510" y="257" class="tiny">Operator-supplied scheduled wrapper</text>
+<rect x="490" y="295" width="360" height="150" class="box" stroke="#34d399"/><text x="510" y="324" class="name">Snapshot and enrichment builder</text><text x="510" y="351" class="sub">opencti_context_snapshot.py</text><text x="510" y="376" class="sub">Correlated evidence and source geography</text><text x="510" y="401" class="tiny">Schema, count, pagination, identity, and</text><text x="510" y="422" class="tiny">safety-ceiling validation, fail closed</text>
+<rect x="490" y="475" width="360" height="120" class="box" stroke="#a78bfa"/><text x="510" y="504" class="name">Deterministic context snapshot</text><text x="510" y="531" class="sub">Indicators, vulnerabilities, Sightings</text><text x="510" y="554" class="sub">Evidence Notes and located-at records</text><text x="510" y="577" class="tiny">Operator-controlled cache and state directory</text>
+<rect x="490" y="630" width="360" height="145" class="box" stroke="#fb7185"/><text x="510" y="659" class="name">Receipt producer and durable ledger</text><text x="510" y="686" class="sub">Exact GraphQL Sighting and Note read-back</text><text x="510" y="709" class="sub">Per consumer: reserved → submitted → indexed</text><text x="510" y="732" class="tiny">At-most-once send, exact index confirmation</text><text x="510" y="753" class="tiny">Ambiguous attempts require reconciliation</text>
+
+<!-- OpenCTI boxes -->
+<rect x="950" y="180" width="310" height="155" class="box" stroke="#34d399"/><text x="970" y="209" class="name">Context connector</text><text x="970" y="236" class="sub">Deterministic STIX object creation</text><text x="970" y="261" class="sub">Indicator, Vulnerability, Sighting, Note</text><text x="970" y="286" class="sub">IPv4-Addr located-at Country</text><text x="970" y="311" class="tiny">TLP:AMBER local evidence</text>
+<rect x="950" y="395" width="310" height="110" class="box" stroke="#fb923c"/><text x="970" y="424" class="name">RabbitMQ and four workers</text><text x="970" y="451" class="sub">Asynchronous import and processing</text><text x="970" y="478" class="tiny">Queue must return to zero</text>
+<rect x="950" y="565" width="310" height="130" class="box" stroke="#22d3ee"/><text x="970" y="594" class="name">OpenCTI platform and GraphQL</text><text x="970" y="621" class="sub">Analyst graph and dashboards</text><text x="970" y="646" class="sub">Elasticsearch, Redis, MinIO</text><text x="970" y="671" class="tiny">Exact object attachment read-back</text>
+<rect x="950" y="730" width="310" height="75" class="box" stroke="#94a3b8"/><text x="970" y="759" class="name">Analyst interface</text><text x="970" y="785" class="sub">opencti.example.org</text>
+
+<!-- SIEM return boxes -->
+<rect x="1370" y="180" width="345" height="125" class="box" stroke="#22c55e"/><text x="1390" y="209" class="name">Graylog GELF HTTPS lane</text><text x="1390" y="236" class="sub">Highly available ingestion endpoint</text><text x="1390" y="259" class="sub">Load balancer to Graylog cores</text><text x="1390" y="282" class="tiny">Source restricted to the OpenCTI host</text>
+<rect x="1370" y="340" width="345" height="125" class="box" stroke="#22c55e"/><text x="1390" y="369" class="name">Graylog correlation stream</text><text x="1390" y="396" class="sub">Replicated index and bounded retention</text><text x="1390" y="419" class="sub">Dedicated receipt stream</text><text x="1390" y="442" class="tiny">Exact correlation_id search read-back</text>
+<rect x="1370" y="500" width="345" height="110" class="box" stroke="#22c55e"/><text x="1390" y="529" class="name">OpenCTI host receipt append</text><text x="1390" y="556" class="sub">Lock, O_NOFOLLOW, fsync</text><text x="1390" y="581" class="tiny">Protected newline-delimited JSON log</text>
+<rect x="1370" y="645" width="345" height="110" class="box" stroke="#22c55e"/><text x="1390" y="674" class="name">Wazuh agent and managers</text><text x="1390" y="701" class="sub">Agent forwarding to manager cluster</text><text x="1390" y="726" class="tiny">Ordinary and material-priority rules</text>
+<rect x="1370" y="785" width="345" height="85" class="box" stroke="#22c55e"/><text x="1390" y="814" class="name">Wazuh indexer cluster</text><text x="1390" y="841" class="sub">Exact correlation_id search read-back</text>
+
+<!-- numbered markers and labels -->
+<circle cx="447" cy="305" r="15" class="num"/><text x="447" y="305" class="ntext">1</text><text x="462" y="286" class="label">collect + normalize</text>
+<circle cx="900" cy="535" r="15" class="num"/><text x="900" y="535" class="ntext">2</text><text x="860" y="515" class="label">stage/apply</text>
+<circle cx="1105" cy="365" r="15" class="num"/><text x="1105" y="365" class="ntext">3</text><text x="1127" y="371" class="label">import</text>
+<circle cx="900" cy="650" r="15" class="num"/><text x="900" y="650" class="ntext">4</text><text x="690" y="618" class="label">exact graph read-back</text>
+<circle cx="1310" cy="305" r="15" class="num2"/><text x="1310" y="305" class="ntext">5</text>
+<circle cx="1535" cy="480" r="15" class="num2"/><text x="1535" y="480" class="ntext">6</text><text x="1558" y="486" class="label">index confirm</text>
+<circle cx="1535" cy="775" r="15" class="num2"/><text x="1535" y="775" class="ntext">7</text><text x="1558" y="781" class="label">index confirm</text>
+
+<!-- bottom control summary -->
+<rect x="40" y="875" width="1720" height="270" class="bound"/>
+<text x="64" y="912" class="btitle">Control and operating summary</text>
+<text x="75" y="952" class="name">Evidence integrity</text><text x="75" y="978" class="sub">Deterministic IDs and exact Note attachment verification.</text><text x="75" y="1000" class="sub">Bounded provenance, no aggregate-count proof.</text>
+<text x="75" y="1030" class="name">Delivery semantics</text><text x="75" y="1056" class="sub">Independent reserved → submitted → indexed state.</text><text x="75" y="1078" class="sub">Ambiguous outcomes are polled, never blindly resent.</text>
+<text x="75" y="1108" class="name">Response boundary</text><text x="75" y="1134" class="sub">No automatic blocking, containment, case creation, or compromise claim.</text>
+<text x="950" y="952" class="name">Material priority only</text><text x="950" y="978" class="sub">Detection + gateway evidence, at least 3 observations,</text><text x="950" y="1000" class="sub">or at least 2 distinct internal sources.</text>
+<text x="950" y="1030" class="name">Geography semantics</text><text x="950" y="1056" class="sub">IPv4-Addr located-at Country is coarse source context.</text><text x="950" y="1078" class="sub">Targeted countries remains reserved for targets.</text>
+<text x="950" y="1108" class="name">Reference status</text><text x="950" y="1134" class="sub">Pattern derived from a production-accepted, duplicate-safe implementation.</text>
+</svg>
