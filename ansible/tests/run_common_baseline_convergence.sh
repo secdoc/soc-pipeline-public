@@ -6,7 +6,7 @@ image="${ANSIBLE_TEST_IMAGE:-docker.io/library/debian:13-slim@sha256:d7e12182ce1
 apt_main="${ANSIBLE_TEST_APT_MAIN:-}"
 apt_security="${ANSIBLE_TEST_APT_SECURITY:-}"
 ca_file="${ANSIBLE_TEST_CA_FILE:-}"
-ansible_core_version="${ANSIBLE_TEST_ANSIBLE_CORE_VERSION:-2.19.4-0+deb13u1}"
+ansible_core_version="${ANSIBLE_TEST_ANSIBLE_CORE_VERSION:-}"
 name="soc-iac-common-baseline-$RANDOM-$$"
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 output_dir="$(mktemp -d)"
@@ -33,11 +33,18 @@ if [[ -n "$apt_main" ]]; then
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/debian.sources
     printf "deb %s trixie main\ndeb %s trixie-security main\n" "$APT_MAIN" "$APT_SECURITY" >/etc/apt/sources.list
     apt-get -o Acquire::https::CaInfo=/usr/local/share/ca-certificates/ansible-test-root.crt update >/dev/null
-    DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::https::CaInfo=/usr/local/share/ca-certificates/ansible-test-root.crt install -y "ansible-core=$ANSIBLE_CORE_VERSION" ca-certificates >/dev/null
+    ansible_core_package=ansible-core
+    [ -z "$ANSIBLE_CORE_VERSION" ] || ansible_core_package="ansible-core=$ANSIBLE_CORE_VERSION"
+    DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::https::CaInfo=/usr/local/share/ca-certificates/ansible-test-root.crt install -y "$ansible_core_package" ca-certificates >/dev/null
     update-ca-certificates >/dev/null
   '
 else
-  "$engine" exec --env ANSIBLE_CORE_VERSION="$ansible_core_version" "$name" sh -ec 'apt-get update >/dev/null && DEBIAN_FRONTEND=noninteractive apt-get install -y "ansible-core=$ANSIBLE_CORE_VERSION" ca-certificates >/dev/null'
+  "$engine" exec --env ANSIBLE_CORE_VERSION="$ansible_core_version" "$name" sh -ec '
+    apt-get update >/dev/null
+    ansible_core_package=ansible-core
+    [ -z "$ANSIBLE_CORE_VERSION" ] || ansible_core_package="ansible-core=$ANSIBLE_CORE_VERSION"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y "$ansible_core_package" ca-certificates >/dev/null
+  '
 fi
 
 if "$engine" exec --workdir /workspace/ansible "$name" ansible-playbook -i localhost, -c local /workspace/ansible/tests/common_baseline/converge.yml \
